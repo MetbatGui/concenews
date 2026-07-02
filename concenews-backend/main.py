@@ -1,5 +1,5 @@
 def main():
-    print("Hello from concenews!")
+    print("Hello from concenews-backend!")
 
 
 if __name__ == "__main__":
