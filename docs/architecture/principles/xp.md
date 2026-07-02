@@ -283,9 +283,9 @@ test("NewsList는 뉴스를 fetch하고 표시한다", async () => {
 
 ```
 spikes/{topic}/
-├── approach_1.py
-├── approach_2.py
-└── LEARNINGS.md  ← 핵심 발견 기록
+├── {api}_spike.py          ← 학습용 (test❌, spike✅)
+├── {approach}_spike.py
+└── LEARNINGS.md            ← 핵심 발견 기록
 
 ↓ (학습 완료)
 
@@ -300,6 +300,11 @@ rm -r spikes/{topic}  ← 정리, Git에 남지 않음
 ✨feat: Cosine 유사도 기반 매칭 알고리즘 채택
 (Spike 결과 기록, proper 구현 이후)
 ```
+
+**명명 규칙** (중요):
+- `test_*.py` ❌ → 테스트 코드 (pytest 대상, Git O)
+- `*_spike.py` ✅ → 학습용 임시 코드 (로컬만, Git X)
+- 구분 명확 → "이건 버릴 코드다" 한눈에 알 수 있음
 
 **예시**:
 
