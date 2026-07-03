@@ -119,7 +119,7 @@ priority: high/medium/low (필요시)
 
 ### 흐름
 ```
-feature/news-fetch (Spike 완료 후)
+feature/news-fetch-{task} (Spike 완료 후)
   ├─ commit 1: Fix: NewsAPI parsing error
   ├─ commit 2: Feat: NewsRepository.find_all()
   ├─ commit 3: Refactor: extract _parse_response()

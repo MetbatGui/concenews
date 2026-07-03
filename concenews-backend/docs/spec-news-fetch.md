@@ -116,7 +116,7 @@ GET https://api.thenewsapi.com/v1/news/top
 1. ✓ **Spike** 완료: 뉴스 API 선택 (TheNewsAPI)
 2. ✓ **Spec** 정의: 이 문서
 3. ✓ **Plan** 완료: 6단계 PR 구성 ([plan-news-fetch.md](plan-news-fetch.md))
-4. → **Implementation**: TDD 개발 중 (feature/news-fetch)
+4. → **Implementation**: TDD 개발 중 (feature/news-fetch-*)
    - ✓ Phase 1: Domain (NewsItem)
    - ✓ Phase 2: Repository (메모리 저장소)
    - ✓ Phase 3: Service (비즈니스 로직)

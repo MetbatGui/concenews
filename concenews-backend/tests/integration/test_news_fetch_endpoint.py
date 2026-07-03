@@ -7,9 +7,9 @@ TDD: RED phase
 
 구현 순서:
 1. Mock 데이터로 endpoint 반환 (RED → GREEN)
-2. Refactor: Service 추출
-3. Refactor: Domain 모델 추출
-4. Refactor: Repository 추출
+2. Service 레이어 추출
+3. Domain 모델 추출
+4. Repository 추출
 """
 
 import pytest
