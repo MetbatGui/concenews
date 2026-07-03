@@ -1,5 +1,17 @@
 # concenews-backend CLAUDE.md
 
+## 코드 작성 시 우선순위
+
+**필수**: 코드 작성 전 다음 문서 확인
+
+1. **[Modular Monolith](../docs/architecture/modular_monolith.md)** — 폴더/파일 구조
+2. **[Bounded Contexts](../docs/architecture/bounded_contexts.md)** — Context별 책임
+3. **[이 기능의 Plan](./docs/plan-*.md)** — 구체적 설계
+
+불명확하면 architecture 문서 먼저 읽고 질문.
+
+---
+
 ## 설계 원칙 (참고)
 
 모든 백엔드 설계는 루트 CLAUDE.md의 원칙을 따름:

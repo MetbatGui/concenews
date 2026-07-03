@@ -55,13 +55,17 @@
 
 ---
 
-## 설계 원칙
+## 설계 원칙 & 참고 자료
 
-모든 설계는 다음 원칙을 참고:
+**코드 작성 시 의무**: `docs/architecture/` 먼저 확인
+
+### 핵심 설계 문서
 
 - **[DDD (Domain-Driven Design)](docs/architecture/principles/ddd.md)** — 4계층 구조, Repository 패턴
 - **[XP (Extreme Programming)](docs/architecture/principles/xp.md)** — TDD, Refactoring, Simple Design
 - **[Vertical Slices](docs/architecture/principles/vertical-slices.md)** — Spike → Spec → Plan → Integration Test → TDD
+- **[Modular Monolith](docs/architecture/modular_monolith.md)** — 폴더 구조, 파일 역할 (필수 참고)
+- **[Bounded Contexts](docs/architecture/bounded_contexts.md)** — 각 Context 정의 (필수 참고)
 
 ### Git & GitHub
 
