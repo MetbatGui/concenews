@@ -2,20 +2,21 @@
 
 TDD: RED phase
 - 모든 테스트 실패 (구현 전)
-- Mock Service로 스켈레톤만 작동
-- 경계: Endpoint ↔ Service
+- 엔드포인트 구현 (GREEN)
+- 점진적 refactor로 계층 분리
 
 구현 순서:
-1. Mock Service 반환 (RED → GREEN)
-2. Domain 추가
-3. Repository 추가
-4. Service 실제 로직 추가
+1. Mock 데이터로 endpoint 반환 (RED → GREEN)
+2. Refactor: Service 추출
+3. Refactor: Domain 모델 추출
+4. Refactor: Repository 추출
 """
 
 import pytest
 from fastapi.testclient import TestClient
 
 from src.main import app
+from src.modules.news.public import GetNewsResponse, NewsItemResponse
 
 
 @pytest.fixture
