@@ -1,7 +1,6 @@
 # XP 원칙 — 1인 개발 & 실무 최적화
 
-> Vertical Slice + Outside-In TDD를 중심으로 한 Extreme Programming 도입
-> Walking Skeleton은 복잡한 다중 의존성이 있을 때만 선택적 적용
+> Vertical Slice + Walking Skeleton + Outside-In TDD를 실행하기 위한 Extreme Programming 선택적 도입
 > 1인 개발을 가정하되, 팀 확장 시 그대로 스케일하는 구조
 
 ---
@@ -165,45 +164,29 @@ git diff HEAD~1
 
 한 Slice = 한 주기 (1-3일):
 
-**단순 기능** (외부 의존성 1-2개):
 ```
 1. Spec (사용자 관점 정의)
    ↓
-2. Integration Test 작성 (Red)
+2. Test 작성 (Integration + Unit)
    ↓
-3. 엔드포인트 구현 (Mock data로 Green)
+3. Stub 상태로 테스트 통과 확인 (Green이 되도록 fake 구현)
    ↓
-4. Outside-In Refactor (점진적으로 Service/Domain/Repository 계층 분리, Green 유지)
+4. Outside-In: 바깥쪽부터 안쪽으로 Stub 교체 (TDD Red-Green-Refactor)
    ↓
 5. Self-Review: diff 읽기, 리팩터링
    ↓
 6. 모든 테스트 통과 + PR ready → merge
 ```
 
-**복잡한 기능** (다중 내부 의존성):
-```
-1. Spec (사용자 관점 정의)
-   ↓
-2. Plan (모든 계층 시그니처 결정)
-   ↓
-3. Walking Skeleton (Stub으로 뼈대 구성, 통합점 검증)
-   ↓
-4. Integration Test 작성 (Red)
-   ↓
-5. Outside-In TDD (Stub 하나씩 교체, Red-Green-Refactor)
-   ↓
-6. 나머지 동일...
-```
-
-**각 단계의 검증 기준** (단순 기능 기준):
+**각 단계의 검증 기준**:
 
 | 단계 | 기준 | 넘어가기 전 확인 |
 |-----|------|-----------------|
 | Spec | 사용자 관점에서 "이게 다인가" | AC(Acceptance Criteria) 모두 명시 |
-| Test | Integration Test 실패하는가? | 404 또는 예상된 실패 |
-| Green | 테스트 통과하는가? | Mock 데이터로 모든 테스트 green |
-| Refactor | 점진적으로 계층 분리 후 테스트 green? | 각 refactor 단계마다 테스트 통과 |
-| Self-Review | 1인이 읽기에 명확한가? | diff 읽고 "왜?"라는 의문 없음 |
+| Test | Integration Test 실패하는가? | Stub 상태에서 실패 확인 (예: KeyError 말고 AssertionError) |
+| Stub | 테스트 통과하는가? | 모든 테스트 green (가짜 구현이지만) |
+| Implementation | 진짜 구현 후 테스트 여전히 green? | 같은 테스트, 다른 구현 |
+| Refactor | 1인이 읽기에 명확한가? | diff 읽고 "왜?"라는 의문 없음 |
 
 ---
 

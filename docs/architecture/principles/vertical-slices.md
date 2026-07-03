@@ -36,11 +36,8 @@
 **2단계**: plan.md — 접합부 설계 (Port/Domain/Endpoint 시그니처)
 **3단계**: tasks.md — Stub 교체 순서 (의존성 역순)
 **4단계**: Integration Test 작성 — Slice 완료 판정 기준
-**5단계**: Outside-In TDD — 엔드포인트 구현, 점진적 Refactor로 계층 분리
-
-**Walking Skeleton (선택)**: 복잡한 다중 의존성 있을 때만 필요
-- 단순 기능: 5단계에서 직접 구현 (가장 프래그마틱)
-- 복잡한 기능: 미리 Stub 뼈대로 통합점 검증 후 구현
+**5단계**: Walking Skeleton — Stub으로 뼈대 연결
+**6단계**: Outside-In TDD — Stub을 실제 구현으로 교체
 
 **핵심**: tasks.md가 Integration Test보다 먼저. 의존성 순서를 알아야 Integration Test 검증 대상이 결정되기 때문.
 
@@ -97,22 +94,20 @@ spikes/{topic}/
 □ 3. Tasks (Stub 교체 순서)
   └─ 의존성 역순 (가장 깊은 것부터 교체)?
 
-□ 4. Integration Test (RED)
+□ 4. Integration Test (Stub 상태)
   └─ 모든 테스트 빨간불 (아직 구현 안 함)?
 
-□ 5. Outside-In TDD (GREEN → REFACTOR)
-  └─ 엔드포인트 구현 (Mock data)
-  └─ 테스트 통과 확인
-  └─ 점진적 refactor로 계층 분리 (Service → Domain → Repository)
-  └─ 각 단계마다 테스트 Green 유지?
+□ 5. Walking Skeleton (Stub으로 Green)
+  └─ 모든 테스트 통과 (가짜 구현)?
 
-□ 6. Self-Review & Refactor
+□ 6. Outside-In TDD (실제 구현)
+  └─ Stub 하나씩 교체, 테스트 여전히 Green?
+
+□ 7. Self-Review & Refactor
   └─ diff 읽고 명확한가? 복잡도 없나?
 
 □ 완료
   └─ 모든 테스트 Green, PR Ready
-
-**주의**: Walking Skeleton은 복잡한 다중 의존성이 있을 때만 사용. 단순 기능은 5단계에서 직접 구현하는 것이 더 빠르고 프래그마틱.
 ```
 
 ---
