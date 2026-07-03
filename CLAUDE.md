@@ -57,15 +57,22 @@
 
 ## 설계 원칙 & 참고 자료
 
-**코드 작성 시 의무**: `docs/architecture/` 먼저 확인
+### 원칙 (루트 docs/)
 
-### 핵심 설계 문서
+- **[DDD](docs/architecture/principles/ddd.md)** — 4계층, Repository 패턴
+- **[XP](docs/architecture/principles/xp.md)** — TDD, Refactoring, Simple Design
+- **[Vertical Slices](docs/architecture/principles/vertical-slices.md)** — Spike → Spec → Plan → Integration Test
 
-- **[DDD (Domain-Driven Design)](docs/architecture/principles/ddd.md)** — 4계층 구조, Repository 패턴
-- **[XP (Extreme Programming)](docs/architecture/principles/xp.md)** — TDD, Refactoring, Simple Design
-- **[Vertical Slices](docs/architecture/principles/vertical-slices.md)** — Spike → Spec → Plan → Integration Test → TDD
-- **[Modular Monolith](docs/architecture/modular_monolith.md)** — 폴더 구조, 파일 역할 (필수 참고)
-- **[Bounded Contexts](docs/architecture/bounded_contexts.md)** — 각 Context 정의 (필수 참고)
+### 구현 가이드 (백엔드 전용, concenews-backend/docs/)
+
+**코드 작성 전 필수 확인**:
+- **[Modular Monolith](concenews-backend/docs/architecture/modular-monolith.md)** — 폴더 구조, 모듈 경계, public.py
+- **[기능별 Plan](concenews-backend/docs/plan-*.md)** — 구체적 설계 (예: plan-news-fetch.md)
+
+### 인프라 & 워크플로우
+
+- **[Git Workflow](docs/git-workflow.md)** — Branch 전략, Commit 컨벤션
+- **[GitHub Strategy](docs/github-strategy.md)** — Milestone, Issue, PR
 
 ### Git & GitHub
 
