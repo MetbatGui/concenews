@@ -51,11 +51,7 @@ class TestGetNewsEndpoint:
         response = client.get("/news")
 
         # Schema 검증 (구조, 타입, 필드 모두 확인)
-        data = GetNewsResponse.model_validate(response.json())
-
-        # 타입 검증 (schema로 자동 처리되지만 명시)
-        assert isinstance(data.news, list)
-        assert isinstance(data.count, int)
+        GetNewsResponse.model_validate(response.json())
 
     def test_get_news_count_matches_articles(self, client):
         """count는 실제 기사 수와 일치한다.

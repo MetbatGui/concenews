@@ -43,10 +43,8 @@ class GetNewsResponse(BaseModel):
     Then: news 배열과 count 반환
     """
 
-    news: list[NewsItemResponse] = Field(
-        default_factory=list, description="뉴스 기사 목록"
-    )
-    count: int = Field(default=0, description="반환된 기사 개수")
+    news: list[NewsItemResponse] = Field(description="뉴스 기사 목록")
+    count: int = Field(description="반환된 기사 개수")
 
     model_config = ConfigDict(
         json_schema_extra={
