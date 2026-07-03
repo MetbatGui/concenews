@@ -51,7 +51,10 @@
 
 ## 기술 결정
 
-- **데이터 소스**: 뉴스 API (구체 선택은 Spike)
+- **데이터 소스**: TheNewsAPI Basic ($9/month, 2,500 req/day)
+  - Query: `interest rate OR forex OR currency`
+  - 수집 주기: 15분마다 1회 (96 req/day)
+  - 참고: [spikes/news_spikes/LEARNINGS.md](../spikes/news_spikes/LEARNINGS.md)
 - **저장소**: Python dict/list (메모리, 테스트용)
 - **향후 마이그레이션**: PostgreSQL + Redis 캐싱
 
