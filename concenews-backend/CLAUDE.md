@@ -50,6 +50,10 @@ modules/
 
 각 Slice의 Plan 문서 참고 ([예: plan-news-fetch.md](docs/plan-news-fetch.md))
 
+## Spike Process
+
+[Spike 프로세스](docs/spike-process.md) 참고 (기술 검증 → LEARNINGS.md → 삭제)
+
 ## Docstring & 코드 스타일
 
 [Google Style Docstring Convention](docs/conventions/docstring.md) 참고
