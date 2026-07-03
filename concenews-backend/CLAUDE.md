@@ -50,6 +50,10 @@ modules/
 
 각 Slice의 Plan 문서 참고 ([예: plan-news-fetch.md](docs/plan-news-fetch.md))
 
+## Docstring & 코드 스타일
+
+[Google Style Docstring Convention](docs/conventions/docstring.md) 참고
+
 ---
 
 ## 커밋 컨벤션 (루트 CLAUDE.md 참고)
