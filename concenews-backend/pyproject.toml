@@ -17,4 +17,24 @@ dev = [
     "pytest>=7.4.0",
     "pytest-asyncio>=0.21.0",
     "httpx2>=0.0.0",
+    "import-linter>=2.0",
+]
+
+[tool.importlinter]
+root_packages = ["src"]
+ignore_init_modules = true
+
+[[tool.importlinter.contracts]]
+name = "News 모듈 - 구현 세부사항 외부 노출 금지"
+description = "모듈은 public.py를 통해서만 외부 접근 가능"
+type = "forbidden"
+source_modules = ["src"]
+forbidden_modules = [
+    "src.modules.news.domain",
+    "src.modules.news.application",
+    "src.modules.news.presentation",
+    "src.modules.news.infrastructure",
+]
+ignore_imports = [
+    "src.modules.news.public -> src.modules.news.presentation.schemas",
 ]
