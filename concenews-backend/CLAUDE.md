@@ -46,38 +46,9 @@ modules/
 
 ---
 
-## TDD 순서 & PR 단위 (모든 Slice)
+## TDD & PR 전략
 
-### PR 구성 (예: news-fetch)
-
-```
-PR #1: Test: Integration test (RED)
-  └─ GET /endpoint 스펙 정의
-
-PR #2: Feat: Domain
-  └─ NewsItem 모델 + 검증
-
-PR #3: Feat: Repository
-  └─ 데이터 접근 계층
-
-PR #4: Feat: Service
-  └─ 비즈니스 로직
-
-PR #5: Feat: Endpoint (GREEN)
-  └─ HTTP 변환, 모든 테스트 통과
-
-PR #6: Refactor: 코드 정리
-  └─ 복잡도 제거, 네이밍 개선
-
-PR #7: Closes #{issue}
-  └─ 마지막 PR, Issue 자동 close
-```
-
-### 각 PR 규칙
-- 1 PR = 1 단위 기능 또는 1 리팩터 (focused)
-- Self-review 체크리스트 통과
-- "Related to #{issue}" (마지막 제외)
-- "Closes #{issue}" (마지막만)
+각 Slice의 Plan 문서 참고 ([예: plan-news-fetch.md](docs/plan-news-fetch.md))
 
 ---
 
