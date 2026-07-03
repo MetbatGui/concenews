@@ -1,14 +1,9 @@
 # concenews-backend CLAUDE.md
 
-## 코드 작성 시 우선순위
+## 코드 작성 전 필수 확인
 
-**필수**: 코드 작성 전 다음 문서 확인
-
-1. **[Modular Monolith](../docs/architecture/modular_monolith.md)** — 폴더/파일 구조
-2. **[Bounded Contexts](../docs/architecture/bounded_contexts.md)** — Context별 책임
-3. **[이 기능의 Plan](./docs/plan-*.md)** — 구체적 설계
-
-불명확하면 architecture 문서 먼저 읽고 질문.
+- **[Modular Monolith](docs/architecture/modular-monolith.md)** — 폴더 구조, 모듈 경계
+- **해당 기능의 Plan** — 구체적 설계 (예: [plan-news-fetch.md](docs/plan-news-fetch.md))
 
 ---
 
@@ -29,32 +24,11 @@
 
 ## 모듈러 모놀리스 구조
 
-각 Slice는 **독립적인 모듈**:
+**[docs/architecture/modular-monolith.md](docs/architecture/modular-monolith.md) 참고**
 
-```
-modules/
-  ├─ news_fetch/
-  │  ├─ endpoints.py     (FastAPI route)
-  │  ├─ services.py      (Business logic)
-  │  ├─ domain.py        (Domain model, Pydantic)
-  │  └─ repositories.py   (Data access)
-  ├─ market_info/
-  │  ├─ endpoints.py
-  │  ├─ services.py
-  │  ├─ domain.py
-  │  └─ repositories.py
-  └─ matching/
-     ├─ endpoints.py
-     ├─ services.py
-     ├─ domain.py
-     └─ repositories.py
-```
-
-### 역할 분명:
-- **Endpoint**: HTTP 변환만 (Request/Response → DTO)
-- **Service**: 비즈니스 로직 (외부 API, 조합 로직)
-- **Domain**: 도메인 규칙 (검증, 계산, 불변성)
-- **Repository**: 데이터 접근 (저장소 추상화)
+- 폴더 구조: `src/modules/{context}/`
+- 모듈 경계: `public.py`를 통한 계약 결합만 허용
+- import-linter로 강제
 
 ---
 
