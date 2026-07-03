@@ -171,7 +171,7 @@ git diff HEAD~1
    ↓
 2. Integration Test 작성 (Red)
    ↓
-3. 엔드포인트 구현 (Mock data로 Green)
+3. 엔드포인트 구현 (Mock data로 Green) — Golden Master 기법 사용
    ↓
 4. Outside-In Refactor (점진적으로 Service/Domain/Repository 계층 분리, Green 유지)
    ↓
@@ -201,7 +201,7 @@ git diff HEAD~1
 |-----|------|-----------------|
 | Spec | 사용자 관점에서 "이게 다인가" | AC(Acceptance Criteria) 모두 명시 |
 | Test | Integration Test 실패하는가? | 404 또는 예상된 실패 |
-| Green | 테스트 통과하는가? | Mock 데이터로 모든 테스트 green |
+| Green | 테스트 통과하는가? | Mock 데이터로 모든 테스트 green (Golden Master: 실제 API 호출 후 응답 하드코딩) |
 | Refactor | 점진적으로 계층 분리 후 테스트 green? | 각 refactor 단계마다 테스트 통과 |
 | Self-Review | 1인이 읽기에 명확한가? | diff 읽고 "왜?"라는 의문 없음 |
 
