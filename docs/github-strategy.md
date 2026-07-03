@@ -86,6 +86,35 @@ Labels: epic, news-fetch
 
 ---
 
+## 2.5 Bug Reports (언제 생성)
+
+### Bug Report 작성 시점
+
+**TDD 사이클 중**:
+- RED 단계: Integration test 실패 → 미구현 (버그 아님)
+- GREEN 단계: 개발 중 test 실패 → 디버깅 (버그 아님)
+- REFACTOR 단계: 리팩터링 (버그 아님)
+
+**버그 리포트 필요한 경우** (예상 밖의 문제):
+- 기존 코드에서 발견한 결함
+- Test 통과 후 수동 테스트에서 발견
+- 외부 의존성 문제 (API 변경, 라이브러리 버그 등)
+
+### 정리
+
+```
+TDD 자동 감지 → 버그 리포트 거의 불필요
+예상 밖 이슈 발견 → Bug Report 생성 + Milestone 없음 (urgent)
+```
+
+### Bug Report 라벨
+```
+type: bug
+priority: high/medium/low (필요시)
+```
+
+---
+
 ## 3. Branches & PRs
 
 ### 흐름
