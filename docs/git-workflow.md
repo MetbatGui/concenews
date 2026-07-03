@@ -10,14 +10,16 @@
 - 항상 배포 가능 (모든 테스트 green)
 - PR 기반 merge (self-review 포함)
 
-### feature/{slice-name}
+### feature/{slice-name}-{task}
 ```
-feature/news-fetch          (뉴스 조회 Slice)
-feature/market-info         (마켓 정보 Slice)
+feature/news-fetch-endpoint-mock   (mock endpoint, 통합테스트 GREEN)
+feature/news-fetch-service         (Service 레이어 추출)
+feature/news-fetch-domain          (Domain 모델 추출)
+feature/news-fetch-repository      (Repository 추출)
+feature/news-fetch-close           (Issue close)
 ```
-- **단위**: Vertical Slice = 1주 = 1 배포 가능 기능
-- **시간**: 3-5 commit, 1-2일
-- main에서 생성, 완료 후 merge
+- **단위**: PR 1개 = 브랜치 1개 (작업 내용 명시)
+- master에서 생성, PR merge 후 삭제
 
 ---
 
@@ -78,11 +80,11 @@ PR 체크리스트:
 
 ## 요약
 
-| 단계 | 브랜치 | 시간 | 액션 |
-|------|--------|------|------|
-| Spike (학습) | — (로컬) | 1-2시간 | spikes/{topic}/ → LEARNINGS.md → 삭제 |
-| Spec 확정 | main | 1시간 | spec.md commit |
-| 개발 | feature/{slice} | 2-5일 | code → test → refactor |
-| PR & Review | feature/{slice} | 1시간 | self-review → merge |
-| 배포 | main | — | 자동화 또는 수동 |
+| 단계 | 브랜치 | 액션 |
+|------|--------|------|
+| Spike (학습) | — (로컬) | spikes/{topic}/ → LEARNINGS.md → 삭제 |
+| Spec 확정 | master | spec.md commit |
+| 개발 | feature/{slice}-{task} | code → test → refactor |
+| PR & Review | feature/{slice}-{task} | self-review → merge |
+| 배포 | master | 자동화 또는 수동 |
 

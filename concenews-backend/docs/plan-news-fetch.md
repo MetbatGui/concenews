@@ -102,32 +102,31 @@ concenews-backend/
 
 ## TDD 순서 & PR 구성
 
-### PR #1: Test - Integration Test (RED)
-```python
-def test_get_news_returns_items():
-    response = client.get("/news")
-    assert response.status_code == 200
-    assert "news" in response.json()
-    assert len(response.json()["news"]) >= 0
-    assert response.json()["count"] == len(response.json()["news"])
-```
-- 스펙 정의 (GET /news 응답 구조)
-- 실패 상태 (구현 전)
+### PR #1: Integration Test (RED) — `feature/news-fetch-integration-test`
+- 9개 통합 테스트 작성
+- Schema Contract 정의 (GetNewsResponse, NewsItemResponse)
+- 전체 실패 상태 (구현 전) ✅ 완료
 
-### PR #2-#5: Implementation (GREEN)
-- **PR #2**: Domain (NewsItem 모델)
-- **PR #3**: Repository (데이터 저장소)
-- **PR #4**: Service (NewsAPI 통합, 비즈니스 로직)
-- **PR #5**: Endpoint (GET /news 라우트)
-- 각 PR마다 관련 Unit Test 작성
-- PR #5 완료 → Integration Test 통과 (GREEN)
+### PR #2: Endpoint Mock (GREEN) — `feature/news-fetch-endpoint-mock`
+- `/news` endpoint 하드코딩 mock 반환
+- 통합 테스트 9개 모두 통과
 
-### PR #6: Refactor
-- 복잡도 제거
-- 네이밍 개선
-- 중복 코드 추출
+### PR #3: Service 추출 — `feature/news-fetch-service`
+- `NewsService` 추출 (비즈니스 로직)
+- Unit Test 작성
+- 통합 테스트 유지
 
-### PR #7: Close Issue
+### PR #4: Domain 모델 추출 — `feature/news-fetch-domain`
+- `NewsItem` Pydantic 모델 추출
+- Unit Test 작성
+- 통합 테스트 유지
+
+### PR #5: Repository 추출 — `feature/news-fetch-repository`
+- `NewsRepository` 추출 (메모리 저장소)
+- Unit Test 작성
+- 통합 테스트 유지
+
+### PR #6: Close Issue — `feature/news-fetch-close`
 - Closes #{issue} (자동 close)
 
 ---
