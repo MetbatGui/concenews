@@ -145,3 +145,20 @@ class TestGetNewsEndpoint:
 
         # 기본 limit 검증
         assert data.count <= 50
+
+    def test_get_news_sorted_by_published_at_desc(self, client):
+        """뉴스는 published_at 기준 최근순으로 정렬된다.
+
+        Given: FastAPI test client
+        When: GET /news 호출 후 뉴스가 2개 이상 있는 경우
+        Then: published_at이 내림차순(최근순)
+        """
+        response = client.get("/news")
+        data = GetNewsResponse.model_validate(response.json())
+
+        # 뉴스가 2개 이상일 때만 정렬 검증
+        if len(data.news) >= 2:
+            for i in range(len(data.news) - 1):
+                current = data.news[i].published_at
+                next_item = data.news[i + 1].published_at
+                assert current >= next_item, f"{current} should be >= {next_item} (descending)"
