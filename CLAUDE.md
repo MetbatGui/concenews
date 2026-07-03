@@ -53,6 +53,45 @@
 
 ---
 
+## 설계 원칙
+
+모든 설계는 다음 원칙을 참고:
+
+- **[DDD (Domain-Driven Design)](docs/architecture/principles/ddd.md)** — 4계층 구조, Repository 패턴
+- **[XP (Extreme Programming)](docs/architecture/principles/xp.md)** — TDD, Refactoring, Simple Design
+- **[Vertical Slices](docs/architecture/principles/vertical-slices.md)** — Spike → Spec → Plan → Integration Test → TDD
+
+### Git & GitHub
+
+- **[Git Workflow](docs/git-workflow.md)** — Branch strategy, Spike handling, Commit convention
+- **[GitHub Strategy](docs/github-strategy.md)** — Milestones (Slice unit), Epic Issues, Labels, PR automation
+
+---
+
+## UV 명령 실행
+
+프로젝트 루트에서 백엔드 명령 실행:
+
+```bash
+# 테스트
+uv --directory concenews-backend run pytest
+
+# 개발 서버
+uv --directory concenews-backend run python -m uvicorn src.main:app --reload
+
+# 기타 Python 스크립트
+uv --directory concenews-backend run python script.py
+```
+
+또는 백엔드 폴더로 이동 후:
+```bash
+cd concenews-backend
+uv run pytest
+uv run python -m uvicorn src.main:app --reload
+```
+
+---
+
 ## 프론트엔드 설계
 
 사용자는 프론트엔드 미경험. 모든 프론트엔드 작업에서:
