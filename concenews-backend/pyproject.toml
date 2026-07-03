@@ -28,7 +28,7 @@ ignore_init_modules = true
 name = "News module - forbid internal implementation exports"
 description = "Module access only through public.py"
 type = "forbidden"
-source_modules = ["src"]
+source_modules = ["src.modules"]
 forbidden_modules = [
     "src.modules.news.domain",
     "src.modules.news.application",

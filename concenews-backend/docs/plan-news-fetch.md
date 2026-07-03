@@ -79,7 +79,7 @@ Endpoint 응답 반환
 concenews-backend/
 ├─ src/
 │  └─ modules/
-│     └─ news_fetch/
+│     └─ news/
 │        ├─ endpoints.py     (GET /news route)
 │        ├─ services.py      (NewsService, NewsAPI 통합)
 │        ├─ domain.py        (NewsItem - Pydantic)
