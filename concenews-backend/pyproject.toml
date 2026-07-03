@@ -1,7 +1,40 @@
 [project]
 name = "concenews-backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "Portfolio: 금리/통화 뉴스 조회 및 마켓 데이터 매칭 플랫폼"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0",
+    "requests>=2.31.0",
+    "feedparser>=6.0.10",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx2>=0.0.0",
+    "import-linter>=2.0",
+]
+
+[tool.importlinter]
+root_packages = ["src"]
+ignore_init_modules = true
+
+[[tool.importlinter.contracts]]
+name = "News module - forbid internal implementation exports"
+description = "Module access only through public.py"
+type = "forbidden"
+source_modules = ["src.modules"]
+forbidden_modules = [
+    "src.modules.news.domain",
+    "src.modules.news.application",
+    "src.modules.news.presentation",
+    "src.modules.news.infrastructure",
+]
+ignore_imports = [
+    "src.modules.news.public -> src.modules.news.presentation.schemas",
+]

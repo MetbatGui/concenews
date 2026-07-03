@@ -137,6 +137,39 @@ register_matching()
 
 ---
 
+## 계층 구조 (Module Internal)
+
+각 모듈 내부는 4계층으로 나뉨:
+
+| 계층 | 역할 | 예시 |
+|---|---|---|
+| **Domain** | 비즈니스 규칙, 엔티티, 도메인 로직 | `NewsItem` 엔티티, `published_at` 검증 규칙 |
+| **Application** | Use Cases, Commands, Queries, 비즈니스 오케스트레이션 | `GetNewsCommand`, `FetchNewsUseCase` (아직 미구현) |
+| **Presentation** | HTTP/API 응답 계약, DTO | `GetNewsResponse`, `NewsItemResponse` (schemas.py) |
+| **Infrastructure** | 데이터 접근, 외부 서비스 호출 | `NewsRepository`, API 클라이언트 |
+
+**규칙**:
+- Domain/Application → 외부 의존성 없음 (순수 비즈니스 로직)
+- Presentation → HTTP 응답만 정의 (비즈니스 로직 없음)
+- Infrastructure → DB, 외부 API만 (도메인 규칙 없음)
+
+**예시: News 모듈**:
+```
+src/modules/news/
+├── domain/
+│   └── (NewsItem 엔티티, 검증 규칙 — 아직 미구현)
+├── application/
+│   └── (Commands, Queries — 아직 미구현)
+├── presentation/
+│   └── schemas.py  ← GetNewsResponse DTO ✅
+├── infrastructure/
+│   └── (NewsRepository, TheNewsAPI 클라이언트 — 아직 미구현)
+├── public.py  ← 외부는 여기서만 import
+└── bootstrap.py
+```
+
+---
+
 ## 이 문서가 지켜주는 것
 
 - 한 모듈의 내부 리팩터링이 다른 모듈에 전파되지 않음

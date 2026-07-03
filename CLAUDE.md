@@ -27,7 +27,9 @@
 | fix      | 🐛      | 버그 수정                      |
 | refactor | ♻️    | 코드 리팩토링 (기능 변경 없음) |
 | docs     | 📝      | 문서 추가/수정                 |
+| test     | 🧪      | 테스트 추가/수정 (설계 포함)   |
 | chore    | 🔧      | 빌드, 의존성, 설정 변경        |
+| verify   | ✅      | 테스트 통과, 검증 완료         |
 
 ### 예시
 
@@ -49,6 +51,56 @@
 🔧chore: 환경 변수 설정 추가
 
 .env.example 파일 추가 및 README에 설정 가이드 작성
+```
+
+---
+
+## 설계 원칙 & 참고 자료
+
+### 원칙 (루트 docs/)
+
+- **[DDD](docs/architecture/principles/ddd.md)** — 4계층, Repository 패턴
+- **[XP](docs/architecture/principles/xp.md)** — TDD, Refactoring, Simple Design
+- **[Vertical Slices](docs/architecture/principles/vertical-slices.md)** — Spike → Spec → Plan → Integration Test
+
+### 구현 가이드 (백엔드 전용, concenews-backend/docs/)
+
+**코드 작성 전 필수 확인**:
+- **[Modular Monolith](concenews-backend/docs/architecture/modular-monolith.md)** — 폴더 구조, 모듈 경계, public.py
+- **[기능별 Plan](concenews-backend/docs/plan-*.md)** — 구체적 설계 (예: plan-news-fetch.md)
+
+### 인프라 & 워크플로우
+
+- **[Git Workflow](docs/git-workflow.md)** — Branch 전략, Commit 컨벤션
+- **[GitHub Strategy](docs/github-strategy.md)** — Milestone, Issue, PR
+
+### Git & GitHub
+
+- **[Git Workflow](docs/git-workflow.md)** — Branch strategy, Spike handling, Commit convention
+- **[GitHub Strategy](docs/github-strategy.md)** — Milestones (Slice unit), Epic Issues, Labels, PR automation
+
+---
+
+## UV 명령 실행
+
+프로젝트 루트에서 백엔드 명령 실행:
+
+```bash
+# 테스트
+uv --directory concenews-backend run pytest
+
+# 개발 서버
+uv --directory concenews-backend run python -m uvicorn src.main:app --reload
+
+# 기타 Python 스크립트
+uv --directory concenews-backend run python script.py
+```
+
+또는 백엔드 폴더로 이동 후:
+```bash
+cd concenews-backend
+uv run pytest
+uv run python -m uvicorn src.main:app --reload
 ```
 
 ---
