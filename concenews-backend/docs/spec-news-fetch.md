@@ -168,7 +168,7 @@ Repository (Memory Dict)
 
 **파일 구조:**
 ```
-src/modules/news_fetch/
+src/modules/news/
   ├─ endpoints.py       (FastAPI route)
   ├─ services.py        (비즈니스 로직)
   ├─ domain.py          (NewsItem 모델)
@@ -177,9 +177,10 @@ src/modules/news_fetch/
 
 ### 테스트 전략
 
-- **Integration**: GET /news 응답 검증 (6 tests)
+- **Integration**: GET /news 응답 검증 (8 tests)
+  - 200 상태, 응답 구조, count 매칭, 빈 배열, 필드 검증, limit 최대값, limit 파라미터, 기본값, 정렬 (published_at 최근순)
 - **Unit**: Domain, Service, Repository (17 tests)
-- **현재 상태**: 23/23 PASSED
+- **현재 상태**: RED phase (404 - 구현 전)
 
 ## 다음 단계
 
