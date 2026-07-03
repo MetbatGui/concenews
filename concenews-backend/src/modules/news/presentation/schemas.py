@@ -12,7 +12,7 @@ class NewsItemResponse(BaseModel):
 
     id: str = Field(..., description="고유 식별자 (URL 해시)")
     title: str = Field(..., description="뉴스 제목")
-    description: str = Field(..., description="요약 설명")
+    description: str | None = Field(default=None, description="요약 설명 (API 응답에서 누락될 수 있음)")
     link: str = Field(..., description="기사 원본 링크")
     source: str = Field(..., description="뉴스 출처 (신문사명)")
     published_at: str = Field(..., description="발행 시간 (ISO8601)")
