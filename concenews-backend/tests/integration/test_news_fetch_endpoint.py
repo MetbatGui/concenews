@@ -28,12 +28,22 @@ class TestGetNewsEndpoint:
     """GET /news endpoint integration tests."""
 
     def test_get_news_returns_200(self, client):
-        """GET /news returns 200 OK."""
+        """GET /news 엔드포인트는 200 OK를 반환한다.
+
+        Given: FastAPI test client
+        When: GET /news 호출
+        Then: 응답 상태 코드는 200
+        """
         response = client.get("/news")
         assert response.status_code == 200
 
     def test_get_news_response_structure(self, client):
-        """응답 구조: {news: [...], count: N}."""
+        """응답 구조는 {news: [...], count: N}이다.
+
+        Given: FastAPI test client
+        When: GET /news 호출
+        Then: 응답에 'news' 배열과 'count' 정수 필드 포함
+        """
         response = client.get("/news")
         data = response.json()
 
@@ -43,25 +53,37 @@ class TestGetNewsEndpoint:
         assert isinstance(data["count"], int), "'count'는 정수"
 
     def test_get_news_count_matches_articles(self, client):
-        """count는 실제 기사 수와 일치."""
+        """count는 실제 기사 수와 일치한다.
+
+        Given: FastAPI test client
+        When: GET /news 호출
+        Then: count 값 == 기사 배열 길이
+        """
         response = client.get("/news")
         data = response.json()
 
         assert data["count"] == len(data["news"]), "count는 articles 개수와 일치"
 
     def test_get_news_empty_when_no_articles(self, client):
-        """저장된 뉴스가 없으면 빈 배열."""
+        """저장된 뉴스가 없으면 빈 배열을 반환한다.
+
+        Given: 초기 상태 (뉴스 없음)
+        When: GET /news 호출
+        Then: news는 빈 배열, count는 0
+        """
         response = client.get("/news")
         data = response.json()
 
-        # 초기 상태: 뉴스 없음
         assert data["news"] == [], "초기 상태에서 빈 배열 반환"
         assert data["count"] == 0, "count = 0"
 
     def test_get_news_article_fields(self, client):
-        """각 기사 필드: id, title, description, link, source, published_at, keywords, categories."""
-        # 이 테스트는 나중에 실제 데이터가 있을 때 작동
-        # 현재는 스킵 가능 (or fixture로 데이터 추가)
+        """각 기사는 필수 필드를 포함한다.
+
+        Given: FastAPI test client
+        When: GET /news 호출 후 기사 데이터가 존재하는 경우
+        Then: 각 기사는 id, title, description, link, source, published_at, keywords, categories 필드 포함
+        """
         response = client.get("/news")
         data = response.json()
 
@@ -86,14 +108,24 @@ class TestGetNewsEndpoint:
                 ), f"'{field}'는 {expected_type.__name__} 타입"
 
     def test_get_news_max_50_articles(self, client):
-        """최대 50개 기사 반환."""
+        """최대 50개의 기사를 반환한다.
+
+        Given: FastAPI test client
+        When: GET /news?limit=50 호출
+        Then: 반환되는 기사 개수는 50개 이하
+        """
         response = client.get("/news?limit=50")
         data = response.json()
 
         assert len(data["news"]) <= 50, "최대 50개 제한"
 
     def test_get_news_limit_parameter(self, client):
-        """limit 파라미터 처리."""
+        """limit 파라미터로 조회 개수를 제어할 수 있다.
+
+        Given: FastAPI test client
+        When: GET /news?limit={10, 5} 호출
+        Then: count 값은 각각 10, 5 이하
+        """
         # limit=10
         response = client.get("/news?limit=10")
         data = response.json()
@@ -105,9 +137,13 @@ class TestGetNewsEndpoint:
         assert data["count"] <= 5, "limit=5 요청"
 
     def test_get_news_default_limit_50(self, client):
-        """기본 limit=50."""
+        """limit 파라미터 생략 시 기본값은 50이다.
+
+        Given: FastAPI test client
+        When: GET /news 호출 (limit 파라미터 없음)
+        Then: count 값은 50 이하 (기본값 적용)
+        """
         response = client.get("/news")
         data = response.json()
 
-        # 기본값 50이므로 50 이하
         assert data["count"] <= 50, "기본 limit=50"

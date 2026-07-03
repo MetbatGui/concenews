@@ -65,6 +65,20 @@ class NewsItem(BaseModel):
     published_at: datetime
 ```
 
+### 테스트 함수 (GWT 패턴)
+
+```python
+def test_get_news_returns_200(self, client):
+    """GET /news 엔드포인트는 200 OK를 반환한다.
+
+    Given: FastAPI test client
+    When: GET /news 호출
+    Then: 응답 상태 코드는 200
+    """
+    response = client.get("/news")
+    assert response.status_code == 200
+```
+
 ---
 
 ## 규칙
