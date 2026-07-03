@@ -60,8 +60,77 @@
 
 ---
 
+## 구현 상태
+
+1. ✓ **Spike** 완료: 뉴스 API 선택 (TheNewsAPI)
+2. ✓ **Spec** 정의: 이 문서
+3. ✓ **Plan** 완료: 6단계 PR 구성 ([plan-news-fetch.md](plan-news-fetch.md))
+4. → **Implementation**: TDD 개발 중 (feature/news-fetch)
+   - ✓ Phase 1: Domain (NewsItem)
+   - ✓ Phase 2: Repository (메모리 저장소)
+   - ✓ Phase 3: Service (비즈니스 로직)
+   - ✓ Phase 4: Endpoint (GET /news)
+   - → Phase 5: Refactor (진행 예정)
+   - → Phase 6: Close Issue
+
+## 구현 세부사항
+
+### API 엔드포인트
+
+```
+GET /news?limit=50
+```
+
+**쿼리 파라미터:**
+- `limit` (int, 선택): 반환할 최대 기사 수 (1-100, 기본값: 50)
+
+**응답 (200 OK):**
+```json
+{
+  "news": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "title": "Interest Rate Decision Announced",
+      "description": "Central bank raises rates by 0.25%",
+      "link": "https://example.com/article",
+      "source": "Reuters",
+      "published_at": "2026-07-03T10:00:00Z"
+    }
+  ],
+  "count": 1
+}
+```
+
+### 아키텍처 (DDD 4계층)
+
+```
+Endpoint (HTTP)
+    ↓ Request
+Service (Business Logic)
+    ↓ Domain Model
+Domain (NewsItem - Pydantic)
+    ↓ Persistence
+Repository (Memory Dict)
+```
+
+**파일 구조:**
+```
+src/modules/news_fetch/
+  ├─ endpoints.py       (FastAPI route)
+  ├─ services.py        (비즈니스 로직)
+  ├─ domain.py          (NewsItem 모델)
+  └─ repositories.py     (저장소)
+```
+
+### 테스트 전략
+
+- **Integration**: GET /news 응답 검증 (6 tests)
+- **Unit**: Domain, Service, Repository (17 tests)
+- **현재 상태**: 23/23 PASSED
+
 ## 다음 단계
 
-1. **Spike** (1-2일): 뉴스 API 선택 & 데이터 구조 학습
-2. **Plan**: Endpoint/Domain/Repository 설계
-3. **Implementation**: TDD로 개발
+1. ✓ Spike & Plan
+2. → Refactor & Code Review
+3. → Merge to master
+4. → Spike #2: NewsAPI 통합 (데이터 수집)
