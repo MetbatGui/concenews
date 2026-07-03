@@ -131,13 +131,31 @@ feature/news-fetch (Spike 완료 후)
               └─ Merge (regular) & delete branch
 ```
 
-### PR 체크리스트
+### PR 체크리스트 (단계별)
+
+**RED Phase PR** (테스트 설계, 스펙, 설계):
 ```markdown
-## ✅ Ready
-- [x] All tests green (Integration + Unit)
-- [x] Self-reviewed (diff 명확한가?)
-- [x] Refactored (중복 없나?)
+## 검수 목록
+- [x] 테스트 설계 완료?
+- [x] 스펙/계획 문서화?
+- [x] import-linter 통과?
+```
+
+**GREEN Phase PR** (구현):
+```markdown
+## 검수 목록
+- [x] 모든 테스트 통과?
+- [x] 코드 명확한가?
+- [x] 리팩터링 필요 없나?
 - [x] Commit 메시지 명확한가?
+```
+
+**REFACTOR Phase PR** (정리):
+```markdown
+## 검수 목록
+- [x] 중복 제거?
+- [x] 네이밍 개선?
+- [x] 기존 테스트 통과?
 ```
 
 ---

@@ -22,9 +22,13 @@ uv run pytest tests/...
 
 ## 검수 목록
 
-- [ ] 코드 명확한가?
-- [ ] 테스트 충분한가?
-- [ ] 문서 업데이트되었나?
+> 단계별 체크리스트는 [docs/github-strategy.md](../docs/github-strategy.md#pr-체크리스트-단계별) 참고
+> 
+> - **RED Phase**: 테스트 설계, 스펙 문서화
+> - **GREEN Phase**: 구현, 테스트 통과
+> - **REFACTOR Phase**: 정리, 개선
+
+- [ ] (단계별 체크리스트 항목들)
 - [ ] import-linter 통과?
   ```bash
   uv run lint-imports
