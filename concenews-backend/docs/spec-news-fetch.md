@@ -27,7 +27,9 @@
      "description": "string",
      "link": "string",
      "source": "string",
-     "published_at": "ISO8601 datetime"
+     "published_at": "ISO8601 datetime",
+     "keywords": "string (쉼표 구분)",
+     "categories": ["string"]
    }
    ```
 
@@ -83,6 +85,8 @@ GET https://api.thenewsapi.com/v1/news/top
 | url | link | 기사 링크 |
 | source | source | 출처 (cbsnews.com 등) |
 | published_at | published_at | ISO8601 시간 |
+| keywords | keywords | 쉼표 구분 텍스트 (필터링용) |
+| categories | categories | 카테고리 배열 (참고용) |
 
 **수집 전략:**
 - 키워드: 개별 검색 (OR 조합 대신)
@@ -136,12 +140,14 @@ GET /news?limit=50
 {
   "news": [
     {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "title": "Interest Rate Decision Announced",
-      "description": "Central bank raises rates by 0.25%",
-      "link": "https://example.com/article",
-      "source": "Reuters",
-      "published_at": "2026-07-03T10:00:00Z"
+      "id": "fd04ffe1-7511-40b8-a951-2e0b3da2a043",
+      "title": "Bessent on Trump's crypto earnings, Trump Accounts and the U.S. economy's struggles",
+      "description": "Treasury Secretary Scott Bessent touched on the recent disclosure of President Trump's crypto earnings...",
+      "link": "https://www.cbsnews.com/news/scott-bessent-trump-crypto-earnings-trump-accounts-inflation/",
+      "source": "cbsnews.com",
+      "published_at": "2026-07-03T01:56:53Z",
+      "keywords": "Scott Bessent, Economy, Donald Trump, Inflation",
+      "categories": ["general", "politics"]
     }
   ],
   "count": 1
