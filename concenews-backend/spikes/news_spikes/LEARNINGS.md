@@ -161,11 +161,87 @@
 
 ### Implementation Notes
 
-- API: `https://www.thenewsapi.com/v1/news/top`
-- Query: `q=interest rate OR forex OR currency` + `country=us,gb,de,jp,cn` 등
-- Rate: 15분마다 1회 스케줄 작업
-- Caching: 수집 기사 DB 저장 (중복 제외)
-- Response: 25 articles/req → newsItem 변환
+**API 요청**
+```
+GET https://api.thenewsapi.com/v1/news/top
+?api_token={token}
+&search=interest+rate
+&locale=us
+&limit=10
+```
+
+**응답 구조**
+```json
+{
+  "meta": {
+    "found": 32202,        // 매칭 기사 총 수
+    "returned": 3,         // 실제 반환 수 (무료 제약)
+    "limit": 10            // 요청 limit
+  },
+  "data": [
+    {
+      "uuid": "고유ID",
+      "title": "기사 제목",
+      "description": "요약 (자동 생성, ...으로 잘림)",
+      "snippet": "스니펫",
+      "url": "https://...",
+      "image_url": "https://...",
+      "source": "cbsnews.com",
+      "published_at": "2026-07-03T01:56:53.000000Z",
+      "language": "en",
+      "locale": "us",
+      "keywords": "쉼표,구분,텍스트",
+      "categories": ["general", "politics"],
+      "relevance_score": null
+    }
+  ]
+}
+```
+
+**필드 활용**
+
+| 필드 | 사용 | 설명 |
+|------|------|------|
+| uuid | ✓ NewsItem.id | 고유 식별자 |
+| title | ✓ NewsItem.title | 기사 제목 |
+| description | ✓ NewsItem.description | 요약 (자동 생성) |
+| url | ✓ NewsItem.link | 기사 링크 |
+| source | ✓ NewsItem.source | 출처 (cbsnews.com) |
+| published_at | ✓ NewsItem.published_at | ISO8601 시간 |
+| keywords | ⚠️ 필터링용 | 쉼표 구분, 때로 빈 문자열 |
+| categories | ⚠️ 참고용 | 자동 추출 (정확도 낮음) |
+| image_url | - (scope out) | 썸네일 (미사용) |
+| snippet | - (scope out) | 중복 데이터 |
+| relevance_score | ✗ (항상 null) | 사용 불가 |
+
+**데이터 품질**
+- Source: CBS News, Yahoo 등 신뢰 언론사 ✓
+- Timeliness: 실시간 (수 분 내) ✓
+- Keywords: 쉼표 구분, 사용자 검색 필터링 기반 ✓
+- Categories: 자동 분류, 정확도 낮음 ⚠️
+
+**검색 쿼리 성능**
+- "interest rate": 32,202건 ✓
+- "forex": 921건 ✓
+- "currency": 16,130건 ✓
+- "Fed rate decision": 3,484건 ✓
+
+**필터링 지원**
+- ✓ `search`: 키워드 (interest rate, forex 등)
+- ✓ `locale`: 지역 (us, gb 등)
+- ✓ `language`: 언어 (en)
+- ✓ `domain`: 특정 언론사
+- ⚠️ `categories`: politics, business, general만 (macroeconomics, geopolitics 미지원)
+
+**수집 전략**
+- 쿼리: 개별 검색 (keywords 조합 권장)
+  - "interest rate"
+  - "forex OR currency"
+  - "inflation"
+  - "employment" 등
+- 주기: 15분마다 1회 (무료 100 req/day, Basic 2,500 req/day)
+- 저장: 중복 제외 (uuid 기준)
+- 변환: 응답 → NewsItem 모델 (위 필드 맵핑)
 
 ---
 
