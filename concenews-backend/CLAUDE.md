@@ -46,21 +46,38 @@ modules/
 
 ---
 
-## TDD 순서 (모든 Slice)
+## TDD 순서 & PR 단위 (모든 Slice)
+
+### PR 구성 (예: news-fetch)
 
 ```
-1. Integration Test 작성
-   (GET /endpoint → 응답 검증)
+PR #1: Test: Integration test (RED)
+  └─ GET /endpoint 스펙 정의
 
-2. Unit Test 작성
-   - Domain (데이터 검증)
-   - Service (비즈니스 로직)
-   - Repository (저장소)
+PR #2: Feat: Domain
+  └─ NewsItem 모델 + 검증
 
-3. Implementation
-   - Walking Skeleton (최소 구현)
-   - Refactoring (매 PR마다)
+PR #3: Feat: Repository
+  └─ 데이터 접근 계층
+
+PR #4: Feat: Service
+  └─ 비즈니스 로직
+
+PR #5: Feat: Endpoint (GREEN)
+  └─ HTTP 변환, 모든 테스트 통과
+
+PR #6: Refactor: 코드 정리
+  └─ 복잡도 제거, 네이밍 개선
+
+PR #7: Closes #{issue}
+  └─ 마지막 PR, Issue 자동 close
 ```
+
+### 각 PR 규칙
+- 1 PR = 1 단위 기능 또는 1 리팩터 (focused)
+- Self-review 체크리스트 통과
+- "Related to #{issue}" (마지막 제외)
+- "Closes #{issue}" (마지막만)
 
 ---
 

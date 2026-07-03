@@ -100,26 +100,35 @@ concenews-backend/
 
 ---
 
-## TDD 순서
+## TDD 순서 & PR 구성
 
-### Phase 1: Integration Test
+### PR #1: Test - Integration Test (RED)
 ```python
-# GET /news 호출 → NewsItem[] 반환 검증
 def test_get_news_returns_items():
     response = client.get("/news")
     assert response.status_code == 200
     assert "news" in response.json()
-    assert isinstance(response.json()["news"], list)
+    assert len(response.json()["news"]) >= 0
+    assert response.json()["count"] == len(response.json()["news"])
 ```
+- 스펙 정의 (GET /news 응답 구조)
+- 실패 상태 (구현 전)
 
-### Phase 2: Unit Tests
-1. NewsItem 검증 (Domain)
-2. NewsService.fetch_news() (Service)
-3. NewsRepository (Repository)
+### PR #2-#5: Implementation (GREEN)
+- **PR #2**: Domain (NewsItem 모델)
+- **PR #3**: Repository (데이터 저장소)
+- **PR #4**: Service (NewsAPI 통합, 비즈니스 로직)
+- **PR #5**: Endpoint (GET /news 라우트)
+- 각 PR마다 관련 Unit Test 작성
+- PR #5 완료 → Integration Test 통과 (GREEN)
 
-### Phase 3: Implementation
-- Walking Skeleton (최소 구현)
-- Refactoring
+### PR #6: Refactor
+- 복잡도 제거
+- 네이밍 개선
+- 중복 코드 추출
+
+### PR #7: Close Issue
+- Closes #{issue} (자동 close)
 
 ---
 
