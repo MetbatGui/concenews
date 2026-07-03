@@ -57,12 +57,53 @@
 
 ## 기술 결정
 
-- **데이터 소스**: TheNewsAPI Basic ($9/month, 2,500 req/day)
-  - Query: `interest rate OR forex OR currency`
-  - 수집 주기: 15분마다 1회 (96 req/day)
-  - 참고: [spikes/news_spikes/LEARNINGS.md](../spikes/news_spikes/LEARNINGS.md)
-- **저장소**: Python dict/list (메모리, 테스트용)
-- **향후 마이그레이션**: PostgreSQL + Redis 캐싱
+### 데이터 소스: TheNewsAPI
+
+**선택 이유:**
+- 저비용 ($9/month Basic)
+- 충분한 Rate (2,500 req/day, 15분마다 수집 가능)
+- 신뢰 언론사 (CBS News 등)
+- 실시간 업데이트
+
+**API 명세:**
+```
+GET https://api.thenewsapi.com/v1/news/top
+?api_token={token}
+&search={keyword}
+&locale=us
+&limit=10
+```
+
+**응답 필드 → NewsItem 맵핑:**
+| API Field | NewsItem | 설명 |
+|-----------|----------|------|
+| uuid | id | 고유 식별자 |
+| title | title | 기사 제목 |
+| description | description | 요약 (자동 생성) |
+| url | link | 기사 링크 |
+| source | source | 출처 (cbsnews.com 등) |
+| published_at | published_at | ISO8601 시간 |
+
+**수집 전략:**
+- 키워드: 개별 검색 (OR 조합 대신)
+  - "interest rate" (32,202건)
+  - "forex" (921건)
+  - "currency" (16,130건)
+  - "Fed rate decision" (3,484건)
+- 주기: 15분마다 1회 (무료: 100 req/day, Basic: 2,500 req/day)
+- 중복 제외: uuid 기준 (저장소 관리)
+
+**데이터 품질:**
+- ✓ 신뢰 언론사 (CBS News, Yahoo)
+- ✓ 실시간 (수 분 내)
+- ⚠️ keywords 필드: 때로 비어있음
+- ⚠️ categories 필드: 자동 추출 (정확도 낮음) → 현재 사용 안 함
+
+**참고:** [spikes/news_spikes/LEARNINGS.md](../spikes/news_spikes/LEARNINGS.md)
+
+### 저장소
+- Python dict/list (메모리, 테스트용)
+- 향후: PostgreSQL + Redis 캐싱
 
 ---
 
