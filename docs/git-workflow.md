@@ -12,14 +12,16 @@
 
 ### feature/{slice-name}-{task}
 ```
-feature/news-fetch-endpoint-mock   (mock endpoint, 통합테스트 GREEN)
-feature/news-fetch-service         (Service 레이어 추출)
-feature/news-fetch-domain          (Domain 모델 추출)
-feature/news-fetch-repository      (Repository 추출)
-feature/news-fetch-close           (Issue close)
+feature/news-fetch-acceptance    (walking skeleton: acceptance test + stub, GREEN)
+feature/news-fetch-domain        (Domain + unit test, GREEN)
+feature/news-fetch-repository    (Repository + unit test + fixture, GREEN)
+feature/news-fetch-service       (Service + unit test, GREEN)
+feature/news-fetch-wire          (Endpoint wire-up + integration test, GREEN)
 ```
-- **단위**: PR 1개 = 브랜치 1개 (작업 내용 명시)
-- master에서 생성, PR merge 후 삭제
+- **PR 단위 = TDD cycle 완결** (RED + GREEN + Refactor 결합).
+  TDD step (RED 만, GREEN 만) 을 별도 PR 로 나누지 않음.
+- **매 PR merge 시 master green 보장** — RED 상태 master merge 금지.
+- master 에서 생성, PR merge 후 삭제
 
 ---
 

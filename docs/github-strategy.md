@@ -190,18 +190,34 @@ Require pull request before merging: ON
 
 ### PR Template (.github/pull_request_template.md)
 
+실제 파일 [.github/PULL_REQUEST_TEMPLATE.md](../.github/PULL_REQUEST_TEMPLATE.md) 참고.
+
+구조:
 ```markdown
-## Spike
-- [스펙](../docs/spec-{slug}.md)
+## 개요
+이 PR의 목표를 한 문장으로.
 
-## What Changed
-- 기능 A
-- 기능 B
+## 주요 변경사항
+- 변경 1
+- 변경 2
 
-## Checklist
-- [ ] All tests green
-- [ ] Self-reviewed
-- [ ] Refactored
+## 테스트 계획
+### 실행한 테스트
+### 결과
+- [ ] 모든 테스트 통과
+- [ ] 새 테스트 추가됨
+- [ ] 기존 테스트 영향 없음
+
+## 검수 목록
+- [ ] 코드 명확한가?
+- [ ] 테스트 충분한가?
+- [ ] 문서 업데이트되었나?
+- [ ] import-linter 통과?
+
+## 관련 이슈
+Closes #00 (해당하면)
+
+## 추가 노트
 ```
 
 ---

@@ -54,29 +54,20 @@
 
 ---
 
-## 설계 원칙 & 참고 자료
+## 언제 무엇을 볼까
 
-### 원칙 (루트 docs/)
-
-- **[DDD](docs/architecture/principles/ddd.md)** — 4계층, Repository 패턴
-- **[XP](docs/architecture/principles/xp.md)** — TDD, Refactoring, Simple Design
-- **[Vertical Slices](docs/architecture/principles/vertical-slices.md)** — Spike → Spec → Plan → Integration Test
-
-### 구현 가이드 (백엔드 전용, concenews-backend/docs/)
-
-**코드 작성 전 필수 확인**:
-- **[Modular Monolith](concenews-backend/docs/architecture/modular-monolith.md)** — 폴더 구조, 모듈 경계, public.py
-- **[기능별 Plan](concenews-backend/docs/plan-*.md)** — 구체적 설계 (예: plan-news-fetch.md)
-
-### 인프라 & 워크플로우
-
-- **[Git Workflow](docs/git-workflow.md)** — Branch 전략, Commit 컨벤션
-- **[GitHub Strategy](docs/github-strategy.md)** — Milestone, Issue, PR
-
-### Git & GitHub
-
-- **[Git Workflow](docs/git-workflow.md)** — Branch strategy, Spike handling, Commit convention
-- **[GitHub Strategy](docs/github-strategy.md)** — Milestones (Slice unit), Epic Issues, Labels, PR automation
+| 상황 | 문서 |
+|------|------|
+| 커밋 메시지 형식 | 이 파일 위 (커밋 컨벤션) |
+| PR 만들 때 (단위/브랜치명/master green 규칙) | [git-workflow.md](docs/git-workflow.md) |
+| Issue / Milestone / Label | [github-strategy.md](docs/github-strategy.md) |
+| 새 slice 시작 (Spec/Plan/Task 순서) | [vertical-slices.md](docs/architecture/principles/vertical-slices.md) |
+| TDD 순서 헷갈림 (Red-Green-Refactor, GWT) | [xp.md](docs/architecture/principles/xp.md) |
+| 도메인 계층 애매 (4계층 어디에?) | [ddd.md](docs/architecture/principles/ddd.md) |
+| 새 모듈 폴더 위치 & 경계 | [modular-monolith.md](concenews-backend/docs/architecture/modular-monolith.md) |
+| 백엔드 slice 세부 설계 | `concenews-backend/docs/plan-{slice}.md` |
+| Docstring 형식 (Google style) | [docstring.md](concenews-backend/docs/conventions/docstring.md) |
+| Spike 프로세스 | [spike-process.md](concenews-backend/docs/spike-process.md) |
 
 ---
 

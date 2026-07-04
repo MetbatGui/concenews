@@ -102,39 +102,46 @@ concenews-backend/
 
 ## TDD 순서 & PR 구성
 
-### PR #1: Acceptance Test (RED) — `feature/news-fetch-acceptance-test`
-- Acceptance test 1개: endpoint 200 + GetNewsResponse schema 유효
-- Schema Contract 정의 (GetNewsResponse, NewsItemResponse)
-- 실패 확인 (404)
+**원칙**: 각 PR = 하나의 walking skeleton 또는 계층 완결 (RED + GREEN + Refactor).
+Merge 시 master 는 항상 green.
 
-### PR #2: Stub Endpoint (GREEN) — `feature/news-fetch-endpoint-stub`
-- `/news` endpoint 최소 응답 (`news=[], count=0`)
-- Acceptance test 통과
+### PR #1: Walking Skeleton — `feature/news-fetch-acceptance`
+- Acceptance test 1개 (200 + schema)
+- Stub endpoint (`news=[], count=0`)
+- 상태: **GREEN**
 
-### PR #3: Domain — `feature/news-fetch-domain`
+### PR #2: Domain — `feature/news-fetch-domain`
 - `NewsItem` Pydantic 모델
-- Unit Test (필드 검증, 변환)
+- Unit test (필드 검증)
+- 상태: **GREEN**
 
-### PR #4: Repository — `feature/news-fetch-repository`
-- `InMemoryNewsRepository` (initial dict 받는 생성자)
-- Unit Test
-- `filled_repository` / `empty_repository` fixture 정의
+### PR #3: Repository — `feature/news-fetch-repository`
+- `InMemoryNewsRepository` (initial dict 생성자)
+- Unit test + `filled_repository` / `empty_repository` fixture
+- 상태: **GREEN**
 
-### PR #5: Service — `feature/news-fetch-service`
+### PR #4: Service — `feature/news-fetch-service`
 - `NewsService.fetch_news(limit)`
-- Unit Test (limit, 정렬)
+- Unit test (limit, 정렬)
+- 상태: **GREEN**
 
-### PR #6: Wire up + Integration — `feature/news-fetch-wire`
-- endpoint 를 Service/Repository 에 연결 (FastAPI DI)
-- 추가 integration test (fixture 활용):
-  - `test_empty_when_no_articles` (empty fixture)
-  - `test_article_fields` (filled fixture)
-  - `test_sorted_by_published_at_desc` (filled fixture)
-  - `test_limit_parameter`, `test_default_limit_50`, `test_max_50`
-- Acceptance 여전히 green
+### PR #5: Wire up + Integration — `feature/news-fetch-wire`
+- Endpoint → Service/Repository 연결 (FastAPI DI)
+- Fixture 기반 integration test (empty, filled, sorted, limit 등)
+- 마지막 PR body 에 `Closes #{issue}` 포함
+- 상태: **GREEN** (전체 slice 완료)
 
-### PR #7: Close Issue — `feature/news-fetch-close`
-- Closes #{issue} (자동 close)
+---
+
+## 이전 접근의 실수 (참고)
+
+**초기 계획: 7 PR** (acceptance-test → stub → domain → repo → service → wire → close):
+- PR #1 (acceptance-test only) merge 시 master 가 RED 됨 → "master 항상 green" 위반
+- Trivial PR 남발 → process overhead
+
+**결정**: RED-only PR 분리 금지. TDD cycle 결합.
+결정 이력: master merge commits `72158c6` (TDD 원칙 재설계),
+그리고 stub PR (walking skeleton 결합 반영).
 
 ---
 

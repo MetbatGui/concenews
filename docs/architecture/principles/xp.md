@@ -205,6 +205,10 @@ git diff HEAD~1
 7. 모든 테스트 통과 + PR ready → merge
 ```
 
+**PR 분할 시 주의**: Step 2 (RED) 을 단독 PR 로 내지 말 것.
+Step 2 (Acceptance test) + Step 3 (Stub) = 1 PR (walking skeleton GREEN).
+자세한 규칙은 [git-workflow.md](../../git-workflow.md).
+
 **복잡한 기능** (다중 내부 의존성):
 ```
 1. Spec (사용자 관점 정의)
