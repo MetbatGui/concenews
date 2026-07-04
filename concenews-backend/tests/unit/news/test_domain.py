@@ -129,3 +129,25 @@ class TestNewsItem:
         )
         with pytest.raises(ValidationError):
             item.title = "변경"
+
+    def test_news_item_categories_stored_as_immutable_tuple(self):
+        """categories 는 immutable tuple 로 저장된다.
+
+        Given: categories 로 list 전달
+        When: NewsItem 생성 후 categories 접근
+        Then: tuple 타입, 값 순서 유지
+
+        frozen=True 는 attribute 재할당만 막음. 컨테이너 mutation
+        (list.append) 방지하려면 컨테이너 자체가 immutable 이어야 함.
+        정책: docs/conventions/immutability.md
+        """
+        item = NewsItem(
+            id=1,
+            title="t",
+            link="https://x",
+            source="x",
+            published_at="2026-07-03T10:30:00Z",
+            categories=["general", "politics"],
+        )
+        assert isinstance(item.categories, tuple)
+        assert item.categories == ("general", "politics")
