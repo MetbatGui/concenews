@@ -69,6 +69,7 @@
 | 새 모듈 폴더 위치 & 경계 | [modular-monolith.md](concenews-backend/docs/architecture/modular-monolith.md) |
 | 백엔드 slice 세부 설계 | `concenews-backend/docs/plan-{slice}.md` |
 | Docstring 형식 (Google style) | [docstring.md](concenews-backend/docs/conventions/docstring.md) |
+| Domain immutability (frozen, tuple 등) | [immutability.md](concenews-backend/docs/conventions/immutability.md) |
 | Spike 프로세스 | [spike-process.md](concenews-backend/docs/spike-process.md) |
 
 ---
