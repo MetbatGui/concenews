@@ -33,7 +33,7 @@ NewsService
 
 ```
 NewsItem (Pydantic)
-  - id: int | None      (Repository 부여, bigint sequence)
+  - id: int             (필수, IdGenerator 발급)
   - title: str          (min_length=1)
   - description: str | None
   - link: str           (min_length=1, dedup key)
@@ -45,8 +45,21 @@ NewsItem (Pydantic)
 
 **책임**: 도메인 규칙 (필드 검증, 변환)
 
-**ID 전략**: bigint sequence (Repository 부여). 근거는
+**ID 전략**: bigint sequence, `IdGenerator` (infra port) 발급.
+Domain 은 생성 시점부터 id 소유 (DDD). 상세는
 [ADR 2026-07-04 id-strategy](../../docs/decisions/2026-07-04-id-strategy.md) 참고.
+
+**현재 상태**: Anemic (data + validation 만). **의도적**.
+- 이 slice 의 use case (조회/정렬/limit) 는 domain method 요구 안 함
+- 정렬 = Service/Repository, dedup = Repository (link key)
+- YAGNI: 지금 method 넣으면 speculative
+
+**Behavior 유입 트리거** (다음 slice 이후):
+- `matching` slice: `NewsItem.matches(market_signal)` 등 매칭 로직
+- 카테고리 필터 use case: `NewsItem.belongs_to(category)`
+- 최신 판정 use case: `NewsItem.is_recent(now)`
+
+**Anemic 고착화 방지 규칙**: Service 에서 domain state 를 조작하는 로직 발견 시 → NewsItem 메서드로 이전 (refactor).
 
 ### 4. Repository (Data Access)
 

@@ -20,11 +20,19 @@ NewsItem 도메인 모델의 identity 부여 방식 결정 필요.
 
 ## Decision
 
-**bigint sequence** — Repository 가 부여.
+**bigint sequence** — `IdGenerator` (infrastructure port) 가 발급, 생성 시 필수.
 
-- Domain: `id: int | None = None` (저장 전 None)
-- Repository: 내부 counter (in-memory) → PG SERIAL/BIGSERIAL (미래)
+- Domain: `id: int` (필수, 생성 시점에 발급됨)
+- Infrastructure: `IdGenerator` Protocol + `SequenceIdGenerator` impl (in-memory counter)
+- 미래 PG: BIGSERIAL 로 impl 교체
+- Repository: 순수 저장 (id 부여 책임 없음)
 - DTO: `id: int`
+
+**Usage**:
+```python
+item = NewsItem(id=id_gen.generate(), title=..., link=..., ...)
+repo.store(item)
+```
 
 ## Rationale
 
@@ -32,7 +40,8 @@ NewsItem 도메인 모델의 identity 부여 방식 결정 필요.
 - **성능**: bigint 인덱스 = 최적. Cybertec 실측 UUIDv4 vs bigint 조회 시 I/O 31,229% 증가.
 - **공간**: bigint 8B vs UUID 16B. 대규모 테이블에서 백업/복원 시간 차이.
 - **인덱스 밀도**: integer 97.64% vs UUIDv4 79.06% vs UUIDv7 90.09%.
-- **Simple Design (XP)**: `IdGenerator` abstraction 도입 = 인터페이스+구현 1개 = 안티패턴.
+- **IdGenerator abstraction 정당화**: speculative 아님. Test 결정성 (Fake 주입) + Repository 순수성 (저장만) = 지금 즉시 이득. RepositoryFactory 같은 "미래 DB 종류" 투기와 구분됨.
+- **DDD identity**: Domain 은 생성 시점부터 identity 소유. Anemic (Optional id) 회피.
 - **리소스 노출**: `/news/{id}` 순차 노출 위험 낮음 (뉴스는 공개 데이터).
 - **보안 misinterpretation**: RFC 4122 명시 — UUID 는 추측 방지용 보안 수단 아님.
 
@@ -44,11 +53,13 @@ NewsItem 도메인 모델의 identity 부여 방식 결정 필요.
 
 ## Migration Path (미래)
 
-Domain `id: int` → `id: UUID` (v7).
-Repository counter → `IdGenerator` 주입 (`UUIDv7Generator`).
-DTO `id: int` → `id: str` (UUID 문자열).
-PG schema: `BIGSERIAL PRIMARY KEY` → `UUID PRIMARY KEY DEFAULT uuidv7()`.
-Estimated churn: 2-3 시간 (도메인 규모 크지 않음).
+Interface (`IdGenerator`) 는 유지, impl 만 교체.
+- `SequenceIdGenerator` → `UUIDv7Generator`
+- Domain `id: int` → `id: UUID` (타입만 변경, 소유권 유지)
+- DTO `id: int` → `id: str` (UUID 문자열)
+- PG schema: `BIGSERIAL PRIMARY KEY` → `UUID PRIMARY KEY DEFAULT uuidv7()`
+- Repository: 변경 없음 (id 부여 책임 없음)
+Estimated churn: 1-2 시간 (interface 유지 덕분에 최소화).
 
 ## References
 
