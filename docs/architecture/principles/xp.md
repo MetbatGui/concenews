@@ -61,6 +61,28 @@ class MatchingPolicy(BaseModel):
 
 **기준**: "나중에 고칠 것 같은 부분 = 테스트 필요". Spike와 결정 사이에 명확한 commit message로 구분.
 
+**Test 서술 = GWT (Given-When-Then)**:
+
+모든 테스트 (Unit, Integration, Acceptance) docstring 은 GWT 형식.
+
+```python
+def test_get_news_returns_valid_response(client):
+    """GET /news 는 유효한 응답을 반환한다.
+
+    Given: FastAPI test client
+    When: GET /news 호출
+    Then: 200 OK + GetNewsResponse schema 유효
+    """
+    response = client.get("/news")
+    assert response.status_code == 200
+    GetNewsResponse.model_validate(response.json())
+```
+
+**규칙**:
+- **Given 은 명시적** — 암묵적 상태 가정 금지. 필요 시 fixture 로 표현 (`filled_repository`, `empty_repository` 등).
+- Given 서로 충돌하는 테스트 = 다른 fixture 필요.
+- Docstring 첫 줄 = 사용자 관점 한 줄 요약.
+
 ### 2.2 Simple Design — Ponytail 정신
 
 **원칙**: 지금 필요한 것만. 투기적 추상화 금지.
@@ -169,15 +191,18 @@ git diff HEAD~1
 ```
 1. Spec (사용자 관점 정의)
    ↓
-2. Integration Test 작성 (Red)
+2. Acceptance Test 1개 작성 (Red) — walking skeleton 기준
+   endpoint 200 + 응답 schema 유효만 검증
    ↓
-3. 엔드포인트 구현 (Mock data로 Green) — Golden Master 기법 사용
+3. Stub 하드코드 (Green) — endpoint 최소 구현
    ↓
-4. Outside-In Refactor (점진적으로 Service/Domain/Repository 계층 분리, Green 유지)
+4. Inside-Out TDD (Domain/Repository/Service 각각 unit test → 구현)
    ↓
-5. Self-Review: diff 읽기, 리팩터링
+5. Wire up + 추가 Integration Test (fixture 로 상태 통제)
    ↓
-6. 모든 테스트 통과 + PR ready → merge
+6. Self-Review: diff 읽기, 리팩터링
+   ↓
+7. 모든 테스트 통과 + PR ready → merge
 ```
 
 **복잡한 기능** (다중 내부 의존성):
@@ -188,9 +213,9 @@ git diff HEAD~1
    ↓
 3. Walking Skeleton (Stub으로 뼈대 구성, 통합점 검증)
    ↓
-4. Integration Test 작성 (Red)
+4. Acceptance Test 1개 (Red)
    ↓
-5. Outside-In TDD (Stub 하나씩 교체, Red-Green-Refactor)
+5. Inside-Out TDD (Stub 하나씩 교체, Red-Green-Refactor)
    ↓
 6. 나머지 동일...
 ```
@@ -200,9 +225,10 @@ git diff HEAD~1
 | 단계 | 기준 | 넘어가기 전 확인 |
 |-----|------|-----------------|
 | Spec | 사용자 관점에서 "이게 다인가" | AC(Acceptance Criteria) 모두 명시 |
-| Test | Integration Test 실패하는가? | 404 또는 예상된 실패 |
-| Green | 테스트 통과하는가? | Mock 데이터로 모든 테스트 green (Golden Master: 실제 API 호출 후 응답 하드코딩) |
-| Refactor | 점진적으로 계층 분리 후 테스트 green? | 각 refactor 단계마다 테스트 통과 |
+| Acceptance Test | 실패하는가? | 404 또는 schema validation error |
+| Stub Green | 통과하는가? | 최소 응답만 (하드코드 `[]` 또는 dummy) |
+| Unit Test | 각 계층 behavior 커버? | Domain/Repository/Service unit green |
+| Integration | fixture 로 상태 통제된 시나리오? | filled/empty repository 로 분리 |
 | Self-Review | 1인이 읽기에 명확한가? | diff 읽고 "왜?"라는 의문 없음 |
 
 ---
@@ -214,29 +240,53 @@ git diff HEAD~1
 **Slice 예시**: "RSS 뉴스 조회"
 
 ```python
-# 1. Integration Test (TDD Red)
+# 1. Acceptance Test (walking skeleton, Red)
 @pytest.mark.asyncio
-async def test_get_news_returns_articles():
-    client = AsyncClient(...)
+async def test_get_news_endpoint_returns_valid_response(client):
+    """GET /news 는 유효한 응답을 반환한다.
+
+    Given: FastAPI test client
+    When: GET /news 호출
+    Then: 200 OK + GetNewsResponse schema 유효
+    """
     response = await client.get("/news")
     assert response.status_code == 200
-    assert len(response.json()) >= 0
+    GetNewsResponse.model_validate(response.json())
 
 # 2. Stub (Green)
-@router.get("/news", response_model=list[NewsArticleResponse])
+@router.get("/news", response_model=GetNewsResponse)
 async def get_news():
-    return []  # 가짜 구현
+    return GetNewsResponse(news=[], count=0)
 
-# 3. Implementation (여전히 Green)
-@router.get("/news", response_model=list[NewsArticleResponse])
-async def get_news(repo: NewsRepository = Depends()):
-    articles = await repo.find_all()
-    return [NewsArticleResponse.model_validate(a) for a in articles]
+# 3. Unit Test (Inside-out, Domain)
+def test_news_item_requires_title():
+    """NewsItem 은 빈 title 을 거부한다.
 
-# 4. Unit Test (세부 로직)
-def test_match_score_calculation():
-    match = Match(news=..., market=..., score=0.85)
-    assert match.is_relevant(threshold=0.7)
+    Given: title 이 빈 문자열
+    When: NewsItem 생성
+    Then: ValidationError
+    """
+    with pytest.raises(ValidationError):
+        NewsItem(id="1", title="", link="...", source="...", published_at=...)
+
+# 4. Unit Test (Repository)
+def test_repository_returns_all_stored_items():
+    """Repository 는 저장된 모든 아이템을 반환한다.
+
+    Given: news 2개로 초기화된 InMemoryNewsRepository
+    When: find_all() 호출
+    Then: 저장된 news 2개 반환
+    """
+    repo = InMemoryNewsRepository(initial=[news_1, news_2])
+    assert repo.find_all() == [news_1, news_2]
+
+# 5. Wire up + 추가 Integration (fixture 로 상태 통제)
+def test_get_news_returns_sorted_articles(client_with_filled_repo):
+    """Given: filled_repository / When: GET /news / Then: published_at desc"""
+    response = client_with_filled_repo.get("/news")
+    data = GetNewsResponse.model_validate(response.json())
+    for i in range(len(data.news) - 1):
+        assert data.news[i].published_at >= data.news[i + 1].published_at
 ```
 
 ### 4.2 프론트엔드 (React/Vitest)
@@ -406,13 +456,14 @@ TDD = 미리 생각하고 테스트로 명시
 ## 8. 실행 체크리스트 (이번 Slice부터)
 
 - [ ] Spec 작성 (사용자 관점, AC 포함)
-- [ ] Integration Test 작성 (빨간불이 맞음)
-- [ ] Stub으로 green 만들기
-- [ ] 실제 구현 (Stub 교체)
-- [ ] Unit Test 추가 (세부 로직)
+- [ ] Acceptance Test 1개 작성 (walking skeleton, Red)
+- [ ] Stub 하드코드 (Green — endpoint 최소 응답)
+- [ ] Inside-Out Unit Test 로 각 계층 설계 (Domain → Repository → Service)
+- [ ] Wire up (실제 구현으로 endpoint 연결)
+- [ ] 추가 Integration Test (fixture 로 상태 통제)
 - [ ] Self-Review: diff 읽고 리팩터링
 - [ ] 최종 테스트 실행 (local)
-- [ ] PR 생성 (머신러닝 리뷰 대신 자신의 리뷰)
+- [ ] PR 생성 (self-review)
 - [ ] Merge (테스트 green, diff 명확)
 
 끝.
