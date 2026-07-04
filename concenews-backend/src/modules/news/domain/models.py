@@ -32,4 +32,4 @@ class NewsItem(BaseModel):
     source: str = Field(..., min_length=1)
     published_at: datetime
     keywords: str = Field(default="")
-    categories: list[str] = Field(default_factory=list)
+    categories: tuple[str, ...] = Field(default_factory=tuple)
