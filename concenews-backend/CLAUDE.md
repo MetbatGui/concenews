@@ -3,6 +3,26 @@
 > 루트 [CLAUDE.md](../CLAUDE.md) 의 "언제 무엇을 볼까" 표에 상황별 문서 매핑 있음.
 > 이 파일은 백엔드 특유 규칙만 담음.
 
+## 코드 편집 후 필수 검증 (매번)
+
+`src/` 또는 `tests/` 편집 후 **커밋 전** 반드시:
+
+```bash
+uvx ruff check src tests    # lint (문법, unused, style)
+uv run ty check src         # 타입 검증
+uv run pytest --ignore=spikes  # 테스트 (RED/GREEN 확인)
+```
+
+**모두 통과해야 커밋**. 실패 시 fix 우선.
+
+- **ruff**: unused import, style, syntax 등 자동 catch (self-review 부담 감소)
+- **ty**: 타입 오류 (Astral 신규 checker)
+- **pytest**: TDD 검증
+
+**범위**: 지금은 news 모듈만 (모듈 확장 시 대상 갱신).
+
+---
+
 ## 코드 작성 순서 (TDD 강제)
 
 **모든 프로덕션 코드는 실패하는 test 부터**:
