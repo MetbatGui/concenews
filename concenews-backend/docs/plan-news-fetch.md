@@ -33,15 +33,20 @@ NewsService
 
 ```
 NewsItem (Pydantic)
-  - id: str
-  - title: str
-  - description: str
-  - link: str
-  - source: str
-  - published_at: datetime
+  - id: int | None      (Repository 부여, bigint sequence)
+  - title: str          (min_length=1)
+  - description: str | None
+  - link: str           (min_length=1, dedup key)
+  - source: str         (min_length=1)
+  - published_at: datetime  (ISO8601 파싱)
+  - keywords: str       (default "")
+  - categories: list[str]   (default [])
 ```
 
 **책임**: 도메인 규칙 (필드 검증, 변환)
+
+**ID 전략**: bigint sequence (Repository 부여). 근거는
+[ADR 2026-07-04 id-strategy](../../docs/decisions/2026-07-04-id-strategy.md) 참고.
 
 ### 4. Repository (Data Access)
 
