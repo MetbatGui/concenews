@@ -140,6 +140,16 @@ feature/news-fetch-{task} (Spike 완료 후)
 - [x] Commit 메시지 명확한가?
 ```
 
+### PR 생성 체크리스트
+
+PR 만들 때 (`gh pr create` 전) 확인:
+
+1. Base branch = master?
+2. **Milestone 할당?** (Slice = 1 Milestone. 놓치면 `gh pr edit N --milestone {slice-name}`)
+3. Label 붙임? (`type:feat` / `type:fix` / `type:docs` / `type:refactor`)
+4. Template body 준수? ([.github/PULL_REQUEST_TEMPLATE.md](../.github/PULL_REQUEST_TEMPLATE.md))
+5. 관련 이슈 링크? (마지막 slice PR 이면 `Closes #N`)
+
 ---
 
 ## 4. Commits (히스토리 명확성)
