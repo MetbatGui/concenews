@@ -1,6 +1,4 @@
 """InMemoryNewsRepository unit tests."""
-import pytest
-
 from src.modules.news.domain.models import NewsItem
 from src.modules.news.infrastructure.repositories import InMemoryNewsRepository
 
