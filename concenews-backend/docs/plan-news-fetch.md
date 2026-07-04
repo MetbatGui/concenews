@@ -134,8 +134,10 @@ Merge 시 master 는 항상 green.
 - 상태: **GREEN**
 
 ### PR #3: Repository — `feature/news-fetch-repository`
-- `InMemoryNewsRepository` (initial dict 생성자)
-- Unit test + `filled_repository` / `empty_repository` fixture
+- `InMemoryNewsRepository` (initial 파라미터 생성자, save 는 upsert)
+- Unit test 5개 (fixture 없이 직접 생성 — YAGNI)
+- Fixture (`filled_repository` / `empty_repository`) 는 **wire-up PR** 로 이관
+  (integration test 에서 실제 사용처 등장 시)
 - 상태: **GREEN**
 
 ### PR #4: Service — `feature/news-fetch-service`
@@ -145,6 +147,7 @@ Merge 시 master 는 항상 green.
 
 ### PR #5: Wire up + Integration — `feature/news-fetch-wire`
 - Endpoint → Service/Repository 연결 (FastAPI DI)
+- Fixture 도입: `filled_repository` / `empty_repository` (`tests/unit/news/conftest.py` 또는 integration 위치)
 - Fixture 기반 integration test (empty, filled, sorted, limit 등)
 - 마지막 PR body 에 `Closes #{issue}` 포함
 - 상태: **GREEN** (전체 slice 완료)
