@@ -177,9 +177,11 @@ src/modules/news/
 
 ### 테스트 전략
 
-- **Integration**: GET /news 응답 검증 (9 tests)
-  - 200 상태, 응답 구조, count 매칭, 빈 배열, 필드 검증, limit 최대값, limit 파라미터, 기본값, 정렬 (published_at 최근순)
-- **Unit**: Domain, Service, Repository (17 tests)
+- **Acceptance**: GET /news walking skeleton 1개
+  - endpoint 200 + GetNewsResponse schema 유효
+- **Integration**: fixture 기반 시나리오 (wire-up 후)
+  - 빈 상태, 필드 검증, count 매칭, limit, 정렬 등
+- **Unit**: Domain, Service, Repository
 - **현재 상태**: RED phase (404 - 구현 전)
 
 ## 다음 단계

@@ -34,15 +34,15 @@
 **0단계**: constitution.md (프로젝트 불변 원칙) — 1회만
 **1단계**: spec.md — 무엇을 만들 것인가
 **2단계**: plan.md — 접합부 설계 (Port/Domain/Endpoint 시그니처)
-**3단계**: tasks.md — Stub 교체 순서 (의존성 역순)
-**4단계**: Integration Test 작성 — Slice 완료 판정 기준
-**5단계**: Outside-In TDD — 엔드포인트 구현, 점진적 Refactor로 계층 분리
+**3단계**: tasks.md — Inside-out 구현 순서 (Domain → Repository → Service → Wire-up)
+**4단계**: Acceptance Test 1개 — Slice 완료 판정 (walking skeleton criterion)
+**5단계**: Inside-Out TDD — 각 계층 unit test 로 설계
+**6단계**: Wire up + 추가 Integration Test (fixture 로 상태 통제)
 
-**Walking Skeleton (선택)**: 복잡한 다중 의존성 있을 때만 필요
-- 단순 기능: 5단계에서 직접 구현 (가장 프래그마틱)
-- 복잡한 기능: 미리 Stub 뼈대로 통합점 검증 후 구현
+**Walking Skeleton (선택)**: 복잡한 다중 의존성 있을 때 stub 뼈대 먼저
 
-**핵심**: tasks.md가 Integration Test보다 먼저. 의존성 순서를 알아야 Integration Test 검증 대상이 결정되기 때문.
+**핵심**: Acceptance Test 는 spec 에서 곧바로 나옴 (사용자 관점 1개).
+Detail 검증 integration test 는 fixture 확보 후 (repository 구현 후).
 
 ---
 
@@ -89,30 +89,55 @@ spikes/{topic}/
 
 ```
 □ 1. Spec (사용자 관점 정의)
-  └─ AC(Acceptance Criteria) 모두 명시되었나?
+  └─ AC 모두 명시되었나?
 
 □ 2. Plan (접합부 설계)
-  └─ Endpoint, Domain Model, Repository 시그니처 결정?
+  └─ Endpoint, Domain, Repository 시그니처 결정?
 
-□ 3. Tasks (Stub 교체 순서)
-  └─ 의존성 역순 (가장 깊은 것부터 교체)?
+□ 3. Tasks (Inside-out 순서)
+  └─ Domain → Repository → Service → Wire-up?
 
-□ 4. Integration Test (RED)
-  └─ 모든 테스트 빨간불 (아직 구현 안 함)?
+□ 4. Acceptance Test (RED)
+  └─ endpoint 200 + schema 유효 1개만? 실패 확인?
 
-□ 5. Outside-In TDD (GREEN → REFACTOR)
-  └─ 엔드포인트 구현 (Mock data)
-  └─ 테스트 통과 확인
-  └─ 점진적 refactor로 계층 분리 (Service → Domain → Repository)
-  └─ 각 단계마다 테스트 Green 유지?
+□ 5. Stub Green
+  └─ endpoint 최소 응답 하드코드로 acceptance test 통과?
 
-□ 6. Self-Review & Refactor
+□ 6. Inside-Out Unit TDD
+  └─ Domain unit test → 구현 → Green
+  └─ Repository unit test → 구현 → Green
+  └─ Service unit test → 구현 → Green
+
+□ 7. Wire up + Integration Test 추가
+  └─ endpoint 를 실제 계층에 연결, acceptance 여전히 green
+  └─ 추가 integration test (fixture 로 filled/empty repo 상태 통제)
+
+□ 8. Self-Review & Refactor
   └─ diff 읽고 명확한가? 복잡도 없나?
 
 □ 완료
   └─ 모든 테스트 Green, PR Ready
+```
 
-**주의**: Walking Skeleton은 복잡한 다중 의존성이 있을 때만 사용. 단순 기능은 5단계에서 직접 구현하는 것이 더 빠르고 프래그마틱.
+---
+
+## 5.1 테스트 서술 규칙 (GWT)
+
+모든 테스트 docstring 은 **Given-When-Then** 형식.
+
+**Given 은 명시적**:
+- 상태 가정은 fixture 로 표현 (`filled_repository`, `empty_repository`)
+- 같은 fixture 로 서로 상반된 상태 가정 = 안 됨
+- Acceptance test 도 GWT — walking skeleton 은 Given 이 얇을 뿐 생략 아님
+
+```python
+# ✅ 좋음: Given 명시
+def test_get_news_returns_sorted(client_with_filled_repo):
+    """Given: repository 에 news 3개 / When: GET /news / Then: published_at desc"""
+
+# ❌ 나쁨: Given 암묵
+def test_get_news_returns_sorted(client):
+    """뉴스는 정렬된다"""  # 어떤 상태에서? fixture 없음
 ```
 
 ---
