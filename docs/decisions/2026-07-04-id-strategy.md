@@ -24,6 +24,9 @@ NewsItem 도메인 모델의 identity 부여 방식 결정 필요.
 
 - Domain: `id: int` (필수, 생성 시점에 발급됨)
 - Infrastructure: `IdGenerator` Protocol + `SequenceIdGenerator` impl (in-memory counter)
+- **위치**: `src/modules/news/infrastructure/id_generator.py` (news 모듈 로컬)
+  - Rule of Three: 첫 impl 은 로컬. 두 번째 모듈 (market-info 등) 이 identity 발급 필요 시 `src/shared_kernel/` 로 이전.
+  - 로컬 유지 근거: 두 번째 모듈이 어떤 shape (bigint / UUID / external key) 요구할지 미확정 → 지금 shared_kernel 로 굳히면 premature abstraction.
 - 미래 PG: BIGSERIAL 로 impl 교체
 - Repository: 순수 저장 (id 부여 책임 없음)
 - DTO: `id: int`
@@ -50,6 +53,7 @@ repo.store(item)
 - 여러 writer / 마이크로서비스 분리
 - Public identifier 예측 불가능성 요구 (privacy)
 - PG18+ 안정화 + 실제 분산 요구
+- **다른 모듈이 id 생성 필요** → `src/shared_kernel/` 로 이전 (파일 이동 + import 갱신, 약 5분)
 
 ## Migration Path (미래)
 
