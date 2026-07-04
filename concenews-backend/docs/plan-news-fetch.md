@@ -102,31 +102,38 @@ concenews-backend/
 
 ## TDD 순서 & PR 구성
 
-### PR #1: Integration Test (RED) — `feature/news-fetch-integration-test`
-- 9개 통합 테스트 작성
+### PR #1: Acceptance Test (RED) — `feature/news-fetch-acceptance-test`
+- Acceptance test 1개: endpoint 200 + GetNewsResponse schema 유효
 - Schema Contract 정의 (GetNewsResponse, NewsItemResponse)
-- 전체 실패 상태 (구현 전) ✅ 완료
+- 실패 확인 (404)
 
-### PR #2: Endpoint Mock (GREEN) — `feature/news-fetch-endpoint-mock`
-- `/news` endpoint 하드코딩 mock 반환
-- 통합 테스트 9개 모두 통과
+### PR #2: Stub Endpoint (GREEN) — `feature/news-fetch-endpoint-stub`
+- `/news` endpoint 최소 응답 (`news=[], count=0`)
+- Acceptance test 통과
 
-### PR #3: Service 추출 — `feature/news-fetch-service`
-- `NewsService` 추출 (비즈니스 로직)
-- Unit Test 작성
-- 통합 테스트 유지
+### PR #3: Domain — `feature/news-fetch-domain`
+- `NewsItem` Pydantic 모델
+- Unit Test (필드 검증, 변환)
 
-### PR #4: Domain 모델 추출 — `feature/news-fetch-domain`
-- `NewsItem` Pydantic 모델 추출
-- Unit Test 작성
-- 통합 테스트 유지
+### PR #4: Repository — `feature/news-fetch-repository`
+- `InMemoryNewsRepository` (initial dict 받는 생성자)
+- Unit Test
+- `filled_repository` / `empty_repository` fixture 정의
 
-### PR #5: Repository 추출 — `feature/news-fetch-repository`
-- `NewsRepository` 추출 (메모리 저장소)
-- Unit Test 작성
-- 통합 테스트 유지
+### PR #5: Service — `feature/news-fetch-service`
+- `NewsService.fetch_news(limit)`
+- Unit Test (limit, 정렬)
 
-### PR #6: Close Issue — `feature/news-fetch-close`
+### PR #6: Wire up + Integration — `feature/news-fetch-wire`
+- endpoint 를 Service/Repository 에 연결 (FastAPI DI)
+- 추가 integration test (fixture 활용):
+  - `test_empty_when_no_articles` (empty fixture)
+  - `test_article_fields` (filled fixture)
+  - `test_sorted_by_published_at_desc` (filled fixture)
+  - `test_limit_parameter`, `test_default_limit_50`, `test_max_50`
+- Acceptance 여전히 green
+
+### PR #7: Close Issue — `feature/news-fetch-close`
 - Closes #{issue} (자동 close)
 
 ---
