@@ -95,9 +95,13 @@ class SchedulerPort(Protocol):
 
 ### Shared kernel: DB
 
-- `src/shared_kernel/db/engine.py` — SQLAlchemy engine, session factory
-- `src/shared_kernel/db/base.py` — Declarative base
+- **Library**: SQLAlchemy 2.0 sync + psycopg + Alembic
+- **결정 근거**: [ADR 2026-07-06 db-library](../../docs/decisions/2026-07-06-db-library.md)
+- `src/shared_kernel/db/engine.py` — SQLAlchemy engine (`create_engine`), Session factory
+- `src/shared_kernel/db/base.py` — Declarative base (`DeclarativeBase`)
+- `src/shared_kernel/db/session.py` — Session provider (context manager)
 - Alembic migration (`alembic/versions/`)
+- DSN: 환경 변수 `DATABASE_URL` (기본: `postgresql+psycopg://concenews:concenews@localhost:5432/concenews`)
 
 ### news 모듈
 
@@ -132,11 +136,11 @@ CREATE INDEX idx_news_published_at ON news(published_at DESC);
 
 Slice 진행 중 아래 시점에 spike:
 
-| Spike          | Trigger 시점                | 학습 대상                                            |
-| -------------- | --------------------------- | ---------------------------------------------------- |
-| DB 라이브러리  | Shared kernel DB 도입 직전  | SQLAlchemy 2.0 async vs sync, session 관리           |
-| Scheduler 선택 | Scheduler adapter 구현 직전 | APScheduler vs FastAPI-scheduler vs 기타             |
-| Cache impl     | 필요 시                     | stdlib`dict + timestamp` 로 충분? 라이브러리 필요? |
+| Spike          | Trigger 시점                | 학습 대상                                            | 상태 |
+| -------------- | --------------------------- | ---------------------------------------------------- | ---- |
+| DB 라이브러리  | Shared kernel DB 도입 직전  | SQLAlchemy 2.0 async vs sync, session 관리           | ✅ 완료 ([ADR](../../docs/decisions/2026-07-06-db-library.md), Sync psycopg 채택) |
+| Scheduler 선택 | Scheduler adapter 구현 직전 | APScheduler vs FastAPI-scheduler vs 기타             | 대기 |
+| Cache impl     | 필요 시                     | stdlib `dict + timestamp` 로 충분? 라이브러리 필요?  | 대기 |
 
 각 spike 완료 시 ADR + 문서 갱신.
 
@@ -169,10 +173,15 @@ Slice 진행 중 아래 시점에 spike:
 
 #### PR #3: PgNewsRepository — `feature/news-pg-repository`
 
+- **Port 추출**: `application/ports.py` 에 `NewsRepositoryPort` Protocol 추가 (Rule of Three 트리거)
+- 폴더 재구성: `infrastructure/repositories.py` → `infrastructure/repositories/{in_memory,postgres}.py` (git mv)
 - Alembic migration: `news` 테이블
-- `PgNewsRepository` impl (Port 는 기존 InMemory 와 계약 통일)
-- Unit test (transaction rollback fixture)
-- Integration test (real PG via testcontainers or docker-compose)
+- `PgNewsRepository` impl
+- **Test 전략** (고전파, [ADR](../../docs/decisions/2026-07-06-repository-strategy.md)):
+  - Repository unit test: skip (SQLAlchemy 자체 test 안 함)
+  - Integration test: 실 PG (docker-compose), transaction rollback autouse fixture
+  - 파일: `tests/integration/news/test_news_repository_postgres.py`
+- `InMemoryNewsRepository`: production 에서 Fake 로 강등 (test 용도)
 - 상태: **GREEN**
 
 #### PR #4: Cache Adapter — `feature/news-cache-adapter`
@@ -242,7 +251,7 @@ concenews-backend/
 
 ## 의존성 예상
 
-- **SQLAlchemy 2.0** (DB — spike 후 async/sync 결정)
+- **SQLAlchemy 2.0** (DB, sync — ADR 2026-07-06 db-library)
 - **Alembic** (migration)
 - **psycopg** (PG driver)
 - **APScheduler** (스케줄러 — spike 후 결정)
