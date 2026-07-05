@@ -29,5 +29,5 @@ def get_news(
         정렬된 뉴스 리스트 + count.
     """
     items = service.fetch_news(limit=request.limit)
-    news = [NewsItemResponse.model_validate(item, from_attributes=True) for item in items]
+    news = [NewsItemResponse.model_validate(item.model_dump()) for item in items]
     return GetNewsResponse(news=news, count=len(news))
