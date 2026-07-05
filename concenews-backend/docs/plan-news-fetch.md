@@ -50,6 +50,10 @@ Domain 은 생성 시점부터 id 소유 (DDD).
 Port `application/ports.py`, Impl `infrastructure/id_generator.py` (Hexagonal).
 상세는 [ADR 2026-07-05 id-strategy-uuidv7](../../docs/decisions/2026-07-05-id-strategy-uuidv7.md) 참고.
 
+**Timezone 정책**: `published_at: AwareDatetime` (naive 거부), KST 저장.
+Adapter 가 외부 소스 (UTC 등) → KST 변환.
+상세는 [ADR 2026-07-05 timezone-policy](../../docs/decisions/2026-07-05-timezone-policy.md) 참고.
+
 **현재 상태**: Anemic (data + validation 만). **의도적**.
 - 이 slice 의 use case (조회/정렬/limit) 는 domain method 요구 안 함
 - 정렬 = Service/Repository, dedup = Repository (link key)

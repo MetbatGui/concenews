@@ -110,6 +110,24 @@ class TestNewsItem:
                 published_at="어제",
             )
 
+    def test_news_item_rejects_naive_datetime(self):
+        """naive datetime 은 거부한다 (AwareDatetime 강제).
+
+        Given: tzinfo 없는 naive datetime
+        When: NewsItem 생성
+        Then: ValidationError
+
+        Timezone 정책: docs/decisions/2026-07-05-timezone-policy.md
+        """
+        with pytest.raises(ValidationError):
+            NewsItem(
+                id=uuid7(),
+                title="t",
+                link="https://x",
+                source="x",
+                published_at=datetime(2020, 1, 1),  # naive
+            )
+
     def test_news_item_is_immutable(self):
         """생성 후 필드 변경 시도는 거부된다 (frozen).
 

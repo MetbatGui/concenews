@@ -1,8 +1,7 @@
 """News 모듈 domain 모델."""
-from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class NewsItem(BaseModel):
@@ -19,7 +18,7 @@ class NewsItem(BaseModel):
         description: 요약 (외부 API 응답 누락 가능).
         link: 기사 원본 URL (dedup key).
         source: 출처 (신문사명).
-        published_at: 발행 시간 (ISO8601 파싱).
+        published_at: 발행 시간 (AwareDatetime, KST 저장 정책, naive 거부).
         keywords: 쉼표 구분 키워드 (외부 API 응답 누락 가능).
         categories: 카테고리 리스트 (외부 API 응답 누락 가능).
     """
@@ -31,6 +30,6 @@ class NewsItem(BaseModel):
     description: str | None = Field(default=None)
     link: str = Field(..., min_length=1)
     source: str = Field(..., min_length=1)
-    published_at: datetime
+    published_at: AwareDatetime
     keywords: str = Field(default="")
     categories: tuple[str, ...] = Field(default_factory=tuple)
