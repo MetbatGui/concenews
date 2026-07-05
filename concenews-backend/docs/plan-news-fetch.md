@@ -147,10 +147,20 @@ Merge 시 master 는 항상 green.
 
 ### PR #5: Wire up + Integration — `feature/news-fetch-wire`
 - Endpoint → Service/Repository 연결 (FastAPI DI)
+- **Request DTO 도입**: `GetNewsRequest(BaseModel)` — `limit: int = Field(50, ge=1, le=100)`
+  - 이유: Response DTO (`GetNewsResponse`) 와 대칭, 계약 명시, param 확장 대비, portfolio DDD 준수
+  - Layered validation: adapter (endpoint) = boundary check. Service 는 valid 가정.
 - Fixture 도입: `filled_repository` / `empty_repository` (`tests/unit/news/conftest.py` 또는 integration 위치)
 - Fixture 기반 integration test (empty, filled, sorted, limit 등)
 - 마지막 PR body 에 `Closes #{issue}` 포함
 - 상태: **GREEN** (전체 slice 완료)
+
+**Request DTO vs Query direct — 결정 근거**:
+- FastAPI idiomatic 은 Query direct 지만 이 프로젝트는 Response DTO 이미 있음 → 대칭 이득
+- Param 성장 예상 (filter, since, keyword 등) → DTO 가 확장 흡수 easy
+- Custom validator 여지 (예: keyword 정규화)
+- Layered architecture (DDD/hexagonal) 준수 신호
+- Trade-off: 1개 param 에 클래스 하나 = borderline over, 하지만 대칭/확장으로 정당화
 
 ---
 
