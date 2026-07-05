@@ -1,7 +1,18 @@
-"""응답 모델 (DTO) - News 모듈의 API 계약."""
+"""요청/응답 모델 (DTO) - News 모듈의 API 계약."""
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+class GetNewsRequest(BaseModel):
+    """GET /news 요청 파라미터 모델.
+
+    Attributes:
+        limit: 반환할 최대 기사 수. 기본 50, 최소 1, 최대 100.
+            Endpoint boundary validation (Service 는 valid 가정).
+    """
+
+    limit: int = Field(default=50, ge=1, le=100, description="최대 반환 개수")
 
 
 class NewsItemResponse(BaseModel):
