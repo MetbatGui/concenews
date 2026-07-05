@@ -16,12 +16,12 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here for 'autogenerate' support.
 from src.shared_kernel.db.base import Base  # noqa: E402
-from src.shared_kernel.db.settings import settings  # noqa: E402
+from src.shared_kernel.db.settings import get_database_url  # noqa: E402
 
 target_metadata = Base.metadata
 
 # Override sqlalchemy.url from settings (env-driven).
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", get_database_url())
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

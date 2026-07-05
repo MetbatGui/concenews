@@ -6,7 +6,7 @@ from functools import lru_cache
 
 from sqlalchemy import Engine, create_engine
 
-from src.shared_kernel.db.settings import settings
+from src.shared_kernel.db.settings import get_database_url
 
 
 @lru_cache(maxsize=1)
@@ -16,4 +16,4 @@ def get_engine() -> Engine:
     Returns:
         SQLAlchemy Engine (pool_pre_ping=True 로 stale connection 자동 감지).
     """
-    return create_engine(settings.database_url, pool_pre_ping=True)
+    return create_engine(get_database_url(), pool_pre_ping=True)

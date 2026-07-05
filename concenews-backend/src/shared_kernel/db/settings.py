@@ -1,25 +1,22 @@
-"""DB 설정 (Pydantic Settings).
+"""DB 설정 (.env + os.environ).
 
-환경 변수 (.env) 로 DATABASE_URL 관리.
+.env 파일에서 DATABASE_URL 을 로드하여 os.environ 에 반영.
+Test 는 fixture 로 URL 을 직접 주입.
 상세: docs/decisions/2026-07-06-db-library.md
 """
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DEFAULT_DATABASE_URL = "postgresql+psycopg://concenews:concenews@localhost:5432/concenews"
 
 
-class DbSettings(BaseSettings):
-    """DB 관련 설정.
+def get_database_url() -> str:
+    """Production 용 DATABASE_URL.
 
-    Attributes:
-        database_url: SQLAlchemy DSN (예: postgresql+psycopg://user:pass@host:port/db).
+    Returns:
+        환경 변수 DATABASE_URL 값. 없으면 dev 기본값 (localhost:5432).
     """
-
-    database_url: str = Field(
-        default="postgresql+psycopg://concenews:concenews@localhost:5432/concenews",
-        alias="DATABASE_URL",
-    )
-
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
-
-
-settings = DbSettings()
+    return os.environ.get("DATABASE_URL", DEFAULT_DATABASE_URL)
