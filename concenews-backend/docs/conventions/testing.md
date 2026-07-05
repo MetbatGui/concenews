@@ -73,6 +73,68 @@ class TestGetNewsBehavior:
 
 ---
 
+## Test 격리 (Singleton Cache Clear)
+
+Module-level singleton (예: `@lru_cache` provider) 는 test 간 state 공유 위험.
+
+### 지금 방식 (InMemory)
+```python
+# tests/conftest.py
+@pytest.fixture(autouse=True)
+def _clear_singleton_cache():
+    yield
+    get_repository.cache_clear()
+```
+
+- Autouse → 매 test 자동 실행
+- Repository singleton 을 매 test 후 재초기화
+
+### 미래 (PG 도입 시)
+Transaction rollback fixture 로 대체. Repository 인터페이스 변경 없음.
+
+### 근거
+- [ADR 2026-07-05 test-isolation-cache-clear](../../../docs/decisions/2026-07-05-test-isolation-cache-clear.md)
+- InMemory 와 PG 는 다른 격리 메커니즘 — Repository 인터페이스 통일 시도는 premature.
+
+---
+
+## Integration Test Fixture Data 패턴 (Object Mother)
+
+Integration test 는 **hardcoded constants** 로 test data 정의. Factory 대신.
+
+### 구조
+```python
+# tests/integration/{module}/data.py
+NEWS_OLD = NewsItem(id=UUID("...-01"), title="오래된 뉴스", ...)
+NEWS_MID = NewsItem(id=UUID("...-02"), title="중간 뉴스", ...)
+NEWS_NEW = NewsItem(id=UUID("...-03"), title="최신 뉴스", ...)
+
+# tests/integration/{module}/conftest.py
+from tests.integration.{module}.data import NEWS_OLD, NEWS_MID, NEWS_NEW
+
+@pytest.fixture
+def filled_repository():
+    return InMemoryNewsRepository(initial=[NEWS_OLD, NEWS_MID, NEWS_NEW])
+
+# Test 에서 직접 참조
+def test_sorted(self, filled_client):
+    data = ...
+    assert [item.id for item in data.news] == [NEWS_NEW.id, NEWS_MID.id, NEWS_OLD.id]
+```
+
+### 장점
+- 결정성 (UUID 고정, test 재현 가능)
+- Assertion 강도 (상수 직접 비교)
+- Cross-conftest import 회피 (pytest 관용 준수)
+
+### Unit test 는 factory 유지
+각 파일 `_make_item` 헬퍼로 unique UUID 생성 (uniqueness 검증 필요).
+
+### 근거
+- [ADR 2026-07-05 test-fixture-data-pattern](../../../docs/decisions/2026-07-05-test-fixture-data-pattern.md)
+
+---
+
 ## Fixture 위치 규칙
 
 **사용 범위별 위치**:
