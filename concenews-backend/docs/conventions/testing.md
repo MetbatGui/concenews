@@ -73,6 +73,31 @@ class TestGetNewsBehavior:
 
 ---
 
+## Test 격리 (Singleton Cache Clear)
+
+Module-level singleton (예: `@lru_cache` provider) 는 test 간 state 공유 위험.
+
+### 지금 방식 (InMemory)
+```python
+# tests/conftest.py
+@pytest.fixture(autouse=True)
+def _clear_singleton_cache():
+    yield
+    get_repository.cache_clear()
+```
+
+- Autouse → 매 test 자동 실행
+- Repository singleton 을 매 test 후 재초기화
+
+### 미래 (PG 도입 시)
+Transaction rollback fixture 로 대체. Repository 인터페이스 변경 없음.
+
+### 근거
+- [ADR 2026-07-05 test-isolation-cache-clear](../../../docs/decisions/2026-07-05-test-isolation-cache-clear.md)
+- InMemory 와 PG 는 다른 격리 메커니즘 — Repository 인터페이스 통일 시도는 premature.
+
+---
+
 ## Fixture 위치 규칙
 
 **사용 범위별 위치**:
