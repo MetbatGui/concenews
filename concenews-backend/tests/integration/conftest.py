@@ -1,7 +1,7 @@
 """Integration test 공통 fixture.
 
 testing.md: 사용 범위별 위치. 여기는 integration 전체 공유.
-Sub-fixture (모듈 별) 는 tests/integration/{module}/conftest.py 에 위치.
+Dependency override 정리는 tests/conftest.py autouse fixture 가 담당.
 """
 
 import pytest
@@ -25,11 +25,8 @@ def client(empty_repository: InMemoryNewsRepository) -> TestClient:
     Args:
         empty_repository: 빈 저장소 fixture.
 
-    Yields:
-        TestClient. 종료 시 dependency override 정리.
+    Returns:
+        TestClient. dependency_overrides 정리는 autouse teardown 이 담당.
     """
     app.dependency_overrides[get_repository] = lambda: empty_repository
-    try:
-        yield TestClient(app)
-    finally:
-        app.dependency_overrides.clear()
+    return TestClient(app)

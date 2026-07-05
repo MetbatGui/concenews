@@ -2,6 +2,7 @@
 
 testing.md: 모듈 전용 fixture 는 tests/integration/{module}/conftest.py.
 Fixture data (constants) 는 data.py 에 별도.
+Dependency override 정리는 tests/conftest.py autouse fixture 가 담당.
 """
 
 import pytest
@@ -33,11 +34,8 @@ def filled_client(filled_repository: InMemoryNewsRepository) -> TestClient:
     Args:
         filled_repository: 3개 news 저장된 저장소.
 
-    Yields:
-        TestClient.
+    Returns:
+        TestClient. dependency_overrides 정리는 autouse teardown 이 담당.
     """
     app.dependency_overrides[get_repository] = lambda: filled_repository
-    try:
-        yield TestClient(app)
-    finally:
-        app.dependency_overrides.clear()
+    return TestClient(app)
