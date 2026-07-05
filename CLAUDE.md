@@ -70,6 +70,8 @@
 | 백엔드 slice 세부 설계 | `concenews-backend/docs/plan-{slice}.md` |
 | Docstring 형식 (Google style) | [docstring.md](concenews-backend/docs/conventions/docstring.md) |
 | Domain immutability (frozen, tuple 등) | [immutability.md](concenews-backend/docs/conventions/immutability.md) |
+| 테스트 구조 & 파일 위치 (unit/integration/acceptance) | [testing.md](concenews-backend/docs/conventions/testing.md) |
+| ADR (아키텍처 결정 이력) | [docs/decisions/](docs/decisions/) |
 | Spike 프로세스 | [spike-process.md](concenews-backend/docs/spike-process.md) |
 
 ---
