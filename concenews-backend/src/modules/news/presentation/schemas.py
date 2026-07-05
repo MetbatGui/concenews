@@ -1,8 +1,7 @@
 """요청/응답 모델 (DTO) - News 모듈의 API 계약."""
-from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 
 class GetNewsRequest(BaseModel):
@@ -29,7 +28,7 @@ class NewsItemResponse(BaseModel):
     description: str | None = Field(default=None, description="요약 설명 (API 응답에서 누락될 수 있음)")
     link: str = Field(..., description="기사 원본 링크")
     source: str = Field(..., description="뉴스 출처 (신문사명)")
-    published_at: datetime = Field(..., description="발행 시간 (ISO8601)")
+    published_at: AwareDatetime = Field(..., description="발행 시간 (ISO8601, aware)")
     keywords: str = Field(default="", description="검색 키워드 (쉼표 구분)")
     categories: list[str] = Field(default_factory=list, description="카테고리 (자동 추출)")
 
