@@ -8,8 +8,8 @@
 `src/` 또는 `tests/` 편집 후 **커밋 전** 반드시:
 
 ```bash
-uvx ruff check src tests    # lint (문법, unused, style)
-uv run ty check src         # 타입 검증
+uv run ruff check src tests    # lint (문법, unused, style)
+uv run ty check src            # 타입 검증
 uv run pytest --ignore=spikes  # 테스트 (RED/GREEN 확인)
 ```
 
