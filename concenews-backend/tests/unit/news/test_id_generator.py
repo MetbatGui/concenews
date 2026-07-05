@@ -1,11 +1,25 @@
 """IdGenerator (UUIDv7) unit tests."""
 from uuid import UUID
 
+from src.modules.news.application.ports import IdGenerator
 from src.modules.news.infrastructure.id_generator import UuidV7Generator
 
 
 class TestUuidV7Generator:
     """UUIDv7 발급기 검증."""
+
+    def test_satisfies_id_generator_port(self):
+        """UuidV7Generator 는 IdGenerator port 계약을 만족한다.
+
+        Given: UuidV7Generator 인스턴스
+        When: IdGenerator Protocol 로 typing 확인 (runtime_checkable 없이 구조적 검증)
+        Then: generate() 메서드 존재, UUID 반환
+        """
+        gen: IdGenerator = UuidV7Generator()
+
+        result = gen.generate()
+
+        assert isinstance(result, UUID)
 
     def test_generate_returns_uuid_instance(self):
         """generate() 는 stdlib uuid.UUID 를 반환한다.
