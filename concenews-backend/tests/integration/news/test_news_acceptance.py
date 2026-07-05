@@ -6,6 +6,8 @@ Walking skeleton + behavior 시나리오 (endpoint 단위 응집).
 
 from src.modules.news.public import GetNewsResponse
 
+from tests.integration.news.data import NEWS_MID, NEWS_NEW, NEWS_OLD
+
 
 class TestGetNewsWalkingSkeleton:
     """Endpoint 최소 연결 증명."""
@@ -39,33 +41,34 @@ class TestGetNewsBehavior:
     def test_count_matches_returned_news_length(self, filled_client):
         """count 는 실제 news 배열 길이와 일치한다.
 
-        Given: filled_repository (3 items)
+        Given: filled_repository (3 items: NEWS_OLD/MID/NEW)
         When: GET /news
-        Then: count == len(news)
+        Then: count == 3
         """
         data = GetNewsResponse.model_validate(filled_client.get("/news").json())
-        assert data.count == len(data.news)
+        assert data.count == 3
+        assert len(data.news) == 3
 
     def test_returns_sorted_by_published_at_desc(self, filled_client):
         """뉴스는 published_at 내림차순으로 반환된다.
 
-        Given: filled_repository (오래된/중간/최신 3개)
+        Given: filled_repository (NEWS_OLD/MID/NEW)
         When: GET /news
-        Then: published_at 이 내림차순 (최신 first)
+        Then: id 순서가 [NEWS_NEW, NEWS_MID, NEWS_OLD]
         """
         data = GetNewsResponse.model_validate(filled_client.get("/news").json())
-        assert data.news[0].title == "최신 뉴스"
-        assert data.news[-1].title == "오래된 뉴스"
+        assert [item.id for item in data.news] == [NEWS_NEW.id, NEWS_MID.id, NEWS_OLD.id]
 
     def test_respects_limit_parameter(self, filled_client):
         """limit 쿼리 파라미터는 반환 개수를 제한한다.
 
         Given: filled_repository (3 items)
         When: GET /news?limit=2
-        Then: 2개만 반환 (최신 2개)
+        Then: 최신 2개 반환 (NEWS_NEW, NEWS_MID)
         """
         data = GetNewsResponse.model_validate(filled_client.get("/news?limit=2").json())
         assert data.count == 2
+        assert [item.id for item in data.news] == [NEWS_NEW.id, NEWS_MID.id]
 
     def test_rejects_limit_out_of_range(self, client):
         """limit 이 1-100 범위 밖이면 422 반환.
@@ -77,17 +80,17 @@ class TestGetNewsBehavior:
         assert client.get("/news?limit=101").status_code == 422
         assert client.get("/news?limit=0").status_code == 422
 
-    def test_article_fields_are_present(self, filled_client):
-        """각 news 아이템은 필수 필드를 포함한다.
+    def test_article_fields_match_source(self, filled_client):
+        """반환 아이템의 필드 값이 원본 상수와 일치한다.
 
-        Given: filled_repository
+        Given: filled_repository (NEWS_NEW 등)
         When: GET /news
-        Then: 각 아이템에 id/title/link/source/published_at 존재
+        Then: 첫 번째 아이템 (NEWS_NEW) 의 title/link/source/published_at 원본과 동일
         """
         data = GetNewsResponse.model_validate(filled_client.get("/news").json())
-        for item in data.news:
-            assert item.id
-            assert item.title
-            assert item.link
-            assert item.source
-            assert item.published_at
+        latest = data.news[0]
+        assert latest.id == NEWS_NEW.id
+        assert latest.title == NEWS_NEW.title
+        assert str(latest.link) == NEWS_NEW.link
+        assert latest.source == NEWS_NEW.source
+        assert latest.published_at == NEWS_NEW.published_at
