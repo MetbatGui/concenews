@@ -1,10 +1,22 @@
 """InMemoryNewsRepository unit tests."""
+from uuid import UUID
+
+from uuid_utils.compat import uuid7
+
 from src.modules.news.domain.models import NewsItem
 from src.modules.news.infrastructure.repositories import InMemoryNewsRepository
 
 
-def _make_item(item_id: int, title: str = "t") -> NewsItem:
-    """테스트용 NewsItem 헬퍼."""
+def _make_item(item_id: UUID, title: str = "t") -> NewsItem:
+    """테스트용 NewsItem 헬퍼.
+
+    Args:
+        item_id: 부여할 UUID.
+        title: 뉴스 제목.
+
+    Returns:
+        NewsItem 인스턴스.
+    """
     return NewsItem(
         id=item_id,
         title=title,
@@ -35,7 +47,7 @@ class TestInMemoryNewsRepository:
         Then: find_all() 에 해당 item 포함
         """
         repo = InMemoryNewsRepository()
-        item = _make_item(1)
+        item = _make_item(uuid7())
 
         repo.save(item)
 
@@ -49,8 +61,8 @@ class TestInMemoryNewsRepository:
         Then: find_all() 에 2개 모두 포함
         """
         repo = InMemoryNewsRepository()
-        item1 = _make_item(1, title="A")
-        item2 = _make_item(2, title="B")
+        item1 = _make_item(uuid7(), title="A")
+        item2 = _make_item(uuid7(), title="B")
 
         repo.save(item1)
         repo.save(item2)
@@ -63,13 +75,14 @@ class TestInMemoryNewsRepository:
     def test_save_same_id_updates_existing(self):
         """같은 id 로 save 시 기존 값 갱신 (upsert).
 
-        Given: id=1 로 item1 저장
-        When: 같은 id=1 로 item2 저장 (다른 title)
+        Given: 같은 UUID 로 item1 저장 후 item2 저장 (다른 title)
+        When: save 2회
         Then: find_all() 에 item2 만 존재 (item1 대체)
         """
         repo = InMemoryNewsRepository()
-        item1 = _make_item(1, title="원본")
-        item2 = _make_item(1, title="갱신")
+        same_id = uuid7()
+        item1 = _make_item(same_id, title="원본")
+        item2 = _make_item(same_id, title="갱신")
 
         repo.save(item1)
         repo.save(item2)
@@ -85,8 +98,8 @@ class TestInMemoryNewsRepository:
         When: 저장소 생성 후 find_all()
         Then: initial 의 2개 아이템 모두 반환
         """
-        item1 = _make_item(1)
-        item2 = _make_item(2)
+        item1 = _make_item(uuid7())
+        item2 = _make_item(uuid7())
 
         repo = InMemoryNewsRepository(initial=[item1, item2])
 

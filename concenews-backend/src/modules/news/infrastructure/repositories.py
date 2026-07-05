@@ -1,19 +1,21 @@
 """News 모듈 저장소 구현."""
+from uuid import UUID
+
 from src.modules.news.domain.models import NewsItem
 
 
 class InMemoryNewsRepository:
     """뉴스 in-memory 저장소.
 
-    Dict 기반 (id → NewsItem). 재시작 시 데이터 소실.
+    Dict 기반 (UUID → NewsItem). 재시작 시 데이터 소실.
     PostgreSQL 도입 시 동일 인터페이스로 교체 예정.
 
     Attributes:
-        _items: id → NewsItem 매핑.
+        _items: UUID → NewsItem 매핑.
     """
 
     def __init__(self, initial: list[NewsItem] | None = None):
-        self._items: dict[int, NewsItem] = {}
+        self._items: dict[UUID, NewsItem] = {}
         for item in initial or []:
             self.save(item)
 
