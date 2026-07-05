@@ -5,6 +5,6 @@
 """
 
 from .presentation.router import router
-from .presentation.schemas import GetNewsResponse, NewsItemResponse
+from .presentation.schemas import GetNewsRequest, GetNewsResponse, NewsItemResponse
 
-__all__ = ["router", "GetNewsResponse", "NewsItemResponse"]
+__all__ = ["router", "GetNewsRequest", "GetNewsResponse", "NewsItemResponse"]
