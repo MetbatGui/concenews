@@ -25,6 +25,8 @@ uv run pytest tests/...
 - [ ] 코드 명확한가?
 - [ ] 테스트 충분한가?
 - [ ] 문서 업데이트되었나?
+- [ ] **설계 결정 trigger 매칭 시 ADR 있는가?** ([process](../docs/adr-process.md))
+- [ ] **Docs (spec/plan) 에서 관련 ADR 링크 명시됨?**
 - [ ] import-linter 통과?
   ```bash
   uv run lint-imports
