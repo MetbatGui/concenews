@@ -71,7 +71,8 @@
 | Docstring 형식 (Google style) | [docstring.md](concenews-backend/docs/conventions/docstring.md) |
 | Domain immutability (frozen, tuple 등) | [immutability.md](concenews-backend/docs/conventions/immutability.md) |
 | 테스트 구조 & 파일 위치 (unit/integration/acceptance) | [testing.md](concenews-backend/docs/conventions/testing.md) |
-| ADR (아키텍처 결정 이력) | [docs/decisions/](docs/decisions/) |
+| ADR (아키텍처 결정 이력) | [docs/decisions/](docs/decisions/) — index: [README](docs/decisions/README.md) |
+| ADR 프로세스 (언제/어떻게 쓰나) | [adr-process.md](docs/adr-process.md) |
 | Spike 프로세스 | [spike-process.md](concenews-backend/docs/spike-process.md) |
 
 ---

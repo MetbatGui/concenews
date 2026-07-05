@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytest
 from pydantic import ValidationError
+from uuid_utils.compat import uuid7
 
 from src.modules.news.domain.models import NewsItem
 
@@ -18,13 +19,12 @@ class TestNewsItem:
         Then: 인스턴스 반환, published_at 은 datetime
         """
         item = NewsItem(
-            id=1,
+            id=uuid7(),
             title="Fed 금리 인상",
             link="https://example.com/1",
             source="Reuters",
             published_at="2026-07-03T10:30:00Z",
         )
-        assert item.id == 1
         assert item.title == "Fed 금리 인상"
         assert isinstance(item.published_at, datetime)
 
@@ -52,7 +52,7 @@ class TestNewsItem:
         Then: ValidationError
         """
         base = dict(
-            id=1,
+            id=uuid7(),
             title="t",
             link="https://x",
             source="x",
@@ -70,7 +70,7 @@ class TestNewsItem:
         Then: description 은 None
         """
         item = NewsItem(
-            id=1,
+            id=uuid7(),
             title="t",
             link="https://x",
             source="x",
@@ -86,7 +86,7 @@ class TestNewsItem:
         Then: published_at 은 datetime 인스턴스
         """
         item = NewsItem(
-            id=1,
+            id=uuid7(),
             title="t",
             link="https://x",
             source="x",
@@ -103,7 +103,7 @@ class TestNewsItem:
         """
         with pytest.raises(ValidationError):
             NewsItem(
-                id=1,
+                id=uuid7(),
                 title="t",
                 link="https://x",
                 source="x",
@@ -121,7 +121,7 @@ class TestNewsItem:
         Repository 저장 값이 호출자에 의해 오염될 위험 제거.
         """
         item = NewsItem(
-            id=1,
+            id=uuid7(),
             title="원본",
             link="https://x",
             source="x",
@@ -142,7 +142,7 @@ class TestNewsItem:
         정책: docs/conventions/immutability.md
         """
         item = NewsItem(
-            id=1,
+            id=uuid7(),
             title="t",
             link="https://x",
             source="x",

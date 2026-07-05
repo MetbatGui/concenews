@@ -1,4 +1,6 @@
 """응답 모델 (DTO) - News 모듈의 API 계약."""
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -10,7 +12,7 @@ class NewsItemResponse(BaseModel):
     Then: 이 구조의 JSON 반환
     """
 
-    id: str = Field(..., description="고유 식별자 (URL 해시)")
+    id: UUID = Field(..., description="고유 식별자 (UUID v7)")
     title: str = Field(..., description="뉴스 제목")
     description: str | None = Field(default=None, description="요약 설명 (API 응답에서 누락될 수 있음)")
     link: str = Field(..., description="기사 원본 링크")
@@ -22,7 +24,7 @@ class NewsItemResponse(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "id": "abc123def456",
+                "id": "01912345-6789-7abc-8def-0123456789ab",
                 "title": "연방준비제도, 기준금리 인상",
                 "description": "미국 연방준비제도가 기준금리를 25bp 인상했습니다.",
                 "link": "https://example.com/news/123",
@@ -51,7 +53,7 @@ class GetNewsResponse(BaseModel):
             "example": {
                 "news": [
                     {
-                        "id": "abc123def456",
+                        "id": "01912345-6789-7abc-8def-0123456789ab",
                         "title": "연방준비제도, 기준금리 인상",
                         "description": "미국 연방준비제도가 기준금리를 25bp 인상했습니다.",
                         "link": "https://example.com/news/123",
