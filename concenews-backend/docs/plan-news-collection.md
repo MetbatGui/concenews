@@ -173,10 +173,15 @@ Slice 진행 중 아래 시점에 spike:
 
 #### PR #3: PgNewsRepository — `feature/news-pg-repository`
 
+- **Port 추출**: `application/ports.py` 에 `NewsRepositoryPort` Protocol 추가 (Rule of Three 트리거)
+- 폴더 재구성: `infrastructure/repositories.py` → `infrastructure/repositories/{in_memory,postgres}.py` (git mv)
 - Alembic migration: `news` 테이블
-- `PgNewsRepository` impl (Port 는 기존 InMemory 와 계약 통일)
-- Unit test (transaction rollback fixture)
-- Integration test (real PG via testcontainers or docker-compose)
+- `PgNewsRepository` impl
+- **Test 전략** (고전파, [ADR](../../docs/decisions/2026-07-06-repository-strategy.md)):
+  - Repository unit test: skip (SQLAlchemy 자체 test 안 함)
+  - Integration test: 실 PG (docker-compose), transaction rollback autouse fixture
+  - 파일: `tests/integration/news/test_news_repository_postgres.py`
+- `InMemoryNewsRepository`: production 에서 Fake 로 강등 (test 용도)
 - 상태: **GREEN**
 
 #### PR #4: Cache Adapter — `feature/news-cache-adapter`
