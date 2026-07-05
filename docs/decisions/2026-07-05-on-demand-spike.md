@@ -51,17 +51,12 @@ Implement
 - **결정 신선도**: unknown 만난 순간이 학습 최고 시점 (context 명확)
 - **Waste 방지**: batch 시 slice 방향 변경 시 spike 결과 폐기
 - **BDUF 회피**: 미래 예측 대신 실행 중 발견
+- **Spike ↔ ADR 관계 명확화**: spike 는 로컬 학습 (git commit X). ADR 은 spike 결과가 [ADR-process trigger](../adr-process.md) 매칭 시 작성. Trivial 학습은 spec/plan 갱신만.
 
 ## Reconsider When
 
 - 여러 unknown 이 강하게 상호 의존 (예: DB choice 가 scheduler choice 를 규정) → 병행 spike 정당화
 - 큰 아키텍처 전환 (예: monolith → microservices) → 사전 종합 spike 필요할 수도
-
-## Spike vs ADR 관계
-
-- Spike = 로컬 학습 (git commit X, 삭제)
-- ADR = 결정 로그 (spike 결과가 [ADR-process trigger](../adr-process.md) 매칭 시 작성)
-- 모든 spike 가 ADR 로 이어지지 않음 (trivial 학습은 spec/plan 갱신만)
 
 ## Migration Path
 
