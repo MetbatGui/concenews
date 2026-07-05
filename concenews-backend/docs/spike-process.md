@@ -1,7 +1,9 @@
 # Spike Process
 
 > 불확실성 제거를 위한 로컬 학습 단계
-> 기획 (Spec) 전에 기술 검증
+> **On-demand**: unknown 만날 때마다 즉시 시작 (batch 지양)
+
+관련 결정: [ADR 2026-07-05 on-demand-spike](../../../docs/decisions/2026-07-05-on-demand-spike.md)
 
 ---
 
@@ -13,6 +15,24 @@
 - 기술적 불확실성 제거
 - 데이터 구조/API 응답 검증
 - 구현 전략 결정
+
+## 언제 시작 (Trigger)
+
+**On-demand — unknown 을 만난 순간**:
+- Slice 진행 중 "이 기술 어떻게 쓸지 모른다" 발견
+- 두 옵션 트레이드오프 실측 필요
+- 외부 dep 도입 전 검증 필요
+
+**금지**:
+- Slice 시작 전 여러 spike 를 batch 로 검증 (BDUF, YAGNI 위반)
+- "미래 위한" 예방 spike
+
+## Spike ↔ ADR 관계
+
+Spike 결과가 [ADR trigger](../../../docs/adr-process.md) 매칭 시:
+- Spike 완료 → ADR 작성 → docs 갱신 → 코드 착수
+
+Trivial 학습 (API 응답 구조 확인 등) 은 ADR 없이 spec/plan 갱신만.
 
 ---
 
