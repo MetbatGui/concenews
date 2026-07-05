@@ -147,14 +147,22 @@ Merge 시 master 는 항상 green.
 - 상태: **GREEN**
 
 ### PR #5: Wire up + Integration — `feature/news-fetch-wire`
-- Endpoint → Service/Repository 연결 (FastAPI DI)
-- **Request DTO 도입**: `GetNewsRequest(BaseModel)` — `limit: int = Field(50, ge=1, le=100)`
-  - 이유: Response DTO (`GetNewsResponse`) 와 대칭, 계약 명시, param 확장 대비, portfolio DDD 준수
-  - Layered validation: adapter (endpoint) = boundary check. Service 는 valid 가정.
-- Fixture 도입: `filled_repository` / `empty_repository` (`tests/unit/news/conftest.py` 또는 integration 위치)
-- Fixture 기반 integration test (empty, filled, sorted, limit 등)
-- 마지막 PR body 에 `Closes #{issue}` 포함
-- 상태: **GREEN** (전체 slice 완료)
+
+**스코프**:
+1. Endpoint 이동: `main.py` stub → `presentation/router.py` (완료)
+2. Test 파일 이동: `tests/integration/test_news_fetch_endpoint.py` → `tests/integration/news/test_news_acceptance.py`
+3. Fixture 도입 (testing.md 규칙 준수, 사용 범위별):
+   - `tests/integration/conftest.py` — `client` (TestClient), `empty_repository`
+   - `tests/integration/news/conftest.py` — `filled_repository`
+4. **Request DTO**: `GetNewsRequest(BaseModel)` — `limit: int = Field(50, ge=1, le=100)`
+   - 이유: Response DTO 와 대칭, 계약 명시, param 확장 대비, portfolio DDD 준수
+   - Layered validation: adapter (endpoint) = boundary check. Service 는 valid 가정.
+5. Router DI: `Depends(NewsService)` + `Depends(InMemoryNewsRepository)` (FastAPI 표준)
+6. Behavior integration tests (class `TestGetNewsBehavior`):
+   - empty / filled / sorted / limit / default_limit / max_limit / article_fields
+7. 마지막 PR body 에 `Closes #{issue}` 포함
+
+**상태**: **GREEN** (전체 slice 완료)
 
 **Request DTO vs Query direct — 결정 근거**:
 - FastAPI idiomatic 은 Query direct 지만 이 프로젝트는 Response DTO 이미 있음 → 대칭 이득
