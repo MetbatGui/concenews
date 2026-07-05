@@ -115,14 +115,18 @@ GET https://api.thenewsapi.com/v1/news/top
 
 1. ✓ **Spike** 완료: 뉴스 API 선택 (TheNewsAPI)
 2. ✓ **Spec** 정의: 이 문서
-3. ✓ **Plan** 완료: 6단계 PR 구성 ([plan-news-fetch.md](plan-news-fetch.md))
+3. ✓ **Plan** 완료: 5단계 PR 구성 ([plan-news-fetch.md](plan-news-fetch.md))
 4. → **Implementation**: TDD 개발 중 (feature/news-fetch-*)
-   - ✓ Phase 1: Domain (NewsItem)
-   - ✓ Phase 2: Repository (메모리 저장소)
-   - ✓ Phase 3: Service (비즈니스 로직)
-   - ✓ Phase 4: Endpoint (GET /news)
-   - → Phase 5: Refactor (진행 예정)
-   - → Phase 6: Close Issue
+   - ✓ PR #5: Acceptance test (walking skeleton, RED)
+   - ✓ PR #6: Endpoint stub + PR 정책 (GREEN)
+   - ✓ PR #7: NewsItem domain + ID ADR
+   - ✓ PR #8: InMemoryNewsRepository + ruff/ty 검증 규칙
+   - ✓ PR #9: Immutability (frozen + tuple categories)
+   - ✓ PR #10: NewsService (fetch_news 정렬/limit)
+   - ✓ PR #11: ID 전략 UUID v7 재확정 (bigint 폐기)
+   - → 진행중: Wire-up + Integration (feature/news-fetch-wire)
+     - Endpoint 이동 완료 (main.py → presentation/router.py)
+     - 남음: Request DTO, Service DI, fixture, integration test 확장
 
 ## 구현 세부사항
 
@@ -166,14 +170,24 @@ Domain (NewsItem - Pydantic)
 Repository (Memory Dict)
 ```
 
-**파일 구조:**
+**파일 구조 (Modular Monolith 4계층)**:
 ```
 src/modules/news/
-  ├─ endpoints.py       (FastAPI route)
-  ├─ services.py        (비즈니스 로직)
-  ├─ domain.py          (NewsItem 모델)
-  └─ repositories.py     (저장소)
+  ├─ domain/
+  │   └─ models.py           (NewsItem — frozen, id: UUID)
+  ├─ application/
+  │   ├─ services.py         (NewsService, 비즈니스 로직)
+  │   └─ ports.py            (IdGenerator Protocol)
+  ├─ infrastructure/
+  │   ├─ repositories.py     (InMemoryNewsRepository)
+  │   └─ id_generator.py     (UuidV7Generator)
+  ├─ presentation/
+  │   ├─ router.py           (FastAPI APIRouter)
+  │   └─ schemas.py          (NewsItemResponse, GetNewsResponse)
+  ├─ public.py               (모듈 외부 공개 창구)
+  └─ bootstrap.py            (모듈 초기화)
 ```
+자세한 규칙은 [modular-monolith.md](architecture/modular-monolith.md) 참고.
 
 ### 테스트 전략
 
