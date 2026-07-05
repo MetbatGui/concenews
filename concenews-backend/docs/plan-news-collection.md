@@ -139,7 +139,7 @@ Slice 진행 중 아래 시점에 spike:
 | Spike          | Trigger 시점                | 학습 대상                                            | 상태 |
 | -------------- | --------------------------- | ---------------------------------------------------- | ---- |
 | DB 라이브러리  | Shared kernel DB 도입 직전  | SQLAlchemy 2.0 async vs sync, session 관리           | ✅ 완료 ([ADR](../../docs/decisions/2026-07-06-db-library.md), Sync psycopg 채택) |
-| Scheduler 선택 | Scheduler adapter 구현 직전 | APScheduler vs FastAPI-scheduler vs 기타             | 대기 |
+| Scheduler 선택 | Scheduler adapter 구현 직전 | APScheduler vs FastAPI-scheduler vs 기타             | ✅ 완료 ([ADR](../../docs/decisions/2026-07-06-scheduler-choice.md), stdlib asyncio 채택) |
 | Cache impl     | 필요 시                     | stdlib `dict + timestamp` 로 충분? 라이브러리 필요?  | 대기 |
 
 각 spike 완료 시 ADR + 문서 갱신.
@@ -161,12 +161,14 @@ Slice 진행 중 아래 시점에 spike:
 - Unit test (session factory 동작)
 - 상태: **GREEN**
 
-#### PR #2: Scheduler Shared Kernel — `feature/shared-scheduler`
+#### PR #2: Scheduler Port (news 로컬) — `feature/news-scheduler-port`
 
-- **Spike 선행**: `spikes/scheduler/` — APScheduler 등 비교
-- **ADR**: Scheduler 선택 근거
-- `src/shared_kernel/scheduler/` — Port + Adapter (또는 news 모듈 로컬로 시작)
-- Unit test
+- **Spike 완료**: stdlib asyncio vs APScheduler 비교 ([LEARNINGS](../spikes/scheduler/LEARNINGS.md))
+- **ADR**: [scheduler-choice](../../docs/decisions/2026-07-06-scheduler-choice.md) — stdlib asyncio, news 로컬, lifespan
+- `application/ports.py` 에 `SchedulerPort` Protocol 추가 (Port 만)
+- Adapter 실 impl 은 PR #7 (wire-up, lifespan 통합 시)
+- Fake 는 test 필요 시 자연 추가
+- 스코프 극소: Port + Spike 기록 + ADR + docs
 - 상태: **GREEN**
 
 ### news 모듈 확장
