@@ -19,6 +19,7 @@
 | Date | ADR | Status |
 |------|-----|--------|
 | 2026-07-05 | [test-isolation-cache-clear](./2026-07-05-test-isolation-cache-clear.md) | Accepted |
+| 2026-07-05 | [test-fixture-data-pattern](./2026-07-05-test-fixture-data-pattern.md) | Accepted |
 
 ### Module Boundaries
 
