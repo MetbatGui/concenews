@@ -1,7 +1,7 @@
 """News API application."""
 from fastapi import FastAPI
 
-from src.modules.news.public import GetNewsResponse
+from src.modules.news.public import router as news_router
 
 app = FastAPI(
     title="Concenews API",
@@ -16,7 +16,4 @@ def health_check():
     return {"status": "ok"}
 
 
-@app.get("/news", response_model=GetNewsResponse)
-def get_news() -> GetNewsResponse:
-    """Walking skeleton stub. Wire-up PR 에서 Service 연결."""
-    return GetNewsResponse(news=[], count=0)
+app.include_router(news_router)

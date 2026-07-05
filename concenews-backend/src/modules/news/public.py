@@ -4,6 +4,7 @@
 구현 세부사항 (domain, application, presentation 내부)은 외부 노출 금지.
 """
 
+from .presentation.router import router
 from .presentation.schemas import GetNewsResponse, NewsItemResponse
 
-__all__ = ["GetNewsResponse", "NewsItemResponse"]
+__all__ = ["router", "GetNewsResponse", "NewsItemResponse"]
