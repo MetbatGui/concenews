@@ -76,10 +76,10 @@ Each item:
 ## 기술 결정 (Spike 후 확정 예정)
 
 ### DB
-- SQLAlchemy 2.0 async / sync (spike 필요)
-- PostgreSQL
+- SQLAlchemy 2.0 sync + psycopg
+- PostgreSQL 17
 - Alembic migration
-- ADR 예정
+- 상세: [ADR 2026-07-06 db-library](../../docs/decisions/2026-07-06-db-library.md)
 
 ### Cache
 - In-memory: `cachetools.TTLCache` 또는 stdlib `dict` + timestamp
