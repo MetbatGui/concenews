@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from src.main import app
 from src.modules.news.infrastructure.repositories import InMemoryNewsRepository
-from src.modules.news.presentation.router import get_repository
+from src.modules.news.bootstrap import get_repository
 
 from tests.integration.conftest import _make_news
 

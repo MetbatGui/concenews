@@ -13,7 +13,7 @@ from uuid_utils.compat import uuid7
 from src.main import app
 from src.modules.news.domain.models import NewsItem
 from src.modules.news.infrastructure.repositories import InMemoryNewsRepository
-from src.modules.news.presentation.router import get_repository
+from src.modules.news.bootstrap import get_repository
 
 
 @pytest.fixture

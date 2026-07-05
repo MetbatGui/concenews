@@ -1,10 +1,40 @@
-"""News 모듈 초기화 및 의존성 등록."""
+"""News 모듈 조립 (Composition Root).
+
+Repository / Service / Endpoint 조합을 여기서 결정.
+Layer 안쪽 (application, domain) 는 이 파일을 몰라도 됨.
+Router 는 provider 함수만 참조 — Infrastructure 직접 import 금지.
+"""
+from functools import lru_cache
+from typing import Annotated
+
+from fastapi import Depends
+
+from .application.services import NewsService
+from .infrastructure.repositories import InMemoryNewsRepository
 
 
-def register():
-    """News 모듈을 애플리케이션에 등록.
+@lru_cache(maxsize=1)
+def get_repository() -> InMemoryNewsRepository:
+    """Repository 싱글톤 provider.
 
-    main.py에서만 호출됨.
+    앱 수명 동안 하나의 InMemoryNewsRepository 인스턴스 공유.
+    Test 에서는 app.dependency_overrides 로 교체.
+
+    Returns:
+        싱글톤 InMemoryNewsRepository.
     """
-    # TODO: Message Bus, Event Bus, Repository 등록
-    pass
+    return InMemoryNewsRepository()
+
+
+def get_service(
+    repository: Annotated[InMemoryNewsRepository, Depends(get_repository)],
+) -> NewsService:
+    """NewsService provider (Repository 주입).
+
+    Args:
+        repository: 저장소 (Depends 주입).
+
+    Returns:
+        NewsService 인스턴스.
+    """
+    return NewsService(repository=repository)
