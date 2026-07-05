@@ -11,6 +11,9 @@ dependencies = [
     "requests>=2.31.0",
     "feedparser>=6.0.10",
     "uuid-utils>=0.16.2",
+    "sqlalchemy>=2.0",
+    "psycopg[binary]>=3.2",
+    "alembic>=1.13",
 ]
 
 
