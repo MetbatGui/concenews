@@ -33,21 +33,22 @@ NewsService
 
 ```
 NewsItem (Pydantic)
-  - id: int             (필수, IdGenerator 발급)
+  - id: UUID            (필수, IdGenerator 발급, UUID v7)
   - title: str          (min_length=1)
   - description: str | None
   - link: str           (min_length=1, dedup key)
   - source: str         (min_length=1)
   - published_at: datetime  (ISO8601 파싱)
   - keywords: str       (default "")
-  - categories: list[str]   (default [])
+  - categories: tuple[str, ...]   (default (), immutable)
 ```
 
 **책임**: 도메인 규칙 (필드 검증, 변환)
 
-**ID 전략**: bigint sequence, `IdGenerator` (infra port) 발급.
-Domain 은 생성 시점부터 id 소유 (DDD). 상세는
-[ADR 2026-07-04 id-strategy](../../docs/decisions/2026-07-04-id-strategy.md) 참고.
+**ID 전략**: UUID v7, `IdGenerator` (application port) 발급.
+Domain 은 생성 시점부터 id 소유 (DDD).
+Port `application/ports.py`, Impl `infrastructure/id_generator.py` (Hexagonal).
+상세는 [ADR 2026-07-04 id-strategy](../../docs/decisions/2026-07-04-id-strategy.md) 참고.
 
 **현재 상태**: Anemic (data + validation 만). **의도적**.
 - 이 slice 의 use case (조회/정렬/limit) 는 domain method 요구 안 함

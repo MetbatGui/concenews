@@ -22,7 +22,7 @@
 2. **뉴스 필드**
    ```json
    {
-     "id": "uuid",
+     "id": "UUID v7 문자열 (예: 01912345-6789-7abc-8def-0123456789ab)",
      "title": "string",
      "description": "string",
      "link": "string",
@@ -79,7 +79,7 @@ GET https://api.thenewsapi.com/v1/news/top
 **응답 필드 → NewsItem 맵핑:**
 | API Field | NewsItem | 설명 |
 |-----------|----------|------|
-| uuid | id | 고유 식별자 |
+| uuid (외부 API 고유값) | (참조 안 함) | Domain id 는 IdGenerator 가 자체 발급 (UUID v7). 외부 uuid 는 dedup 용 link 로 대체. |
 | title | title | 기사 제목 |
 | description | description | 요약 (자동 생성) |
 | url | link | 기사 링크 |
@@ -95,7 +95,7 @@ GET https://api.thenewsapi.com/v1/news/top
   - "currency" (16,130건)
   - "Fed rate decision" (3,484건)
 - 주기: 15분마다 1회 (무료: 100 req/day, Basic: 2,500 req/day)
-- 중복 제외: uuid 기준 (저장소 관리)
+- 중복 제외: `link` (원본 URL) 기준 (외부 API uuid 는 참조 안 함, Domain id 는 자체 UUID v7 발급)
 
 **데이터 품질:**
 - ✓ 신뢰 언론사 (CBS News, Yahoo)
@@ -140,7 +140,7 @@ GET /news?limit=50
 {
   "news": [
     {
-      "id": "fd04ffe1-7511-40b8-a951-2e0b3da2a043",
+      "id": "01912345-6789-7abc-8def-0123456789ab",
       "title": "Bessent on Trump's crypto earnings, Trump Accounts and the U.S. economy's struggles",
       "description": "Treasury Secretary Scott Bessent touched on the recent disclosure of President Trump's crypto earnings...",
       "link": "https://www.cbsnews.com/news/scott-bessent-trump-crypto-earnings-trump-accounts-inflation/",
