@@ -1,20 +1,27 @@
-"""DB 설정 (.env + os.environ).
+"""DB 설정 (env-driven).
 
-.env 파일에서 DATABASE_URL 을 로드하여 os.environ 에 반영.
-Test 는 fixture 로 URL 을 직접 주입.
+App startup / test setup 에서 load_config() 명시 호출로 .env 로드.
+Test 는 load_config(".env.test") 로 격리.
 상세: docs/decisions/2026-07-06-db-library.md
 """
 import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 DEFAULT_DATABASE_URL = "postgresql+psycopg://concenews:concenews@localhost:5432/concenews"
 
 
+def load_config(env_file: str = ".env") -> None:
+    """Env file 명시 로드. App startup 또는 test setup 에서 호출.
+
+    Args:
+        env_file: .env 파일 경로 (default: ".env"). Test 는 ".env.test" 로 호출.
+    """
+    load_dotenv(env_file)
+
+
 def get_database_url() -> str:
-    """Production 용 DATABASE_URL.
+    """Production DATABASE_URL.
 
     Returns:
         환경 변수 DATABASE_URL 값. 없으면 dev 기본값 (localhost:5432).

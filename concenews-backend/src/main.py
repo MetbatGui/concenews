@@ -2,6 +2,9 @@
 from fastapi import FastAPI
 
 from src.modules.news.public import router as news_router
+from src.shared_kernel.db.settings import load_config
+
+load_config()
 
 app = FastAPI(
     title="Concenews API",

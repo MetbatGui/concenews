@@ -16,7 +16,9 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here for 'autogenerate' support.
 from src.shared_kernel.db.base import Base  # noqa: E402
-from src.shared_kernel.db.settings import get_database_url  # noqa: E402
+from src.shared_kernel.db.settings import get_database_url, load_config  # noqa: E402
+
+load_config()
 
 target_metadata = Base.metadata
 
