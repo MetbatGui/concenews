@@ -1,7 +1,7 @@
 """News 모듈 domain 모델."""
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NewsItem(BaseModel):
@@ -9,6 +9,7 @@ class NewsItem(BaseModel):
 
     ID 는 IdGenerator (infrastructure) 가 발급, 생성 시 필수.
     Domain 은 생성 시점부터 identity 소유 (DDD).
+    Frozen: 생성 후 필드 변경 불가 (aggregate 불변성).
     상세: docs/decisions/2026-07-04-id-strategy.md
 
     Attributes:
@@ -22,6 +23,8 @@ class NewsItem(BaseModel):
         categories: 카테고리 리스트 (외부 API 응답 누락 가능).
     """
 
+    model_config = ConfigDict(frozen=True)
+
     id: int
     title: str = Field(..., min_length=1)
     description: str | None = Field(default=None)
@@ -29,4 +32,4 @@ class NewsItem(BaseModel):
     source: str = Field(..., min_length=1)
     published_at: datetime
     keywords: str = Field(default="")
-    categories: list[str] = Field(default_factory=list)
+    categories: tuple[str, ...] = Field(default_factory=tuple)

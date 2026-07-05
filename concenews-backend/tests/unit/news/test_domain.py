@@ -109,3 +109,45 @@ class TestNewsItem:
                 source="x",
                 published_at="어제",
             )
+
+    def test_news_item_is_immutable(self):
+        """생성 후 필드 변경 시도는 거부된다 (frozen).
+
+        Given: 생성된 NewsItem 인스턴스
+        When: 필드 mutation 시도 (item.title = "새 제목")
+        Then: ValidationError
+
+        Domain identity/state 는 생성 시점 고정. Aggregate 불변성 강제.
+        Repository 저장 값이 호출자에 의해 오염될 위험 제거.
+        """
+        item = NewsItem(
+            id=1,
+            title="원본",
+            link="https://x",
+            source="x",
+            published_at="2026-07-03T10:30:00Z",
+        )
+        with pytest.raises(ValidationError):
+            item.title = "변경"
+
+    def test_news_item_categories_stored_as_immutable_tuple(self):
+        """categories 는 immutable tuple 로 저장된다.
+
+        Given: categories 로 list 전달
+        When: NewsItem 생성 후 categories 접근
+        Then: tuple 타입, 값 순서 유지
+
+        frozen=True 는 attribute 재할당만 막음. 컨테이너 mutation
+        (list.append) 방지하려면 컨테이너 자체가 immutable 이어야 함.
+        정책: docs/conventions/immutability.md
+        """
+        item = NewsItem(
+            id=1,
+            title="t",
+            link="https://x",
+            source="x",
+            published_at="2026-07-03T10:30:00Z",
+            categories=["general", "politics"],
+        )
+        assert isinstance(item.categories, tuple)
+        assert item.categories == ("general", "politics")
