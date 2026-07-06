@@ -4,13 +4,17 @@ testing.md: 모듈 전용 fixture 는 tests/integration/{module}/conftest.py.
 Fixture data (constants) 는 data.py 에 별도.
 Dependency override 정리는 tests/conftest.py autouse fixture 가 담당.
 """
+from collections.abc import Iterator
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 from src.main import app
 from src.modules.news.bootstrap import get_repository
 from src.modules.news.infrastructure.repositories.in_memory import InMemoryNewsRepository
+from src.shared_kernel.db.settings import get_database_url
 
 from tests.integration.news.data import NEWS_MID, NEWS_NEW, NEWS_OLD
 
@@ -39,3 +43,25 @@ def filled_client(filled_repository: InMemoryNewsRepository) -> TestClient:
     """
     app.dependency_overrides[get_repository] = lambda: filled_repository
     return TestClient(app)
+
+
+@pytest.fixture(scope="module")
+def pg_engine():
+    """Test PG engine. Alembic upgrade 사전 필요."""
+    engine = create_engine(get_database_url(), pool_pre_ping=True)
+    yield engine
+    engine.dispose()
+
+
+@pytest.fixture
+def pg_session(pg_engine) -> Iterator[Session]:
+    """Transaction rollback 으로 test 간 격리."""
+    connection = pg_engine.connect()
+    transaction = connection.begin()
+    session = Session(bind=connection)
+
+    yield session
+
+    session.close()
+    transaction.rollback()
+    connection.close()
