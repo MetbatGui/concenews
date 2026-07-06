@@ -1,7 +1,12 @@
 """News 모듈 application 계층 서비스."""
+import logging
+
+from src.modules.news.application.exceptions import CollectionError
 from src.modules.news.application.ports import CachePort, NewsRepositoryPort, NewsSourcePort
 from src.modules.news.domain.models import NewsItem
 from src.modules.news.infrastructure.repositories.in_memory import InMemoryNewsRepository
+
+logger = logging.getLogger(__name__)
 
 
 class NewsService:
@@ -66,19 +71,32 @@ class NewsCollectorService:
         """뉴스 수집 및 저장.
 
         Cache에서 확인 후, 미포함 시 DB 저장 후 캐시 등록.
+        부분 성공 허용 (실패 시 로그, 다음 기사 계속).
 
         Args:
             keywords: 검색 키워드.
+
+        Raises:
+            CollectionError: API 호출 실패 시 (전체 실패).
         """
-        articles = self.news_source.fetch(keywords)
+        try:
+            articles = self.news_source.fetch(keywords)
+        except Exception as e:
+            msg = f"API 호출 실패: {e}"
+            logger.error(msg)
+            raise CollectionError(msg) from e
 
         for article in articles:
-            # 캐시 확인 (dedup 1차)
-            if self.cache.contains(article.link):
-                continue
+            try:
+                # 캐시 확인 (dedup 1차)
+                if self.cache.contains(article.link):
+                    continue
 
-            # DB 저장 (dedup 2차, unique link constraint)
-            self.repository.save(article)
+                # DB 저장 (dedup 2차, unique link constraint)
+                self.repository.save(article)
 
-            # 캐시 저장 (15분 TTL)
-            self.cache.set(article.link, ttl_seconds=900)
+                # 캐시 저장 (15분 TTL)
+                self.cache.set(article.link, ttl_seconds=900)
+            except Exception as e:
+                # 부분 성공: 로그만 하고 계속
+                logger.warning(f"기사 저장 실패 ({article.link}): {e}")
