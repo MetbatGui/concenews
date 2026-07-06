@@ -59,7 +59,7 @@ class CachePort(Protocol):
     - Production: InMemoryCacheAdapter (dict + TTL)
     - Future: RedisCacheAdapter (Redis 대체 가능)
 
-    상세: docs/decisions/2026-07-06-cache-strategy.md (예정)
+    상세: plan-news-collection.md § Cache impl 참고 (stdlib dict+TTL 선택)
     """
 
     def set(self, key: str, ttl_seconds: int) -> None:
