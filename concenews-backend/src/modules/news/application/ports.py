@@ -9,6 +9,8 @@ from collections.abc import Awaitable, Callable
 from typing import Protocol
 from uuid import UUID
 
+from src.modules.news.domain.models import NewsItem
+
 
 class IdGenerator(Protocol):
     """Identity 발급 port.
@@ -18,6 +20,35 @@ class IdGenerator(Protocol):
 
     def generate(self) -> UUID:
         """다음 identity 반환."""
+        ...
+
+
+class NewsRepositoryPort(Protocol):
+    """뉴스 저장소 port.
+
+    구현체 (Adapter):
+    - Production: PgNewsRepository (infrastructure/repositories/postgres.py)
+    - Test Fake: InMemoryNewsRepository (infrastructure/repositories/in_memory.py)
+
+    상세: docs/decisions/2026-07-06-repository-strategy.md
+    """
+
+    def save(self, item: NewsItem) -> None:
+        """뉴스 저장 (upsert). 같은 id 존재 시 update.
+
+        Args:
+            item: 저장할 NewsItem.
+        """
+        ...
+
+    def find_all(self) -> list[NewsItem]:
+        """저장된 모든 뉴스 반환.
+
+        순서 미보장. 정렬은 Service 책임.
+
+        Returns:
+            NewsItem 리스트.
+        """
         ...
 
 
