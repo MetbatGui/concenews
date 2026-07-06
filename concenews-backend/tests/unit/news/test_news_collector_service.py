@@ -211,3 +211,79 @@ def test_collector_dedup_by_link(cache, repository):
 
     # 첫 번째만 저장, 두 번째는 캐시 되어 skip
     assert len(repository.save_calls) == 1
+
+
+def test_collector_raises_on_api_failure(cache, repository):
+    """Given: API 호출 실패
+    When: collector.run() 호출
+    Then: CollectionError 발생
+    """
+    from src.modules.news.application.exceptions import CollectionError
+
+    class FailingNewsSource:
+        def fetch(self, keywords: list[str]) -> list[NewsItem]:
+            raise ValueError("API error")
+
+    source = FailingNewsSource()
+    collector = NewsCollectorService(
+        news_source=source, cache=cache, repository=repository
+    )
+
+    with pytest.raises(CollectionError):
+        collector.run(keywords=[])
+
+
+def test_collector_continues_on_save_failure(cache, repository):
+    """Given: 첫 기사는 저장 실패, 두 번째는 성공
+    When: collector.run() 호출
+    Then: 실패 로그만 하고 두 번째 기사 저장
+    """
+
+    class FailingRepository:
+        def __init__(self) -> None:
+            self.save_calls: list[NewsItem] = []
+
+        def save(self, item: NewsItem) -> None:
+            self.save_calls.append(item)
+            if len(self.save_calls) == 1:  # 첫 번째만 실패
+                raise ValueError("DB error")
+
+        def find_all(self) -> list[NewsItem]:
+            return []
+
+    article1 = NewsItem(
+        id=UUID("019f3676-c27a-7000-0000-000000000001"),
+        title="News 1 (will fail)",
+        description=None,
+        link="https://example.com/fail",
+        source="Source",
+        published_at=datetime.now(timezone.utc),
+        keywords="",
+        categories=(),
+    )
+    article2 = NewsItem(
+        id=UUID("019f3676-c27a-7000-0000-000000000002"),
+        title="News 2 (will succeed)",
+        description=None,
+        link="https://example.com/success",
+        source="Source",
+        published_at=datetime.now(timezone.utc),
+        keywords="",
+        categories=(),
+    )
+
+    source = FakeNewsSource([article1, article2])
+    failing_repo = FailingRepository()
+
+    collector = NewsCollectorService(
+        news_source=source, cache=cache, repository=failing_repo
+    )
+
+    # 두 번째 기사는 저장되어야 함 (첫 번째 실패해도 계속)
+    collector.run(keywords=[])
+
+    # 2개 모두 저장 시도, 2번째는 성공
+    assert len(failing_repo.save_calls) == 2
+    # 캐시는 성공한 기사만 저장
+    assert cache.contains("https://example.com/success")
+    assert not cache.contains("https://example.com/fail")
