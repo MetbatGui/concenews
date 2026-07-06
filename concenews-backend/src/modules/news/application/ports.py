@@ -52,6 +52,28 @@ class NewsRepositoryPort(Protocol):
         ...
 
 
+class NewsSourcePort(Protocol):
+    """뉴스 소스 port (외부 API).
+
+    구현체 (Adapter):
+    - Production: TheNewsAPIClient (infrastructure/the_news_api_client.py)
+    - Test Fake: FakeNewsSource
+
+    상세: plan-news-collection.md § NewsSourcePort
+    """
+
+    def fetch(self, keywords: list[str]) -> list[NewsItem]:
+        """키워드로 뉴스 기사 조회.
+
+        Args:
+            keywords: 검색 키워드.
+
+        Returns:
+            NewsItem 리스트 (도메인 모델, 정규화됨).
+        """
+        ...
+
+
 class SchedulerPort(Protocol):
     """정기 job 실행 port.
 
