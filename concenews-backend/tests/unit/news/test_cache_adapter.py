@@ -2,7 +2,7 @@
 
 GWT (Given-When-Then) 형식.
 """
-import time
+from freezegun import freeze_time
 from src.modules.news.infrastructure.cache import InMemoryCacheAdapter
 
 
@@ -30,12 +30,13 @@ def test_cache_ttl_expiry():
     When: TTL elapses
     Then: contains() returns False
     """
-    cache = InMemoryCacheAdapter()
-    cache.set("link1", ttl_seconds=0.1)
-    assert cache.contains("link1") is True
+    with freeze_time("2026-07-06 12:00:00") as frozen_time:
+        cache = InMemoryCacheAdapter()
+        cache.set("link1", ttl_seconds=10)
+        assert cache.contains("link1") is True
 
-    time.sleep(0.2)
-    assert cache.contains("link1") is False
+        frozen_time.move_to("2026-07-06 12:00:11")
+        assert cache.contains("link1") is False
 
 
 def test_cache_multiple_keys():
@@ -57,10 +58,11 @@ def test_cache_overwrite():
     When: set() called again with same key
     Then: TTL resets
     """
-    cache = InMemoryCacheAdapter()
-    cache.set("link1", ttl_seconds=0.2)
-    time.sleep(0.1)
-    cache.set("link1", ttl_seconds=10)
+    with freeze_time("2026-07-06 12:00:00") as frozen_time:
+        cache = InMemoryCacheAdapter()
+        cache.set("link1", ttl_seconds=5)
+        frozen_time.move_to("2026-07-06 12:00:04")
 
-    time.sleep(0.15)
-    assert cache.contains("link1") is True  # TTL reset
+        cache.set("link1", ttl_seconds=10)
+        frozen_time.move_to("2026-07-06 12:00:13")
+        assert cache.contains("link1") is True  # TTL reset
