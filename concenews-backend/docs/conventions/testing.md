@@ -186,6 +186,46 @@ def test_get_news_returns_sorted(self, client, filled_repository):
 
 ---
 
+## 시간 관련 테스트 (freezegun)
+
+TTL, 스케줄러, 시간 기반 로직은 `freezegun` 으로 시간 조작. `time.sleep()` 제거.
+
+### 설치
+
+```bash
+uv pip install freezegun>=1.5.0  # 또는 pyproject.toml [dependency-groups] dev에 추가
+```
+
+### 패턴: TTL/Expiry 검증
+
+```python
+from freezegun import freeze_time
+
+def test_cache_ttl_expiry():
+    """Given: cache with TTL
+    When: time elapses past expiry
+    Then: item is expired
+    """
+    with freeze_time("2026-07-06 12:00:00") as frozen_time:
+        cache = SomeCache()
+        cache.set("key", ttl_seconds=10)
+        assert cache.contains("key") is True
+
+        frozen_time.move_to("2026-07-06 12:00:11")  # 11초 경과 → 만료
+        assert cache.contains("key") is False
+```
+
+### 장점
+- Deterministic (실제 시간 의존 없음)
+- Fast (sleep 제거)
+- CI 환경 안정 (타이밍 문제 없음)
+
+### 참고
+- [freezegun docs](https://github.com/spulec/freezegun)
+- Example: `tests/unit/news/test_cache_adapter.py`
+
+---
+
 ## 검증
 
 Test 편집 후:

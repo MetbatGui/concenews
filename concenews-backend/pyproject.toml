@@ -45,4 +45,5 @@ dev = [
     "import-linter>=2.0",
     "ruff>=0.15.20",
     "ty>=0.0.56",
+    "freezegun>=1.5.0",
 ]
