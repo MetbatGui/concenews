@@ -16,6 +16,7 @@
 | 2026-07-05 | [timezone-policy](./2026-07-05-timezone-policy.md) | Accepted |
 | 2026-07-06 | [db-library (SQLAlchemy sync + psycopg)](./2026-07-06-db-library.md) | Accepted |
 | 2026-07-06 | [repository-strategy (Port 추출 + Fake/PG test)](./2026-07-06-repository-strategy.md) | Accepted |
+| 2026-07-06 | [scheduler-choice (stdlib asyncio + news 로컬 + lifespan)](./2026-07-06-scheduler-choice.md) | Accepted |
 
 ### Process & Convention
 
