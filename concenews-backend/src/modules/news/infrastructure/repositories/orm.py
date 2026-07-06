@@ -24,6 +24,6 @@ class NewsRow(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     link: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     source: Mapped[str] = mapped_column(String, nullable=False)
-    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
     keywords: Mapped[str] = mapped_column(String, nullable=False, default="")
     categories: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, default=list)
