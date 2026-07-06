@@ -52,6 +52,39 @@ class NewsRepositoryPort(Protocol):
         ...
 
 
+class CachePort(Protocol):
+    """재요청 방지 캐시 port.
+
+    구현체 (Adapter):
+    - Production: InMemoryCacheAdapter (dict + TTL)
+    - Future: RedisCacheAdapter (Redis 대체 가능)
+
+    상세: docs/decisions/2026-07-06-cache-strategy.md (예정)
+    """
+
+    def set(self, key: str, ttl_seconds: int) -> None:
+        """캐시 항목 저장.
+
+        Args:
+            key: 캐시 키 (뉴스 링크).
+            ttl_seconds: TTL (초).
+        """
+        ...
+
+    def contains(self, key: str) -> bool:
+        """캐시 항목 존재 여부 확인.
+
+        만료된 항목은 자동 제거 후 False 반환.
+
+        Args:
+            key: 캐시 키.
+
+        Returns:
+            key 가 캐시에 유효하면 True.
+        """
+        ...
+
+
 class SchedulerPort(Protocol):
     """정기 job 실행 port.
 
