@@ -4,7 +4,6 @@ import logging
 from src.modules.news.application.exceptions import CollectionError
 from src.modules.news.application.ports import CachePort, NewsRepositoryPort, NewsSourcePort
 from src.modules.news.domain.models import NewsItem
-from src.modules.news.infrastructure.repositories.in_memory import InMemoryNewsRepository
 
 logger = logging.getLogger(__name__)
 
@@ -15,11 +14,10 @@ class NewsService:
     Repository 에서 뉴스를 읽어 정렬 + limit 적용 후 반환.
 
     Attributes:
-        _repository: 뉴스 저장소 (구체 InMemoryNewsRepository).
-            두 번째 impl (PostgreSQL 등) 등장 시 Protocol 추출.
+        _repository: 뉴스 저장소 (Port).
     """
 
-    def __init__(self, repository: InMemoryNewsRepository):
+    def __init__(self, repository: NewsRepositoryPort):
         self._repository = repository
 
     def fetch_news(self, limit: int) -> list[NewsItem]:
