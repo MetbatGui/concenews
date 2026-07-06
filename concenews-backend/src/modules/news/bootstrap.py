@@ -10,7 +10,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from .application.services import NewsService
-from .infrastructure.repositories import InMemoryNewsRepository
+from .infrastructure.repositories.in_memory import InMemoryNewsRepository
 
 
 @lru_cache(maxsize=1)

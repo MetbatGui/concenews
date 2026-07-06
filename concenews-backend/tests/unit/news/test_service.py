@@ -5,7 +5,7 @@ from uuid_utils.compat import uuid7
 
 from src.modules.news.application.services import NewsService
 from src.modules.news.domain.models import NewsItem
-from src.modules.news.infrastructure.repositories import InMemoryNewsRepository
+from src.modules.news.infrastructure.repositories.in_memory import InMemoryNewsRepository
 
 
 def _make_item(

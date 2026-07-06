@@ -1,6 +1,6 @@
 """News 모듈 application 계층 서비스."""
 from src.modules.news.domain.models import NewsItem
-from src.modules.news.infrastructure.repositories import InMemoryNewsRepository
+from src.modules.news.infrastructure.repositories.in_memory import InMemoryNewsRepository
 
 
 class NewsService:

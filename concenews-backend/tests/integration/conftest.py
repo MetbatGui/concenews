@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from src.main import app
 from src.modules.news.bootstrap import get_repository
-from src.modules.news.infrastructure.repositories import InMemoryNewsRepository
+from src.modules.news.infrastructure.repositories.in_memory import InMemoryNewsRepository
 
 
 @pytest.fixture

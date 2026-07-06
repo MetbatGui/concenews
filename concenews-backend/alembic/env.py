@@ -18,6 +18,9 @@ if config.config_file_name is not None:
 from src.shared_kernel.db.base import Base  # noqa: E402
 from src.shared_kernel.db.settings import get_database_url, load_config  # noqa: E402
 
+# Import ORM models so Alembic autogenerate detects them.
+from src.modules.news.infrastructure.repositories.orm import NewsRow  # noqa: E402, F401
+
 load_config()
 
 target_metadata = Base.metadata
