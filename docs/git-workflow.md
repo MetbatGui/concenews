@@ -53,6 +53,27 @@ requirements.txt 업데이트
 - sqlalchemy>=2.0
 ```
 
+### 원칙: 원자적 커밋 (Atomic Commits)
+
+한 커밋 = 한 가지 변경사항. 여러 변경을 한 커밋에 묶지 않음.
+
+**TDD 예시**:
+```bash
+# Commit 1: RED 상태 (test만)
+🧪test: NewsItem validation unit tests
+
+# Commit 2: GREEN 상태 (impl)
+✨feat: NewsItem Pydantic model
+
+# Commit 3: REFACTOR (필요시)
+♻️refactor: NewsItem docstring 개선
+```
+
+**이점**:
+- git log 이력 명확 (각 단계 추적 가능)
+- Bisect 용이 (버그 원인 특정 쉬움)
+- Revert 정밀함 (특정 변경만 되돌리기)
+
 ---
 
 ## Pull Request
