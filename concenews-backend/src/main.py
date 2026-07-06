@@ -19,10 +19,8 @@ async def lifespan(app: FastAPI):
     """
     # startup
     try:
-        scheduler, session = await setup_news_collector()
+        scheduler = await setup_news_collector()
         app.state.scheduler = scheduler
-        app.state.db_session = session
-
         await scheduler.start()
     except ValueError as e:
         raise RuntimeError(f"뉴스 수집기 초기화 실패: {e}") from e
@@ -31,7 +29,6 @@ async def lifespan(app: FastAPI):
 
     # shutdown
     await scheduler.stop()
-    session.close()
 
 
 app = FastAPI(
