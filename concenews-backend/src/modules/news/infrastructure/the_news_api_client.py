@@ -24,7 +24,7 @@ class TheNewsAPIClient:
             api_key: TheNewsAPI 인증 키.
         """
         self.api_key = api_key
-        self.base_url = "https://api.thenewsapi.com/v1/news"
+        self.base_url = "https://api.thenewsapi.com/v1/news/top"
         self._id_generator = UuidV7Generator()
 
     def fetch(self, keywords: list[str]) -> list[NewsItem]:
@@ -44,7 +44,7 @@ class TheNewsAPIClient:
 
         params = {
             "api_token": self.api_key,
-            "q": query,
+            "search": query,
             "limit": 100,
         }
 
@@ -52,7 +52,7 @@ class TheNewsAPIClient:
         response.raise_for_status()
 
         data = response.json()
-        articles = data.get("articles", [])
+        articles = data.get("data", [])
 
         return [self._convert_to_news_item(article) for article in articles]
 
@@ -67,20 +67,29 @@ class TheNewsAPIClient:
         Returns:
             NewsItem 인스턴스.
         """
-        # published_at: ISO8601 UTC 파싱
-        published_at_str = raw_article["publishedAt"]
+        # published_at: ISO8601 UTC 파싱 (publishedAt 또는 published_at)
+        published_at_str = raw_article.get("publishedAt") or raw_article.get("published_at", "")
+        if not published_at_str:
+            raise ValueError("publishedAt/published_at 필드 없음")
         published_at_utc = datetime.fromisoformat(published_at_str.replace("Z", "+00:00"))
 
         # UTC → KST (UTC+9)
         kst_offset = timezone(timedelta(hours=9))
         published_at_kst = published_at_utc.astimezone(kst_offset)
 
+        # source 필드는 dict 또는 string
+        source_field = raw_article.get("source", "")
+        if isinstance(source_field, dict):
+            source_name = source_field.get("name", "")
+        else:
+            source_name = source_field
+
         return NewsItem(
             id=self._id_generator.generate(),
             title=raw_article["title"],
             description=raw_article.get("description"),
-            link=raw_article["link"],
-            source=raw_article["source"]["name"],
+            link=raw_article.get("url") or raw_article.get("link", ""),
+            source=source_name,
             published_at=published_at_kst,
             keywords="",
             categories=(),

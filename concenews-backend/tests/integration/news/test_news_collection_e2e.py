@@ -33,28 +33,28 @@ class TestNewsCollectionE2E:
             # Mock API 응답
             rsps.add(
                 responses.GET,
-                "https://api.thenewsapi.com/v1/news",
+                "https://api.thenewsapi.com/v1/news/top",
                 json={
-                    "articles": [
+                    "data": [
                         {
                             "title": "Article 1",
                             "description": "Description 1",
-                            "link": "https://example.com/1",
-                            "source": {"name": "Source A"},
+                            "url": "https://example.com/1",
+                            "source": "Source A",
                             "publishedAt": "2026-07-06T10:00:00Z",
                         },
                         {
                             "title": "Article 2",
                             "description": "Description 2",
-                            "link": "https://example.com/2",
-                            "source": {"name": "Source B"},
+                            "url": "https://example.com/2",
+                            "source": "Source B",
                             "publishedAt": "2026-07-06T11:00:00Z",
                         },
                         {
                             "title": "Article 3",
                             "description": None,
-                            "link": "https://example.com/3",
-                            "source": {"name": "Source C"},
+                            "url": "https://example.com/3",
+                            "source": "Source C",
                             "publishedAt": "2026-07-06T12:00:00Z",
                         },
                     ]
@@ -90,12 +90,12 @@ class TestNewsCollectionE2E:
         keywords = ["test"]
 
         articles_response = {
-            "articles": [
+            "data": [
                 {
                     "title": "News",
                     "description": None,
-                    "link": "https://example.com/dup",
-                    "source": {"name": "Source"},
+                    "url": "https://example.com/dup",
+                    "source": "Source",
                     "publishedAt": "2026-07-06T10:00:00Z",
                 }
             ]
@@ -105,13 +105,13 @@ class TestNewsCollectionE2E:
             # Mock: 2번 호출
             rsps.add(
                 responses.GET,
-                "https://api.thenewsapi.com/v1/news",
+                "https://api.thenewsapi.com/v1/news/top",
                 json=articles_response,
                 status=200,
             )
             rsps.add(
                 responses.GET,
-                "https://api.thenewsapi.com/v1/news",
+                "https://api.thenewsapi.com/v1/news/top",
                 json=articles_response,
                 status=200,
             )
@@ -144,14 +144,14 @@ class TestNewsCollectionE2E:
         with responses.RequestsMock() as rsps:
             rsps.add(
                 responses.GET,
-                "https://api.thenewsapi.com/v1/news",
+                "https://api.thenewsapi.com/v1/news/top",
                 json={
-                    "articles": [
+                    "data": [
                         {
                             "title": "News",
                             "description": None,
-                            "link": "https://example.com/news",
-                            "source": {"name": "Source"},
+                            "url": "https://example.com/news",
+                            "source": "Source",
                             "publishedAt": "2026-07-06T10:00:00Z",
                         }
                     ]
