@@ -4,6 +4,7 @@ Repository / Service / Endpoint 조합을 여기서 결정.
 Layer 안쪽 (application, domain) 는 이 파일을 몰라도 됨.
 Router 는 provider 함수만 참조 — Infrastructure 직접 import 금지.
 """
+import asyncio
 import os
 from typing import Annotated
 
@@ -63,8 +64,6 @@ async def setup_news_collector() -> AsyncioSchedulerAdapter:
     Raises:
         ValueError: NEWS_API_KEY 환경 변수 미설정.
     """
-    import asyncio
-
     api_key = os.getenv("NEWS_API_KEY")
     if not api_key:
         raise ValueError("NEWS_API_KEY 환경 변수 미설정")

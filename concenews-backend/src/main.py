@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
         scheduler = await setup_news_collector()
         app.state.scheduler = scheduler
         await scheduler.start()
-    except ValueError as e:
+    except Exception as e:
         raise RuntimeError(f"뉴스 수집기 초기화 실패: {e}") from e
 
     yield
