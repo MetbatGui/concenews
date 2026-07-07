@@ -234,27 +234,54 @@ Closes #00 (해당하면)
 
 ## 3. Labels
 
-GitHub Issues를 분류 추적:
+GitHub Issues 를 분류/추적.
 
-### Epic Labels
+**간단 규칙** (1인개발):
 ```
-epic          (모든 Epic 이슈에 적용)
-{slice-name}  (news-fetch, market-info 등)
-```
-
-### Type Labels (PR/Issue 변경 유형)
-```
-type:feat     (새 기능)
-type:fix      (버그 수정)
-type:docs     (문서)
-type:refactor (리팩터링)
+slice           (이슈 = vertical slice 단위)
+{milestone-name} (scope: news-fetch, news-collection 등)
 ```
 
-### Status Labels (진행상황, 선택)
+**예시**:
 ```
-status:planning     (계획 중)
+Issue #30: [news-collection] shared_kernel/db
+Labels: slice, news-collection
+
+Issue #35: [news-fetch] NewsAPI parser bug
+Labels: bug, news-fetch
+```
+
+### 라벨 목록
+
+**이슈 타입**:
+```
+slice           (Vertical Slice 이슈)
+bug             (버그 리포트)
+defer           (추후 개선)
+epic            (Epic 이슈, 선택)
+```
+
+**Scope** (Milestone과 동일):
+```
+news-fetch      (milestone: news-fetch)
+news-collection (milestone: news-collection)
+news-retrieval  (milestone: news-retrieval, 미래)
+market-info     (미래)
+...
+```
+
+**PR 변경 유형** (선택):
+```
+type:feat       (새 기능)
+type:fix        (버그 수정)
+type:docs       (문서)
+type:refactor   (리팩터링)
+```
+
+**Status** (선택, GitHub automation 가능):
+```
 status:in-progress  (진행 중)
-status:done         (완료)
+status:blocked      (블로킹)
 ```
 
 ---
