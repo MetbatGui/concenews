@@ -16,10 +16,6 @@ from src.modules.news.infrastructure.the_news_api_client import TheNewsAPIClient
 class TestNewsCollectionRealAPI:
     """Real API + Real DB integration."""
 
-    @pytest.mark.skipif(
-        not os.getenv("NEWS_API_KEY"),
-        reason="NEWS_API_KEY 환경 변수 필요",
-    )
     def test_collector_real_api_parses_and_saves_to_db(self, pg_session):
         """Given: Real TheNewsAPI, test DB
         When: collector.run() 호출 (실제 API)
@@ -30,7 +26,9 @@ class TestNewsCollectionRealAPI:
         - DB 저장 (schema 정합성)
         - 데이터 무결성 (필드, 타입)
         """
-        api_key = os.getenv("NEWS_API_KEY")
+        api_key = os.getenv("THENEWSAPI_TOKEN")
+        if not api_key:
+            pytest.skip("THENEWSAPI_TOKEN 환경 변수 필요")
         api_client = TheNewsAPIClient(api_key=api_key)
         cache = InMemoryCacheAdapter()
         repository = PgNewsRepository(pg_session)

@@ -18,6 +18,13 @@ class NewsService:
     """
 
     def __init__(self, repository: NewsRepositoryPort):
+        """Initialize service.
+
+        Args:
+            repository: NewsRepositoryPort 구현 (DI).
+                Production: PgNewsRepository.
+                Test: InMemoryNewsRepository 또는 fixture override.
+        """
         self._repository = repository
 
     def fetch_news(self, limit: int) -> list[NewsItem]:
@@ -58,8 +65,14 @@ class NewsCollectorService:
 
         Args:
             news_source: NewsSourcePort 구현.
+                Production: TheNewsAPIClient.
+                Test: Mock responses.RequestsMock().
             cache: CachePort 구현.
+                Production: InMemoryCacheAdapter.
+                Test: InMemoryCacheAdapter (separate instance per test).
             repository: NewsRepositoryPort 구현.
+                Production: PgNewsRepository (per-execution session).
+                Test: InMemoryNewsRepository 또는 pg_session fixture.
         """
         self.news_source = news_source
         self.cache = cache

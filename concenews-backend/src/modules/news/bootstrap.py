@@ -64,16 +64,18 @@ async def setup_news_collector() -> AsyncioSchedulerAdapter:
     Raises:
         ValueError: NEWS_API_KEY 환경 변수 미설정.
     """
-    api_key = os.getenv("NEWS_API_KEY")
+    api_key = os.getenv("THENEWSAPI_TOKEN")
     if not api_key:
-        raise ValueError("NEWS_API_KEY 환경 변수 미설정")
+        raise ValueError("THENEWSAPI_TOKEN 환경 변수 미설정")
 
     api_client = TheNewsAPIClient(api_key=api_key)
     cache = InMemoryCacheAdapter()
 
     scheduler = AsyncioSchedulerAdapter()
 
-    # Schedule collector job (15분 간격)
+    # Schedule collector job (환경변수로 설정 가능, 기본 15분)
+    interval_seconds = int(os.getenv("NEWS_COLLECTOR_INTERVAL", 900))
+
     async def run_collector() -> None:
         """매 실행마다 새 session 생성 후 실행."""
         session = Session(get_engine())
@@ -92,6 +94,6 @@ async def setup_news_collector() -> AsyncioSchedulerAdapter:
         finally:
             session.close()
 
-    scheduler.schedule(run_collector, interval_seconds=900)
+    scheduler.schedule(run_collector, interval_seconds=interval_seconds)
 
     return scheduler

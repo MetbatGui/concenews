@@ -2,9 +2,6 @@
 
 Scheduler → API mock → DB 저장 흐름 검증.
 """
-import asyncio
-from datetime import datetime, timezone
-from uuid import UUID
 
 import pytest
 import responses
