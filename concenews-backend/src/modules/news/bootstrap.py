@@ -4,30 +4,43 @@ Repository / Service / Endpoint 조합을 여기서 결정.
 Layer 안쪽 (application, domain) 는 이 파일을 몰라도 됨.
 Router 는 provider 함수만 참조 — Infrastructure 직접 import 금지.
 """
-from functools import lru_cache
+import asyncio
+import os
 from typing import Annotated
 
 from fastapi import Depends
+from sqlalchemy.orm import Session
 
-from .application.services import NewsService
-from .infrastructure.repositories.in_memory import InMemoryNewsRepository
+from src.shared_kernel.db.engine import get_engine
+from src.shared_kernel.db.session import get_session
+
+from .application.ports import NewsRepositoryPort
+from .application.services import NewsCollectorService, NewsService
+from .infrastructure.cache import InMemoryCacheAdapter
+from .infrastructure.repositories.postgres import PgNewsRepository
+from .infrastructure.scheduler import AsyncioSchedulerAdapter
+from .infrastructure.the_news_api_client import TheNewsAPIClient
 
 
-@lru_cache(maxsize=1)
-def get_repository() -> InMemoryNewsRepository:
-    """Repository 싱글톤 provider.
+def get_repository(
+    session: Annotated[Session, Depends(get_session)],
+) -> NewsRepositoryPort:
+    """Repository provider (Session 주입).
 
-    앱 수명 동안 하나의 InMemoryNewsRepository 인스턴스 공유.
-    Test 에서는 app.dependency_overrides 로 교체.
+    Production: PgNewsRepository (PostgreSQL adapter).
+    Test: app.dependency_overrides 로 교체.
+
+    Args:
+        session: SQLAlchemy Session (request-scoped).
 
     Returns:
-        싱글톤 InMemoryNewsRepository.
+        NewsRepositoryPort 구현체 (PgNewsRepository).
     """
-    return InMemoryNewsRepository()
+    return PgNewsRepository(session)
 
 
 def get_service(
-    repository: Annotated[InMemoryNewsRepository, Depends(get_repository)],
+    repository: Annotated[NewsRepositoryPort, Depends(get_repository)],
 ) -> NewsService:
     """NewsService provider (Repository 주입).
 
@@ -38,3 +51,49 @@ def get_service(
         NewsService 인스턴스.
     """
     return NewsService(repository=repository)
+
+
+async def setup_news_collector() -> AsyncioSchedulerAdapter:
+    """News collector 및 scheduler 초기화 (lifespan startup 용).
+
+    매 실행마다 새 session 생성 (격리 + lifecycle 단순화).
+
+    Returns:
+        AsyncioSchedulerAdapter 스케줄러.
+
+    Raises:
+        ValueError: NEWS_API_KEY 환경 변수 미설정.
+    """
+    api_key = os.getenv("THENEWSAPI_TOKEN")
+    if not api_key:
+        raise ValueError("THENEWSAPI_TOKEN 환경 변수 미설정")
+
+    api_client = TheNewsAPIClient(api_key=api_key)
+    cache = InMemoryCacheAdapter()
+
+    scheduler = AsyncioSchedulerAdapter()
+
+    # Schedule collector job (환경변수로 설정 가능, 기본 15분)
+    interval_seconds = int(os.getenv("NEWS_COLLECTOR_INTERVAL", 900))
+
+    async def run_collector() -> None:
+        """매 실행마다 새 session 생성 후 실행."""
+        session = Session(get_engine())
+        try:
+            repository = PgNewsRepository(session)
+            collector = NewsCollectorService(
+                news_source=api_client,
+                cache=cache,
+                repository=repository,
+            )
+            # Blocking call을 executor에서 실행 (non-blocking)
+            await asyncio.to_thread(
+                collector.run,
+                keywords=["interest rate", "forex", "central bank"],
+            )
+        finally:
+            session.close()
+
+    scheduler.schedule(run_collector, interval_seconds=interval_seconds)
+
+    return scheduler

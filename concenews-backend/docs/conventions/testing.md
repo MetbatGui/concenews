@@ -251,8 +251,235 @@ CLAUDE.md "코드 편집 후 필수 검증" 규칙 참고.
 
 ---
 
+## Test 계층 심화: Mock vs Real 전략
+
+### 3계층 Test Pyramid
+
+```
+         System (E2E)
+            ↑
+      Integration (신호)
+            ↑
+         Unit (빠름)
+```
+
+각 계층의 Repository 선택:
+
+| 계층 | 파일 | Repository | 속도 | 검증 대상 |
+|------|------|-----------|------|---------|
+| **Unit** | `test_service.py` | `InMemoryNewsRepository` | ~100ms | Service 로직 (dedup, error) |
+| **Integration** | `test_..._e2e.py` | `PgNewsRepository(pg_session)` | ~500ms | Scheduler + API mock + Real DB |
+| **System** | `test_..._system_acceptance.py` | `PgNewsRepository(pg_session)` | ~1s | 전체 경로 (collection → retrieval) |
+
+### Unit Test (InMemoryNewsRepository)
+
+```python
+# tests/unit/news/test_news_collector_service.py
+class TestNewsCollectorServiceLogic:
+    """Service 로직만 검증 (dedup, error handling)."""
+    
+    def test_dedup_on_cache_hit(self):
+        """Given: 캐시된 기사
+        When: collector.run()
+        Then: DB 저장 안 함
+        """
+        cache = InMemoryCacheAdapter()
+        cache.set("link1", ttl_seconds=900)
+        
+        repository = InMemoryNewsRepository()
+        api = Mock(spec=NewsSourcePort)
+        api.fetch.return_value = [NewsItem(link="link1", ...)]
+        
+        collector = NewsCollectorService(api, cache, repository)
+        collector.run(keywords=[...])
+        
+        # Fake 사용 → 검증 빠름 (SQL 없음)
+        assert len(repository.find_all()) == 0
+```
+
+**특징**:
+- 속도 우선
+- 로직만 검증 (저장소 구조 무관)
+- Mock API 사용 (responses 불필요)
+
+### Integration Test + Real DB (pg_session fixture)
+
+```python
+# tests/integration/news/test_news_collection_e2e.py
+class TestNewsCollectionE2E:
+    """Scheduler + API mock + Real DB 통합."""
+    
+    async def test_collector_saves_to_db(self, pg_session):
+        """Given: API mock, Real PG DB, Scheduler
+        When: scheduler.trigger() (manual run)
+        Then: API 호출 → DB 저장 (schema 정합성 확인)
+        """
+        with responses.RequestsMock() as rsps:
+            # Mock API = Real API 구조 동기화 필수 ⚠️
+            rsps.add(
+                responses.GET,
+                "https://api.thenewsapi.com/v1/news/top",
+                json={
+                    "data": [
+                        {
+                            "title": "Article 1",
+                            "url": "https://example.com/1",
+                            "source": "Source A",
+                            "publishedAt": "2026-07-06T10:00:00Z",
+                            "description": None,
+                        }
+                    ]
+                },
+                status=200,
+            )
+            
+            api_client = TheNewsAPIClient(api_key="test-key")
+            repository = PgNewsRepository(pg_session)
+            collector = NewsCollectorService(api_client, cache, repository)
+            
+            collector.run(keywords=[...])
+            
+            # Real Repository + Real DB
+            items = repository.find_all()
+            assert len(items) == 1
+            assert items[0].title == "Article 1"
+```
+
+**특징**:
+- Mock API 는 Real API 응답 구조 모사
+- Repository = Real PgNewsRepository (SQL 실행)
+- pg_session fixture = transaction 격리 (test 간 DB 독립)
+- **목적**: Scheduler + Service 협력 + DB schema 검증
+
+### System Acceptance Test (전체 경로)
+
+```python
+# tests/integration/news/test_news_system_acceptance.py
+class TestGetNewsSystemAcceptance:
+    """전체 흐름: Collector → DB → GET /news."""
+    
+    def test_get_news_returns_collected_data(self, pg_client_with_news_data):
+        """Given: 3개 뉴스 ORM 적재 (예시 데이터)
+        When: GET /news
+        Then: 적재된 뉴스 조회 + 정렬 확인
+        """
+        response = pg_client_with_news_data.get("/news")
+        assert response.status_code == 200
+        
+        data = GetNewsResponse.model_validate(response.json())
+        assert data.count == 3
+        
+        # 최신순 정렬 검증
+        published_times = [item.published_at for item in data.news]
+        assert published_times == sorted(published_times, reverse=True)
+```
+
+**fixture 구조**:
+```python
+@pytest.fixture
+def pg_with_news_data(pg_session):
+    """예시 뉴스 ORM 적재."""
+    repository = PgNewsRepository(pg_session)
+    
+    # Real API 응답 형태로 ORM 저장
+    for raw in [
+        {"title": "News 1", "url": "...", "publishedAt": "2026-07-06T12:00:00Z", ...},
+        ...
+    ]:
+        item = api_client._convert_to_news_item(raw)
+        repository.save(item)
+    
+    return pg_session
+
+
+@pytest.fixture
+def pg_client_with_news_data(pg_with_news_data, news_pg_repository):
+    """Real DB + Real Repository + API client."""
+    # DI override: get_repository → Real Repository (pg_session 포함)
+    app.dependency_overrides[get_repository] = lambda: news_pg_repository
+    return TestClient(app)
+```
+
+**특징**:
+- 전체 경로 검증 (UI → API → DB → Repository → DB)
+- Real data flow (실제 프로덕션 경로 모사)
+- System-level invariant 검증 (정렬, 필드 무결성)
+
+### Mock API 응답 구조 동기화 필수 ⚠️
+
+**중요**: Mock 과 Real API 응답 구조가 다르면 test green ≠ production working
+
+```python
+# ❌ 잘못된 예: Test 에서만 되는 구조
+with responses.RequestsMock() as rsps:
+    rsps.add(
+        responses.GET,
+        "https://api.thenewsapi.com/v1/news",  # ← 잘못된 endpoint
+        json={"articles": [...]},  # ← 잘못된 응답 key
+    )
+
+# ✅ 올바른 예: Real API 와 동기화
+with responses.RequestsMock() as rsps:
+    rsps.add(
+        responses.GET,
+        "https://api.thenewsapi.com/v1/news/top",  # ← Real endpoint
+        json={"data": [...]},  # ← Real response key
+    )
+```
+
+**검증 방법**:
+1. Spike 단계에서 Real API 응답 캡처 (예: spike-news-api.md)
+2. Mock 응답 = Spike 응답 구조 (doc comment 로 참조)
+3. Real API test 추가 (THENEWSAPI_TOKEN 환경변수 필요)
+
+```python
+# tests/integration/news/test_news_collection_real_api.py
+def test_collector_real_api_parses_and_saves_to_db(self, pg_session):
+    """Given: Real TheNewsAPI (THENEWSAPI_TOKEN 필요)
+    When: collector.run() (실제 API call)
+    Then: 응답 파싱 + DB 저장 검증
+    """
+    api_key = os.getenv("THENEWSAPI_TOKEN")
+    if not api_key:
+        pytest.skip("THENEWSAPI_TOKEN 환경 변수 필요")
+    
+    api_client = TheNewsAPIClient(api_key=api_key)
+    repository = PgNewsRepository(pg_session)
+    collector = NewsCollectorService(api_client, cache, repository)
+    
+    # 실제 API 호출 (속도 낮지만 신뢰도 높음)
+    collector.run(keywords=["interest rate"])
+    
+    items = repository.find_all()
+    assert len(items) > 0
+    # 실제 응답 구조 검증
+    assert items[0].title
+    assert items[0].published_at.tzinfo  # timezone aware
+```
+
+**실행**:
+```bash
+# .env 에 THENEWSAPI_TOKEN 설정 후
+THENEWSAPI_TOKEN=your_key uv run pytest tests/integration/news/test_news_collection_real_api.py -v
+```
+
+---
+
+## 언제 파일 분리?
+
+**같은 파일 유지** (기본):
+- Endpoint 시나리오 (walking skeleton + behavior)
+- 응집: 같은 endpoint 단위 test
+
+**분리** (트리거 시):
+- 성격 다른 integration (실 DB, 외부 API, 모듈 간 이벤트)
+- 파일 500+ 라인 (가독성)
+
+---
+
 ## 참고
 
 - [docstring.md](docstring.md) — Google Style + GWT
 - [immutability.md](immutability.md) — Domain frozen/tuple test 패턴
 - [xp.md](../../../docs/architecture/principles/xp.md) — TDD 순서
+- [ADR 2026-07-07 di-bootstrap-strategy](../../../docs/decisions/2026-07-07-di-bootstrap-strategy.md) — Test-Prod 이원화 & Mock 동기화
