@@ -58,12 +58,53 @@ spikes/{topic}/
 (로컬만, Git 커밋 X)
 ```
 
-학습 후 → spec.md에 Decision 추가 → spikes/ 폴더 삭제
+학습 후 → **learning.md** (정밀한 학습 문서) → spec.md에 반영 → spikes/ 폴더 삭제
 
 **Proper Implementation**:
 ```
 테스트 포함, Git 커밋, 코드 리뷰 준비됨
 ```
+
+---
+
+## 3.1 Learning → Spec 정밀도 규칙
+
+Spike 코드는 버리지만, **Learning 내용은 완벽히 Spec에 반영해야 함**.
+
+**Learning 작성 (Spike 직후)**:
+- Concrete example: 실제 API 응답, 매개변수 등
+- 모든 시도/실패: "endpoint A 404, B 200" 식으로
+- Edge case: 발견한 모든 이상 (type variation, optional field 등)
+- 왜: Spec 단계에서 90%+ 반영 가능해야 함
+
+**예시** (Learning.md):
+```markdown
+## TheNewsAPI 통합 학습
+
+**Endpoint 테스트**:
+- GET /v1/news → 404 ❌
+- GET /v1/news/top → 200 ✅
+
+**Query Parameter**:
+- q=keyword → 작동 안 함 (400)
+- search=keyword → OK
+
+**Response 구조**:
+{
+  "data": [...],  // NOT "articles"
+  "publishedAt": "2026-07-06T10:00:00Z",  // UTC, timezone-aware
+  "source": "Bloomberg"  // 가끔 {"name": "X"} dict
+}
+```
+
+**Spec 반영 체크리스트**:
+- [ ] API Endpoint (정확한 URL, HTTP method)
+- [ ] Query/Body 매개변수 (이름, 타입, 필수 여부)
+- [ ] Response 구조 (key name, field type, nullable)
+- [ ] Edge case (source type variation, missing field 등)
+- [ ] 외부 dependency 버전 (라이브러리, API v, 환경변수)
+
+**판정 기준**: Spec 읽은 구현자가 "Learning 내용" 없어도 정확히 구현 가능 (Learning은 참고용, 강제 아님).
 
 ---
 
