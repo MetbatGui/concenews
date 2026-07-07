@@ -65,3 +65,62 @@ def pg_session(pg_engine) -> Iterator[Session]:
     session.close()
     transaction.rollback()
     connection.close()
+
+
+@pytest.fixture
+def news_pg_repository(pg_session):
+    """PgNewsRepository (test용)."""
+    from src.modules.news.infrastructure.repositories.postgres import PgNewsRepository
+
+    return PgNewsRepository(pg_session)
+
+
+@pytest.fixture
+def pg_with_news_data(pg_session, news_pg_repository):
+    """예시 뉴스 데이터 ORM 적재 (Real API 응답 형태).
+
+    예시 데이터 → NewsItem 변환 → PG 저장.
+    """
+    from src.modules.news.infrastructure.the_news_api_client import TheNewsAPIClient
+
+    # 예시 데이터 (Real API 응답 구조)
+    raw_items = [
+        {
+            "title": "Interest Rate Policy Update",
+            "url": "https://example.com/news1",
+            "source": "Financial Times",
+            "publishedAt": "2026-07-06T12:00:00Z",
+            "description": "New interest rate announcement...",
+        },
+        {
+            "title": "Forex Market Analysis",
+            "url": "https://example.com/news2",
+            "source": "Reuters",
+            "publishedAt": "2026-07-06T11:00:00Z",
+            "description": "Current forex trends...",
+        },
+        {
+            "title": "Central Bank Decision",
+            "url": "https://example.com/news3",
+            "source": "Bloomberg",
+            "publishedAt": "2026-07-06T10:00:00Z",
+            "description": "Latest central bank announcement...",
+        },
+    ]
+
+    # NewsItem 변환 + ORM 적재
+    api_client = TheNewsAPIClient(api_key="dummy")
+    for raw in raw_items:
+        item = api_client._convert_to_news_item(raw)
+        news_pg_repository.save(item)
+
+    return pg_session
+
+
+@pytest.fixture
+def pg_client_with_news_data(pg_with_news_data, news_pg_repository):
+    """GET /news 테스트용 TestClient (PG 데이터 포함)."""
+    from src.modules.news.bootstrap import get_repository
+
+    app.dependency_overrides[get_repository] = lambda: news_pg_repository
+    return TestClient(app)
