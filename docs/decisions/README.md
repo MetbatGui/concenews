@@ -26,11 +26,16 @@
 | 2026-07-05 | [test-fixture-data-pattern](./2026-07-05-test-fixture-data-pattern.md) | Accepted |
 | 2026-07-05 | [on-demand-spike](./2026-07-05-on-demand-spike.md) | Accepted |
 
+### Architecture & Strategy
+
+| Date | ADR | Status |
+|------|-----|--------|
+| 2026-07-07 | [di-bootstrap-strategy](./2026-07-07-di-bootstrap-strategy.md) | Accepted |
+| 2026-07-07 | [spike-learning-spec-fidelity](./2026-07-07-spike-learning-spec-fidelity.md) | Accepted |
+| 2026-07-12 | [polymarket-api-choice (Gamma + CLOB)](./2026-07-12-polymarket-api-choice.md) | Accepted |
+| 2026-07-12 | [market-filtering-strategy (tag + keyword 2단계)](./2026-07-12-market-filtering-strategy.md) | Accepted |
+
 ### Module Boundaries
-
-_(없음, 필요 시 추가)_
-
-### External Dependencies
 
 _(없음, 필요 시 추가)_
 
