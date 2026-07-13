@@ -59,6 +59,7 @@
 | 상황 | 문서 |
 |------|------|
 | 커밋 메시지 형식 | 이 파일 위 (커밋 컨벤션) |
+| 커밋 단위 (원자성, 언제 커밋할지) | [git-workflow.md § 원자적 커밋](docs/git-workflow.md) |
 | PR 만들 때 (단위/브랜치명/master green 규칙) | [git-workflow.md](docs/git-workflow.md) |
 | PR 생성 체크리스트 (milestone/label/template) | [github-strategy.md § PR 생성 체크리스트](docs/github-strategy.md) |
 | PR 리뷰 (severity, nit 상한, 저자 응답 형식) | [review-standard.md](docs/review-standard.md) |
