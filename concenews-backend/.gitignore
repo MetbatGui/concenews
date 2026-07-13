@@ -134,8 +134,7 @@ dmypy.json
 Thumbs.db
 
 # Spikes (학습용 임시 코드, LEARNINGS.md만 커밋)
-spikes/*
-!spikes/*/LEARNINGS.md
+spikes/
 
 # Local development
 .env.local
