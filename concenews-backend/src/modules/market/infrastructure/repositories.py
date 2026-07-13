@@ -1,7 +1,6 @@
 """PostgreSQL Repository — market_classification 저장/조회.
 
-Walking Skeleton: 실제 SQL 구현 (E2E 검증에 필요).
-캐시 조회 최적화, ON CONFLICT 등은 PR #3에서 정교화.
+Walking Skeleton 단계에서 이미 실제 SQL 구현 (E2E 검증에 필요).
 """
 from datetime import datetime
 

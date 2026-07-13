@@ -1,7 +1,7 @@
 """Application service — 마켓 분류 오케스트레이션.
 
 Walking Skeleton: 최소 흐름 (fetch → classify → save).
-실제 캐시 조회, 병렬 태그 fetch는 PR #5 (Service 실제 흐름)에서 완성.
+실제 흐름 (에러 처리, 부분 성공 등) 정교화는 후속 PR 에서.
 """
 from datetime import UTC, datetime
 

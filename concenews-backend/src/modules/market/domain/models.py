@@ -1,6 +1,6 @@
 """Market 도메인 모델.
 
-Walking Skeleton 단계: 최소 필드만 정의. PR #2에서 필드/불변식 확장.
+Walking Skeleton 단계: 최소 필드만 정의. 후속 PR 에서 필드/불변식 확장.
 """
 from datetime import datetime
 from enum import Enum

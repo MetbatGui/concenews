@@ -1,17 +1,14 @@
 """Polymarket Gamma API 클라이언트 (Walking Skeleton 스텁).
 
-실제 httpx 기반 async 구현은 PR #4에서 완성.
-현재: 하드코딩 응답 반환.
+실제 httpx.AsyncClient 구현은 후속 PR에서 교체.
 """
-from datetime import UTC, datetime, timedelta
-
 from src.modules.market.domain.models import MarketMetadata, Tag
 
 
 class PolymarketGammaClient:
     """Gamma API 클라이언트 (스텁 구현).
 
-    PR #4에서 httpx.AsyncClient로 실제 구현.
+    후속 PR 에서 httpx.AsyncClient 로 실제 구현.
     """
 
     async def fetch_active_markets(
@@ -43,7 +40,3 @@ class PolymarketGammaClient:
         """
         del condition_ids
         return {}
-
-
-def _stub_future_date() -> datetime:
-    return datetime.now(UTC) + timedelta(days=30)

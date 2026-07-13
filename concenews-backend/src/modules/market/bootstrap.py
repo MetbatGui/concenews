@@ -1,6 +1,6 @@
 """Market 모듈 조립 (Composition Root, Walking Skeleton).
 
-PR #6에서 FastAPI lifespan 통합 + Scheduler 등록 완성.
+후속 PR 에서 FastAPI lifespan 통합 + Scheduler 등록 완성.
 현재: DI 뼈대만.
 """
 from sqlalchemy.orm import Session
