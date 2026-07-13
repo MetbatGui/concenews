@@ -20,6 +20,7 @@ from src.shared_kernel.db.settings import get_database_url, load_config  # noqa:
 
 # Import ORM models so Alembic autogenerate detects them.
 from src.modules.news.infrastructure.repositories.orm import NewsRow  # noqa: E402, F401
+from src.modules.market.infrastructure.orm import MarketClassificationRow  # noqa: E402, F401
 
 load_config()
 
