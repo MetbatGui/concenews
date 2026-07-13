@@ -2,7 +2,6 @@
 
 httpx.MockTransport 로 응답 mock, 실제 HTTP 없이 검증.
 """
-import json
 from typing import Any
 
 import httpx
@@ -80,10 +79,10 @@ class TestFetchActiveMarkets:
         assert m.end_date.isoformat().startswith("2027-01-01")
 
     @pytest.mark.asyncio
-    async def test_stops_early_on_empty_page(self):
-        """Given: 2번째 페이지가 빈 응답
+    async def test_stops_early_on_incomplete_page(self):
+        """Given: 1st 페이지 100개, 2nd 페이지 50개 (< PAGE_SIZE)
         When: fetch_active_markets
-        Then: 3페이지 이후 호출 안 함.
+        Then: 3번째 페이지 호출 안 함 (조기 종료).
         """
         call_count = 0
 
@@ -91,10 +90,18 @@ class TestFetchActiveMarkets:
             nonlocal call_count
             call_count += 1
             if call_count == 1:
-                return httpx.Response(
-                    200, json=[_market_json("m1", "Q", "2027-01-01T00:00:00Z")]
-                )
-            return httpx.Response(200, json=[])
+                page = [
+                    _market_json(f"m{i}", "Q", "2027-01-01T00:00:00Z")
+                    for i in range(100)
+                ]
+            elif call_count == 2:
+                page = [
+                    _market_json(f"m{100 + i}", "Q", "2027-01-01T00:00:00Z")
+                    for i in range(50)
+                ]
+            else:
+                page = []
+            return httpx.Response(200, json=page)
 
         async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
             adapter = PolymarketGammaClient(client=client)
@@ -102,7 +109,7 @@ class TestFetchActiveMarkets:
                 limit=500, order="volume24hr", ascending=False
             )
 
-        assert len(result) == 1
+        assert len(result) == 150
         assert call_count == 2
 
     @pytest.mark.asyncio
@@ -139,7 +146,7 @@ class TestFetchTagsBulk:
         Then: {cid → tags} 매핑 반환.
         """
         def handler(request: httpx.Request) -> httpx.Response:
-            cid = request.url.path.split("/")[-2]  # /markets/{cid}/tags
+            del request
             return httpx.Response(
                 200, json=[{"id": 159, "label": "Fed", "slug": "fed"}]
             )
