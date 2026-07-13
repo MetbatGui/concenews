@@ -9,7 +9,16 @@ from src.shared_kernel.db.base import Base
 
 
 class MarketClassificationRow(Base):
-    """market_classification 테이블 ORM."""
+    """market_classification 테이블 ORM.
+
+    Attributes:
+        condition_id: Polymarket condition ID (Primary Key).
+        question: 마켓 질문 텍스트.
+        classification: 분류 결과 ('MACRO' 또는 'NON_MACRO').
+        tags_json: 분류에 사용된 태그 리스트 (JSONB).
+        end_date: 마켓 종료일. 캐시 만료 기준 (WHERE end_date > NOW()).
+        classified_at: 분류 시각.
+    """
 
     __tablename__ = "market_classification"
 
