@@ -65,6 +65,6 @@ class PgMarketClassificationRepository:
         stmt = insert(MarketClassificationRow).values(rows)
         stmt = stmt.on_conflict_do_nothing(index_elements=["condition_id"])
         self._session.execute(stmt)
-        self._session.commit()
+        self._session.flush()
 
 
