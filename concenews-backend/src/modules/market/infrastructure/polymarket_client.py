@@ -69,7 +69,9 @@ class PolymarketGammaClient:
             if not batch:
                 break
             for m in batch:
-                results.append(_parse_market(m))
+                parsed = _parse_market(m)
+                if parsed is not None:
+                    results.append(parsed)
             if len(batch) < PAGE_SIZE:
                 break
 
@@ -84,13 +86,17 @@ class PolymarketGammaClient:
             condition_ids: 조회할 condition ID 목록.
 
         Returns:
-            condition_id → 태그 리스트 매핑. 404 시 빈 리스트.
+            condition_id → 태그 리스트 매핑.
+            404 또는 예외 발생 시 해당 cid 는 빈 리스트 (부분 성공 허용).
         """
         if not condition_ids:
             return {}
         tasks = [self._fetch_tags(cid) for cid in condition_ids]
-        tag_lists = await asyncio.gather(*tasks)
-        return dict(zip(condition_ids, tag_lists))
+        raw_results = await asyncio.gather(*tasks, return_exceptions=True)
+        return {
+            cid: (r if isinstance(r, list) else [])
+            for cid, r in zip(condition_ids, raw_results)
+        }
 
     async def _fetch_tags(self, condition_id: str) -> list[Tag]:
         """단일 마켓 태그 조회. 404/error 시 빈 리스트."""
@@ -102,13 +108,20 @@ class PolymarketGammaClient:
         return [_parse_tag(t) for t in resp.json()]
 
 
-def _parse_market(raw: dict) -> MarketMetadata:
-    """Raw dict → MarketMetadata."""
-    end_iso = raw.get("endDate") or raw.get("endDateIso") or ""
+def _parse_market(raw: dict) -> MarketMetadata | None:
+    """Raw dict → MarketMetadata. 필수 필드 부재/파싱 실패 시 None (skip)."""
+    end_iso = raw.get("endDate") or raw.get("endDateIso")
+    market_id = raw.get("id")
+    if not end_iso or market_id is None:
+        return None
+    try:
+        end_date = _parse_iso_datetime(end_iso)
+    except ValueError:
+        return None
     return MarketMetadata(
-        condition_id=str(raw["id"]),
+        condition_id=str(market_id),
         question=raw.get("question", ""),
-        end_date=_parse_iso_datetime(end_iso),
+        end_date=end_date,
     )
 
 

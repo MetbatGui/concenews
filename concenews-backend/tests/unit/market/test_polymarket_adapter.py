@@ -136,6 +136,60 @@ class TestFetchActiveMarkets:
         assert captured["limit"] == "100"
 
 
+class TestParseMarketSkipsInvalid:
+    """_parse_market: 필수 필드 부재/파싱 실패 시 skip."""
+
+    @pytest.mark.asyncio
+    async def test_market_without_end_date_is_skipped(self):
+        """Given: endDate 없는 마켓 1개 + 정상 마켓 1개
+        When: fetch_active_markets
+        Then: 정상 마켓만 반환.
+        """
+        def handler(request: httpx.Request) -> httpx.Response:
+            offset = int(request.url.params.get("offset", "0"))
+            if offset > 0:
+                return httpx.Response(200, json=[])
+            return httpx.Response(
+                200,
+                json=[
+                    {"id": "no_date", "question": "Q1"},  # endDate 누락
+                    _market_json("2874512", "Q2", "2027-01-01T00:00:00Z"),
+                ],
+            )
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_active_markets(
+                limit=500, order="volume24hr", ascending=False
+            )
+
+        assert len(result) == 1
+        assert result[0].condition_id == "2874512"
+
+    @pytest.mark.asyncio
+    async def test_market_with_invalid_iso_is_skipped(self):
+        """Given: endDate 가 유효하지 않은 ISO
+        When: fetch_active_markets
+        Then: skip (ValueError 로 크래시 X).
+        """
+        def handler(request: httpx.Request) -> httpx.Response:
+            offset = int(request.url.params.get("offset", "0"))
+            if offset > 0:
+                return httpx.Response(200, json=[])
+            return httpx.Response(
+                200,
+                json=[{"id": "bad", "question": "Q", "endDate": "not-a-date"}],
+            )
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_active_markets(
+                limit=500, order="volume24hr", ascending=False
+            )
+
+        assert result == []
+
+
 class TestFetchTagsBulk:
     """fetch_tags_bulk: 병렬 태그 조회."""
 
@@ -180,6 +234,27 @@ class TestFetchTagsBulk:
 
         assert result == {}
         assert call_count == 0
+
+    @pytest.mark.asyncio
+    async def test_gather_exception_yields_empty_tags(self):
+        """Given: 하나의 요청이 network exception
+        When: fetch_tags_bulk
+        Then: 해당 cid 는 빈 리스트, 다른 것은 정상 (부분 성공).
+        """
+        def handler(request: httpx.Request) -> httpx.Response:
+            cid = request.url.path.split("/")[-2]
+            if cid == "broken":
+                raise httpx.ConnectError("simulated network failure")
+            return httpx.Response(
+                200, json=[{"id": 235, "label": "Bitcoin", "slug": "bitcoin"}]
+            )
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_tags_bulk(["ok", "broken"])
+
+        assert result["broken"] == []
+        assert len(result["ok"]) == 1
 
     @pytest.mark.asyncio
     async def test_handles_404_as_empty_tags(self):
