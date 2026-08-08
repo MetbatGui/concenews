@@ -108,7 +108,7 @@ requirements.txt 업데이트
 
 **예시** (news-collection):
 
-- PR #7a: Scheduler adapter + E2E test
+- PR #7a: Scheduler adapter + Integration test
 - PR #7b: Bootstrap DI + lifespan
 
 ---

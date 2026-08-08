@@ -79,10 +79,10 @@
 ## 용어 정리
 
 - **Integration Test ≠ E2E Test**
-  - Integration: 백엔드 컴포넌트 간 (API → DB)
-  - E2E: 전체 사용자 흐름 (UI → DB → 화면)
-- 본 플로우는 Integration Test 기반
-- UI 연결 시 별도 E2E Test 추가
+  - Integration: 실제 DB와 백엔드 컴포넌트를 조합하되 외부 HTTP 경계는 Fake로 대체
+  - E2E: 실제 외부 서비스와 실제 DB를 함께 통과하는 전체 백엔드 흐름
+- 본 플로우는 Integration Test 기반이며, E2E는 배포 전 수동 실행한다.
+- UI 연결 후에는 UI까지 포함한 별도 E2E Test를 추가한다.
 
 ---
 

@@ -124,6 +124,22 @@ uv run pytest tests/ -v
 uv run python -m uvicorn src.main:app --reload
 ```
 
+### 병합 전 검증
+
+GitHub Actions 대신 로컬 품질 게이트를 사용한다. 프로젝트 루트에서 실행한다.
+
+```bash
+just check-branch-green
+```
+
+이 명령은 린트, 타입, 모듈 경계, 단위 테스트와 테스트용 PostgreSQL 기반 통합 테스트를 순서대로 검증하고, 테스트 컨테이너를 종료한다.
+
+실제 외부 API 연동은 토큰을 설정한 뒤 배포 전에 별도로 검증한다.
+
+```bash
+THENEWSAPI_TOKEN=your_api_key just check-e2e
+```
+
 ---
 
 ## 문서

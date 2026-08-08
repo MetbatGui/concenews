@@ -228,14 +228,14 @@ Step 2 (Acceptance test) + Step 3 (Stub) = 1 PR (walking skeleton GREEN).
 
 **Walking Skeleton PR 에서는 모든 계층을 스텁으로 시작. Repository/Adapter 도 예외 아님.**
 
-**Why**: Walking Skeleton 목적 = 뼈대 통합점만 검증 (E2E GREEN). Repository 를 미리 실 구현하면 후속 PR (Repository) 이 남는 게 없어 스킵 대상 됨 → PR 계획 붕괴. 실제 사례: market-classification Slice A PR #26 에서 실 SQL upsert 구현 → PR #28 Repository 가 사실상 완료 상태로 시작.
+**Why**: Walking Skeleton 목적 = 뼈대 통합점만 검증 (Integration GREEN). Repository 를 미리 실 구현하면 후속 PR (Repository) 이 남는 게 없어 스킵 대상 됨 → PR 계획 붕괴. 실제 사례: market-classification Slice A PR #26 에서 실 SQL upsert 구현 → PR #28 Repository 가 사실상 완료 상태로 시작.
 
 **적용:**
 
 - Walking Skeleton Repository = 하드코딩 응답 or in-memory dict
 - 실제 SQL / 네트워크 / 외부 IO 는 각 담당 PR 에서 교체
-- E2E 테스트가 스텁 상태로 GREEN 되도록 test data 를 fake source 로 주입
-- **Migration 은 예외** (E2E 가 실 DB 필요 시 스키마 필수) — 테이블만 생성, Repository 는 여전히 스텁
+- Integration 테스트가 스텁 상태로 GREEN 되도록 test data 를 fake source 로 주입
+- **Migration 은 예외** (Integration 이 실 DB 필요 시 스키마 필수) — 테이블만 생성, Repository 는 여전히 스텁
 
 ---
 
@@ -418,9 +418,9 @@ Integration Test (Fake 경계)로 Slice 완료 판정.
 E2E (진짜 외부 서비스)로 배포 전/주기적 검증.
 
 ```python
-# 배포 전에만 실행
-pytest -m "not e2e"  # Slice 완료 기준 (CI)
-pytest -m "e2e"      # 배포 전 (수동)
+# 병합 전과 배포 전 실행
+just check-branch-green  # Slice 완료 기준 (로컬 품질 게이트)
+THENEWSAPI_TOKEN=... just check-e2e  # 배포 전 실제 외부 서비스 검증
 ```
 
 ### 5.3 레거시 코드 — 테스트 없이 시작

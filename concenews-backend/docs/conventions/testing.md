@@ -226,16 +226,29 @@ def test_cache_ttl_expiry():
 
 ---
 
+## Classicist 테스트 전략
+
+상세 결정은 [ADR 2026-08-09 classicist-test-strategy](../../../docs/decisions/2026-08-09-classicist-test-strategy.md)를 따른다.
+
+- Domain, Application, Repository는 가능한 실제 구현체를 조합하고 반환값·저장 상태를 검증한다.
+- HTTP, 시간, 스케줄러 같은 프로세스 밖 경계만 결정적 Fake 또는 Transport로 대체한다.
+- 실제 외부 API와 실제 DB를 함께 쓰는 테스트만 `@pytest.mark.e2e`로 표시한다.
+- 외부 API mock 응답은 `tests/fixtures/`의 버전 관리 fixture를 사용한다. Spike에서 응답 계약을 다시 확인하면 fixture부터 갱신한다.
+
 ## 검증
 
-Test 편집 후:
+병합 전:
 ```bash
-uvx ruff check src tests
-uv run ty check src
-uv run pytest --ignore=spikes
+just check-branch-green
 ```
 
-AGENTS.md "코드 편집 후 필수 검증" 규칙 참고.
+실제 외부 API는 배포 전 수동으로 검증한다.
+
+```bash
+THENEWSAPI_TOKEN=your_api_key just check-e2e
+```
+
+`check-branch-green`은 `e2e` 마커를 제외하므로 빠르고 결정적이다. AGENTS.md "코드 편집 후 필수 검증" 규칙 참고.
 
 ---
 
@@ -268,8 +281,9 @@ AGENTS.md "코드 편집 후 필수 검증" 규칙 참고.
 | 계층 | 파일 | Repository | 속도 | 검증 대상 |
 |------|------|-----------|------|---------|
 | **Unit** | `test_service.py` | `InMemoryNewsRepository` | ~100ms | Service 로직 (dedup, error) |
-| **Integration** | `test_..._e2e.py` | `PgNewsRepository(pg_session)` | ~500ms | Scheduler + API mock + Real DB |
+| **Integration** | `test_..._integration.py` | `PgNewsRepository(pg_session)` | ~500ms | Scheduler + API mock + Real DB |
 | **System** | `test_..._system_acceptance.py` | `PgNewsRepository(pg_session)` | ~1s | 전체 경로 (collection → retrieval) |
+| **E2E** | `test_..._real_api.py` + `@pytest.mark.e2e` | 실제 외부 API + `PgNewsRepository` | 가변 | 실제 외부 계약과 DB 저장 |
 
 ### Unit Test (InMemoryNewsRepository)
 
@@ -305,8 +319,8 @@ class TestNewsCollectorServiceLogic:
 ### Integration Test + Real DB (pg_session fixture)
 
 ```python
-# tests/integration/news/test_news_collection_e2e.py
-class TestNewsCollectionE2E:
+# tests/integration/news/test_news_collection_integration.py
+class TestNewsCollectionIntegration:
     """Scheduler + API mock + Real DB 통합."""
     
     async def test_collector_saves_to_db(self, pg_session):
@@ -460,7 +474,7 @@ def test_collector_real_api_parses_and_saves_to_db(self, pg_session):
 **실행**:
 ```bash
 # .env 에 THENEWSAPI_TOKEN 설정 후
-THENEWSAPI_TOKEN=your_key uv run pytest tests/integration/news/test_news_collection_real_api.py -v
+THENEWSAPI_TOKEN=your_key just check-e2e
 ```
 
 ---

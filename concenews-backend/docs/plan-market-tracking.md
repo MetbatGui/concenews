@@ -174,8 +174,8 @@ CREATE INDEX idx_market_classification_type
 
 ### PR #1: Walking Skeleton — `feature/market-classification-acceptance`
 
-- Migration `market_classification` 테이블 (실제 스키마, E2E 테스트에 필요)
-- E2E acceptance integration test 작성 (`tests/integration/market/test_classifier_e2e.py`)
+- Migration `market_classification` 테이블 (실제 스키마, Integration 테스트에 필요)
+  - Integration test 작성 (`tests/integration/market/test_classifier_integration.py`)
   - Fake HTTP 응답 → Service.run() → DB에 분류 저장 확인
 - 최소 스텁 구현으로 GREEN:
   - `MarketClassifierService.run()` — pass (또는 no-op)
@@ -223,7 +223,7 @@ CREATE INDEX idx_market_classification_type
 ### PR #6: Scheduler 등록 완성 — `feature/market-classifier-wire`
 
 - `bootstrap.py`: FastAPI lifespan 에 5분 주기 스케줄러 등록 (PR #1 뼈대에 실제 등록 추가)
-- E2E test 확장 (스케줄러 tick 검증)
+- Integration test 확장 (스케줄러 tick 검증)
 - `Closes #23`
 
 ---
@@ -254,7 +254,7 @@ concenews-backend/
    └─ integration/market/
       ├─ test_market_classification_migration.py
       ├─ test_classification_repository.py
-      └─ test_classifier_e2e.py
+      └─ test_classifier_integration.py
 ```
 
 ---
@@ -280,7 +280,7 @@ concenews-backend/
 ## Slice 완료 조건 (Definition of Done)
 
 - [ ] PR #1-#6 모두 merge, master green
-- [ ] Integration test (E2E): 스케줄러 실행 → DB에 MACRO/NON_MACRO 저장 확인
+- [ ] Integration test: 스케줄러 실행 → DB에 MACRO/NON_MACRO 저장 확인
 - [ ] 로컬 실측: 실제 Gamma API 대상 실행 → 500 마켓 분류 완료 확인 (10초 이내)
 - [ ] LEARNINGS 참조 링크 유효
 

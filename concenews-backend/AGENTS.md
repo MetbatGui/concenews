@@ -8,12 +8,22 @@
 `src/` 또는 `tests/` 편집 후 **커밋 전** 반드시:
 
 ```bash
-uv run ruff check src tests    # lint (문법, unused, style)
-uv run ty check src            # 타입 검증
-uv run pytest --ignore=spikes  # 테스트 (RED/GREEN 확인)
+just check-branch-green
 ```
 
-**모두 통과해야 커밋**. 실패 시 fix 우선.
+`Justfile`의 하위 작업은 다음과 같다.
+
+```bash
+just check-ruff         # lint (문법, unused, style)
+just check-ty           # 타입 검증
+just check-imports      # 모듈 경계 검증
+just check-unit         # 외부 의존성 없는 빠른 테스트
+just check-integration  # 테스트용 PostgreSQL을 기동한 통합 테스트
+just check-e2e          # 실제 외부 API + PostgreSQL 수동 검증 (토큰 필요)
+```
+
+**`check-branch-green`이 모두 통과해야 커밋**. 실패 시 fix 우선.
+`check-e2e`는 외부 API 상태에 의존하므로 병합 전 게이트에 넣지 않고 배포 전 수동 실행한다.
 
 - **ruff**: unused import, style, syntax 등 자동 catch (self-review 부담 감소)
 - **ty**: 타입 오류 (Astral 신규 checker)
