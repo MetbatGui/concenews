@@ -8,7 +8,7 @@
 ## 원칙
 
 - **ADR = 결정 로그** (immutable, append-only history)
-- **Docs = 최신 상태 SSOT** (spec/plan/CLAUDE.md/convention 등)
+- **Docs = 최신 상태 SSOT** (spec/plan/AGENTS.md/convention 등)
 - **순서**: 결정 필요 → ADR 작성 → 관련 docs 갱신 → 코드 변경
 
 ---

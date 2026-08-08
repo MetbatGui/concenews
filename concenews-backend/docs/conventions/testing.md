@@ -235,7 +235,7 @@ uv run ty check src
 uv run pytest --ignore=spikes
 ```
 
-CLAUDE.md "코드 편집 후 필수 검증" 규칙 참고.
+AGENTS.md "코드 편집 후 필수 검증" 규칙 참고.
 
 ---
 

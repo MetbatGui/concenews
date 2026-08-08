@@ -43,7 +43,7 @@ spikes/{topic}/
 
 ## Commit 메시지
 
-[CLAUDE.md 커밋 컨벤션 참고](../CLAUDE.md)
+[AGENTS.md 커밋 컨벤션 참고](../AGENTS.md)
 
 ```
 🔧chore: 패키지 설치
