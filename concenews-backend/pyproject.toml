@@ -24,6 +24,11 @@ dependencies = [
 root_packages = ["src"]
 ignore_init_modules = true
 
+[tool.pytest.ini_options]
+markers = [
+    "e2e: 실제 외부 API와 실제 DB를 함께 검증하는 수동 테스트",
+]
+
 [[tool.importlinter.contracts]]
 name = "News module - forbid internal implementation exports"
 description = "Module access only through public.py"

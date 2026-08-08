@@ -25,7 +25,11 @@ check-unit:
 
 # 테스트용 PostgreSQL을 일시 기동해 통합 테스트를 실행하고 항상 정리한다.
 check-integration:
-    $project_root = $PWD; $started = $false; try { docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" up -d --wait; if ($LASTEXITCODE -ne 0) { throw "테스트 데이터베이스 기동에 실패했습니다." }; $started = $true; $env:DATABASE_URL = "{{test_database_url}}"; Set-Location "$project_root\\{{backend_dir}}"; uv run pytest tests/integration -q --ignore=spikes; if ($LASTEXITCODE -ne 0) { throw "통합 테스트에 실패했습니다." } } finally { if ($started) { docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" down } }
+    $project_root = $PWD; $started = $false; try { docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" up -d --wait; if ($LASTEXITCODE -ne 0) { throw "테스트 데이터베이스 기동에 실패했습니다." }; $started = $true; $env:DATABASE_URL = "{{test_database_url}}"; Set-Location "$project_root\\{{backend_dir}}"; uv run pytest tests/integration -q -m "not e2e" --ignore=spikes; if ($LASTEXITCODE -ne 0) { throw "통합 테스트에 실패했습니다." } } finally { if ($started) { docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" down } }
+
+# 실제 외부 API와 테스트용 PostgreSQL을 함께 검증한다. API 토큰이 필요하며 병합 전 게이트에는 포함하지 않는다.
+check-e2e:
+    $project_root = $PWD; $started = $false; try { if (-not $env:THENEWSAPI_TOKEN) { throw "THENEWSAPI_TOKEN 환경 변수가 필요합니다." }; docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" up -d --wait; if ($LASTEXITCODE -ne 0) { throw "테스트 데이터베이스 기동에 실패했습니다." }; $started = $true; $env:DATABASE_URL = "{{test_database_url}}"; Set-Location "$project_root\\{{backend_dir}}"; uv run pytest tests/integration -q -m e2e --ignore=spikes; if ($LASTEXITCODE -ne 0) { throw "E2E 테스트에 실패했습니다." } } finally { if ($started) { docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" down } }
 
 # 병합 전 전체 품질 게이트. 모든 하위 작업이 성공해야 한다.
 check-branch-green: check-ruff check-ty check-imports check-unit check-integration
