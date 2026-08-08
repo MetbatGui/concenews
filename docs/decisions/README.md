@@ -25,6 +25,7 @@
 | 2026-07-05 | [test-isolation-cache-clear](./2026-07-05-test-isolation-cache-clear.md) | Accepted |
 | 2026-07-05 | [test-fixture-data-pattern](./2026-07-05-test-fixture-data-pattern.md) | Accepted |
 | 2026-07-05 | [on-demand-spike](./2026-07-05-on-demand-spike.md) | Accepted |
+| 2026-08-09 | [classicist-test-strategy](./2026-08-09-classicist-test-strategy.md) | Accepted |
 
 ### Architecture & Strategy
 
