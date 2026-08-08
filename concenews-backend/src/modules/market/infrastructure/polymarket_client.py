@@ -65,8 +65,11 @@ class PolymarketGammaClient:
                 },
             )
             resp.raise_for_status()
-            batch = resp.json()
-            if not batch:
+            try:
+                batch = resp.json()
+            except ValueError:
+                break
+            if not isinstance(batch, list) or not batch:
                 break
             for m in batch:
                 parsed = _parse_market(m)
@@ -105,7 +108,14 @@ class PolymarketGammaClient:
         )
         if resp.status_code != 200:
             return []
-        return [_parse_tag(t) for t in resp.json()]
+        try:
+            raw = resp.json()
+        except ValueError:
+            return []
+        if not isinstance(raw, list):
+            return []
+        parsed = [_parse_tag(t) for t in raw]
+        return [t for t in parsed if t is not None]
 
 
 def _parse_market(raw: dict) -> MarketMetadata | None:
@@ -125,10 +135,17 @@ def _parse_market(raw: dict) -> MarketMetadata | None:
     )
 
 
-def _parse_tag(raw: dict) -> Tag:
-    """Raw dict → Tag."""
+def _parse_tag(raw: dict) -> Tag | None:
+    """Raw dict → Tag. id 부재/파싱 실패 시 None (skip)."""
+    tag_id = raw.get("id")
+    if tag_id is None:
+        return None
+    try:
+        parsed_id = int(tag_id)
+    except (TypeError, ValueError):
+        return None
     return Tag(
-        id=int(raw["id"]),
+        id=parsed_id,
         label=raw.get("label", ""),
         slug=raw.get("slug", ""),
     )

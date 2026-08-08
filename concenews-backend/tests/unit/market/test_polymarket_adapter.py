@@ -257,6 +257,46 @@ class TestFetchTagsBulk:
         assert len(result["ok"]) == 1
 
     @pytest.mark.asyncio
+    async def test_malformed_tag_response_skips_invalid_entries(self):
+        """Given: 태그 응답에 id 누락/비정수 항목 섞임
+        When: fetch_tags_bulk
+        Then: 유효한 태그만 반환, 크래시 X.
+        """
+        def handler(request: httpx.Request) -> httpx.Response:
+            del request
+            return httpx.Response(
+                200,
+                json=[
+                    {"label": "no-id", "slug": "no-id"},           # id 누락
+                    {"id": "not-a-number", "label": "bad"},        # 비정수
+                    {"id": 159, "label": "Fed", "slug": "fed"},    # 정상
+                ],
+            )
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_tags_bulk(["m1"])
+
+        assert len(result["m1"]) == 1
+        assert result["m1"][0].id == 159
+
+    @pytest.mark.asyncio
+    async def test_non_json_tag_response_yields_empty(self):
+        """Given: 200 이지만 body 가 JSON 이 아님
+        When: fetch_tags_bulk
+        Then: 해당 cid 빈 리스트, 크래시 X.
+        """
+        def handler(request: httpx.Request) -> httpx.Response:
+            del request
+            return httpx.Response(200, text="not json")
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_tags_bulk(["m1"])
+
+        assert result["m1"] == []
+
+    @pytest.mark.asyncio
     async def test_handles_404_as_empty_tags(self):
         """Given: 마켓 하나가 404
         When: fetch_tags_bulk
