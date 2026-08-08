@@ -76,6 +76,43 @@ requirements.txt 업데이트
 
 ---
 
+## 문서 전용 변경 (Direct-to-master 예외)
+
+**순수 문서 변경 (코드 변경 없음) 은 브랜치/PR 없이 master 직접 commit & push**:
+
+- 오타 수정, 정책 문서 갱신, ADR 추가, 체크리스트 추가 등
+- **Why**: 1인 개발 + 문서 변경은 코드 리스크 없음. PR 왕복 = 오버헤드. 얇은 PR 정신 반대 방향.
+
+**적용 규칙:**
+
+- 코드 변경 없는 순수 docs → master 직접
+- 코드 + 문서 섞이면 → PR
+- 원칙 문서 (xp.md, ddd.md) 갱신 → 논쟁 여지 있으면 PR, 오타/보완이면 직접
+- **작업 중 feature 브랜치에서 문서 변경 발생 시 → 그 브랜치에 그대로 커밋** (stash/switch to master 하지 말 것). Feature 흐름 유지 우선. Master 직접 커밋은 세션 시작 시 순수 문서 작업일 때만.
+- Branch protection 걸려 있으면 임시 해제 or 사용자가 직접 push
+
+---
+
+## PR 크기 원칙
+
+**작업이 크면 PR 분리. 각 PR = focused & compact.**
+
+**Why**: 작고 focused PR → review 쉬움, merge 빠름.
+
+**적용:**
+
+- 사전 설계 단계 (Plan) 에서 PR 스코프 평가
+- Multiple concerns ("bootstrap + lifespan" 등) → 분리
+- 각 PR = 한 가지 책임 (scheduler impl / bootstrap DI / lifespan 각각)
+- **Acceptance criteria: PR body 읽을 때 "그리고" 많으면 분리 신호**
+
+**예시** (news-collection):
+
+- PR #7a: Scheduler adapter + E2E test
+- PR #7b: Bootstrap DI + lifespan
+
+---
+
 ## Pull Request
 
 1인이지만 self-review 필수:

@@ -1,5 +1,17 @@
 # CLAUDE.md
 
+## 언어 정책 (필수)
+
+**모든 산출물 한국어 작성**:
+
+- Docstring, 커밋 메시지, 문서, 대화, 코드 리뷰, 주석 모두 한국어
+- 예외: 코드 식별자 (변수/함수/클래스명) 는 영어
+- 사용자가 명시적으로 요청하지 않는 한 영어 사용 금지
+
+**Why:** 사용자 모국어. 업무 효율.
+
+---
+
 ## 커밋 컨벤션
 
 ### 형식
@@ -60,7 +72,11 @@
 |------|------|
 | 커밋 메시지 형식 | 이 파일 위 (커밋 컨벤션) |
 | 커밋 단위 (원자성, 언제 커밋할지) | [git-workflow.md § 원자적 커밋](docs/git-workflow.md) |
+| 순수 docs 변경은 어떻게 (직접 master?) | [git-workflow.md § 문서 전용 변경](docs/git-workflow.md) |
 | PR 만들 때 (단위/브랜치명/master green 규칙) | [git-workflow.md](docs/git-workflow.md) |
+| PR 크기 (언제 분리?) | [git-workflow.md § PR 크기 원칙](docs/git-workflow.md) |
+| Walking Skeleton PR 구성 (모든 계층 스텁) | [xp.md § Walking Skeleton 스텁 규칙](docs/architecture/principles/xp.md) |
+| 개발 플로우 (Spike → Spec → Plan → Tasks → Skeleton → 구현) | [workflow.md](docs/workflow.md) |
 | PR 생성 체크리스트 (milestone/label/template) | [github-strategy.md § PR 생성 체크리스트](docs/github-strategy.md) |
 | PR 리뷰 (severity, nit 상한, 저자 응답 형식) | [review-standard.md](docs/review-standard.md) |
 | Issue / Milestone / Label | [github-strategy.md](docs/github-strategy.md) |

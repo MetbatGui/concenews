@@ -224,6 +224,21 @@ Step 2 (Acceptance test) + Step 3 (Stub) = 1 PR (walking skeleton GREEN).
 6. 나머지 동일...
 ```
 
+### Walking Skeleton 스텁 규칙 (필수)
+
+**Walking Skeleton PR 에서는 모든 계층을 스텁으로 시작. Repository/Adapter 도 예외 아님.**
+
+**Why**: Walking Skeleton 목적 = 뼈대 통합점만 검증 (E2E GREEN). Repository 를 미리 실 구현하면 후속 PR (Repository) 이 남는 게 없어 스킵 대상 됨 → PR 계획 붕괴. 실제 사례: market-classification Slice A PR #26 에서 실 SQL upsert 구현 → PR #28 Repository 가 사실상 완료 상태로 시작.
+
+**적용:**
+
+- Walking Skeleton Repository = 하드코딩 응답 or in-memory dict
+- 실제 SQL / 네트워크 / 외부 IO 는 각 담당 PR 에서 교체
+- E2E 테스트가 스텁 상태로 GREEN 되도록 test data 를 fake source 로 주입
+- **Migration 은 예외** (E2E 가 실 DB 필요 시 스키마 필수) — 테이블만 생성, Repository 는 여전히 스텁
+
+---
+
 **각 단계의 검증 기준** (단순 기능 기준):
 
 | 단계 | 기준 | 넘어가기 전 확인 |
