@@ -1,6 +1,6 @@
 """Integration test — PgMarketClassificationRepository.
 
-E2E 에서 이미 흐름 검증. 여기서는 Repository 단위 엣지 케이스.
+Integration 테스트에서 이미 흐름을 검증한다. 여기서는 Repository 단위 엣지 케이스.
 """
 from datetime import UTC, datetime, timedelta
 

@@ -1,4 +1,4 @@
-"""E2E acceptance test — 매크로 마켓 분류 슬라이스.
+"""Integration test — 매크로 마켓 분류 슬라이스.
 
 Walking Skeleton 검증: Fake source → Service → PG Repository → DB 저장 흐름.
 각 후속 PR (Domain, Repository, Adapter, Service, Scheduler)는 이 테스트를 계속 GREEN 유지.
@@ -40,8 +40,8 @@ class _FakeSource:
         return {cid: self._tag_map.get(cid, []) for cid in condition_ids}
 
 
-class TestClassifierE2E:
-    """Walking Skeleton E2E: Fake source → PG repository → DB 저장."""
+class TestClassifierIntegration:
+    """Walking Skeleton Integration: Fake source → PG repository → DB 저장."""
 
     @pytest.mark.asyncio
     async def test_run_saves_classified_markets_to_db(self, pg_session: Session):

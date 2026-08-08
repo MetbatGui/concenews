@@ -16,6 +16,7 @@ from src.modules.news.infrastructure.the_news_api_client import TheNewsAPIClient
 class TestNewsCollectionRealAPI:
     """Real API + Real DB integration."""
 
+    @pytest.mark.e2e
     def test_collector_real_api_parses_and_saves_to_db(self, pg_session):
         """Given: Real TheNewsAPI, test DB
         When: collector.run() 호출 (실제 API)

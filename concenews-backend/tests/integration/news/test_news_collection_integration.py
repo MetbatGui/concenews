@@ -13,7 +13,7 @@ from src.modules.news.infrastructure.scheduler import AsyncioSchedulerAdapter
 from src.modules.news.infrastructure.the_news_api_client import TheNewsAPIClient
 
 
-class TestNewsCollectionE2E:
+class TestNewsCollectionIntegration:
     """Scheduler + API mock + DB 통합."""
 
     @pytest.mark.asyncio
