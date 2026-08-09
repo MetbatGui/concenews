@@ -2,7 +2,7 @@
 name: Epic (Slice)
 about: Slice 단위 기능 (전체 계획)
 title: "[SLICE] "
-labels: "type: epic"
+labels: "epic"
 ---
 
 ## 개요

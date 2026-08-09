@@ -395,11 +395,10 @@ rm -r spikes/{topic}  ← 정리, Git에 남지 않음
 **예시**:
 
 ```python
-# 커밋 1: Spike (로컬만)
-# 📝Spike: Matching 알고리즘 후보 3개 비교 (spikes/matching_algorithm/)
+# Spike: 로컬에서 Matching 알고리즘 후보 3개 비교
 # 결과: Cosine similarity 최적 (정확도 85%, 속도 100ms)
 
-# 커밋 2: Decision (Git에 기록)
+# Decision: Git에 기록
 # ✨feat: Cosine 유사도 기반 매칭 알고리즘 채택
 # 
 # Spike에서 3가지 비교 후 선택:

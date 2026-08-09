@@ -34,7 +34,7 @@
 **0단계**: constitution.md (프로젝트 불변 원칙) — 1회만
 **1단계**: spec.md — 무엇을 만들 것인가
 **2단계**: plan.md — 접합부 설계 (Port/Domain/Endpoint 시그니처)
-**3단계**: tasks.md — Inside-out 구현 순서 (Domain → Repository → Service → Wire-up)
+**3단계**: `plan-{slice}.md`의 Tasks — Inside-out 구현 순서 (Domain → Repository → Service → Wire-up)
 **4단계**: Acceptance Test 1개 — Slice 완료 판정 (walking skeleton criterion)
 **5단계**: Inside-Out TDD — 각 계층 unit test 로 설계
 **6단계**: Wire up + 추가 Integration Test (fixture 로 상태 통제)

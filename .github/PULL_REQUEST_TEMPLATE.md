@@ -12,7 +12,7 @@
 
 ### 실행한 테스트
 ```bash
-uv run pytest tests/...
+just check-branch-green
 ```
 
 ### 결과
@@ -27,10 +27,7 @@ uv run pytest tests/...
 - [ ] 문서 업데이트되었나?
 - [ ] **설계 결정 trigger 매칭 시 ADR 있는가?** ([process](../docs/adr-process.md))
 - [ ] **Docs (spec/plan) 에서 관련 ADR 링크 명시됨?**
-- [ ] import-linter 통과?
-  ```bash
-  uv run lint-imports
-  ```
+- [ ] `just check-branch-green` 통과?
 
 ## 관련 이슈
 

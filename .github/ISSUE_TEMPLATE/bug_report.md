@@ -2,7 +2,7 @@
 name: Bug Report
 about: 버그 신고
 title: "[BUG] "
-labels: "type: bug"
+labels: "type:fix"
 ---
 
 ## 버그 설명

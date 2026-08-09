@@ -6,7 +6,7 @@
 
 ## 브랜치 전략
 
-### main
+### master
 - 항상 배포 가능 (모든 테스트 green)
 - PR 기반 merge (self-review 포함)
 
@@ -117,7 +117,7 @@ requirements.txt 업데이트
 
 1인이지만 self-review 필수:
 ```bash
-git diff main..feature/news-fetch
+git diff master..feature/news-fetch
 # → diff 읽고 refactor 필요 확인
 # → 복잡도 없나, 명확한가?
 ```

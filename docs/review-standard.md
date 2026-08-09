@@ -105,7 +105,7 @@
 
 **스킵 가능**:
 - 순수 docs 변경 (오타, 문구 갱신)
-- 자동화 config 변경 (검증은 CI 가)
+- 자동화 config 변경 (`just check-branch-green`으로 검증)
 - 브랜치 정책 위반 없음 + tests green
 
 **스킵 불가**:
