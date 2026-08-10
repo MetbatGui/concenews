@@ -187,12 +187,13 @@ def _parse_snapshot_payload(raw: object) -> MarketSnapshotPayload | None:
         return None
     market_id = raw.get("id")
     end_iso = raw.get("endDate") or raw.get("endDateIso")
-    if market_id is None or not end_iso:
+    question = raw.get("question")
+    if market_id is None or not isinstance(end_iso, str) or not isinstance(question, str):
         return None
     try:
         return MarketSnapshotPayload(
             market_id=str(market_id),
-            question=raw.get("question", ""),
+            question=question,
             outcomes=_parse_string_array(raw.get("outcomes")),
             outcome_prices=_parse_float_array(raw.get("outcomePrices")),
             last_price=_parse_optional_float(raw.get("lastTradePrice")),
