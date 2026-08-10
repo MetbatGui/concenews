@@ -47,6 +47,15 @@ Spike [Research 기록](../research/scheduler-runtime.md)에서 기존 Adapter�
 - 다중 Scheduler 복제본 또는 분산 실행이 필요하면 분산 락과 queue 기반 Worker를 검토한다.
 - Kubernetes 운영으로 전환하면 Kubernetes CronJob이 daemon을 대체할 수 있다.
 
+### 메시지 브로커 재검토 조건
+
+Kafka 또는 ZeroMQ는 현재 도입하지 않는다. 현재 Scheduler는 두 작업을 직접 실행하고 DB에 저장한다.
+
+- 작업 실행을 별도 Worker로 수평 확장해야 하거나, 명령·이벤트를 여러 소비자가 처리해야 하면 메시지 브로커 Spike를 수행한다.
+- 작업 이력의 영속 보존·재처리·소비자 독립 확장이 필요하면 Kafka를 우선 검토한다.
+- 소수 프로세스의 저지연 실시간 전달만 필요하고 메시지 영속성·재처리 책임을 애플리케이션이 맡을 수 있으면 ZeroMQ를 검토한다.
+- Spike에서는 전달 보장(최대 한 번/최소 한 번), 중복 처리, 실패 재시도, Worker 소유 데이터 경계를 먼저 결정한다.
+
 ## Migration Path
 
 1. 공용 Scheduler Adapter와 작업 등록 함수를 추가한다.
