@@ -4,7 +4,10 @@ import logging
 import signal
 from collections.abc import Awaitable, Callable
 
-from src.modules.market.bootstrap import register_market_classifier_job
+from src.modules.market.bootstrap import (
+    register_market_classifier_job,
+    register_market_snapshot_job,
+)
 from src.modules.news.bootstrap import register_news_collection_job
 from src.shared_kernel.scheduler import AsyncioSchedulerAdapter
 
@@ -16,6 +19,7 @@ def build_scheduler() -> AsyncioSchedulerAdapter:
     scheduler = AsyncioSchedulerAdapter()
     register_news_collection_job(scheduler)
     register_market_classifier_job(scheduler)
+    register_market_snapshot_job(scheduler)
     return scheduler
 
 
