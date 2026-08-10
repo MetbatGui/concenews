@@ -1,4 +1,5 @@
 """마켓 스냅샷 수집 서비스 통합 테스트."""
+
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
@@ -23,6 +24,7 @@ from src.modules.market.infrastructure.repositories import (
 def _payload(index: int) -> MarketSnapshotPayload:
     return MarketSnapshotPayload(
         market_id=f"market-{index}",
+        condition_id=f"0xcondition-{index}",
         question=f"질문 {index}",
         outcomes=("예", "아니오"),
         outcome_prices=(0.6, 0.4),
@@ -96,4 +98,7 @@ class TestMarketSnapshotCollectionIntegration:
         assert len(rows) == 50
         assert {row.market_id for row in rows} == {
             f"market-{index}" for index in range(50)
+        }
+        assert {row.condition_id for row in rows} == {
+            f"0xcondition-{index}" for index in range(50)
         }
