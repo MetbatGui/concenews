@@ -55,9 +55,14 @@ class TestSchedulerEntrypoint:
             "register_market_classifier_job",
             lambda target: registered.append("market") if target is scheduler else None,
         )
+        monkeypatch.setattr(
+            scheduler_main,
+            "register_market_snapshot_job",
+            lambda target: registered.append("snapshot") if target is scheduler else None,
+        )
 
         assert scheduler_main.build_scheduler() is scheduler
-        assert registered == ["news", "market"]
+        assert registered == ["news", "market", "snapshot"]
 
     def test_run_scheduler_stops_on_shutdown_signal(self):
         """종료 대기 완료 뒤 Scheduler를 항상 정리한다."""
