@@ -1,4 +1,5 @@
 """마켓 스냅샷 Domain 모델 테스트."""
+
 from datetime import UTC, datetime
 from uuid import UUID
 
@@ -13,6 +14,7 @@ def _make_snapshot(**overrides: object) -> MarketSnapshot:
     values: dict[str, object] = {
         "id": UUID("018f0d3d-5b5a-7a3d-8b54-8f3c11a20d01"),
         "market_id": "market-1",
+        "condition_id": "0xcondition",
         "question": "금리가 유지될까?",
         "outcomes": ["예", "아니오"],
         "outcome_prices": [0.62, 0.38],

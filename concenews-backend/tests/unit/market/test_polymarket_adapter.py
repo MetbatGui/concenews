@@ -2,6 +2,7 @@
 
 httpx.MockTransport 로 응답 mock, 실제 HTTP 없이 검증.
 """
+
 from typing import Any
 
 import httpx
@@ -58,13 +59,18 @@ class TestFetchActiveMarkets:
         When: fetch_active_markets
         Then: MarketMetadata 변환 (condition_id, question, end_date).
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             offset = int(request.url.params.get("offset", "0"))
             if offset > 0:
                 return httpx.Response(200, json=[])
             return httpx.Response(
                 200,
-                json=[_market_json("2874512", "Will Fed cut rates?", "2027-01-01T00:00:00Z")],
+                json=[
+                    _market_json(
+                        "2874512", "Will Fed cut rates?", "2027-01-01T00:00:00Z"
+                    )
+                ],
             )
 
         async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
@@ -179,6 +185,7 @@ class TestFetchActiveMarketSnapshots:
         assert len(result) == 1
         snapshot = result[0]
         assert snapshot.market_id == "3438892"
+        assert snapshot.condition_id == "0xcondition"
         assert snapshot.outcomes == ("예", "아니오")
         assert snapshot.outcome_prices == (0.62, 0.38)
         assert snapshot.volume_24h == 8000.0
@@ -210,6 +217,7 @@ class TestFetchActiveMarketSnapshots:
         When: fetch_active_market_snapshots
         Then: 잘못된 항목만 건너뛰고 정상 후보는 반환한다.
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             del request
             return httpx.Response(200, json=["invalid", GAMMA_MARKET_SNAPSHOT])
@@ -232,6 +240,7 @@ class TestParseMarketSkipsInvalid:
         When: fetch_active_markets
         Then: 정상 마켓만 반환.
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             offset = int(request.url.params.get("offset", "0"))
             if offset > 0:
@@ -259,6 +268,7 @@ class TestParseMarketSkipsInvalid:
         When: fetch_active_markets
         Then: skip (ValueError 로 크래시 X).
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             offset = int(request.url.params.get("offset", "0"))
             if offset > 0:
@@ -286,6 +296,7 @@ class TestFetchTagsBulk:
         When: fetch_tags_bulk
         Then: {cid → tags} 매핑 반환.
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             del request
             return httpx.Response(
@@ -328,6 +339,7 @@ class TestFetchTagsBulk:
         When: fetch_tags_bulk
         Then: 해당 cid 는 빈 리스트, 다른 것은 정상 (부분 성공).
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             cid = request.url.path.split("/")[-2]
             if cid == "broken":
@@ -349,14 +361,15 @@ class TestFetchTagsBulk:
         When: fetch_tags_bulk
         Then: 유효한 태그만 반환, 크래시 X.
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             del request
             return httpx.Response(
                 200,
                 json=[
-                    {"label": "no-id", "slug": "no-id"},           # id 누락
-                    {"id": "not-a-number", "label": "bad"},        # 비정수
-                    {"id": 159, "label": "Fed", "slug": "fed"},    # 정상
+                    {"label": "no-id", "slug": "no-id"},  # id 누락
+                    {"id": "not-a-number", "label": "bad"},  # 비정수
+                    {"id": 159, "label": "Fed", "slug": "fed"},  # 정상
                 ],
             )
 
@@ -373,6 +386,7 @@ class TestFetchTagsBulk:
         When: fetch_tags_bulk
         Then: 해당 cid 빈 리스트, 크래시 X.
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             del request
             return httpx.Response(200, text="not json")
@@ -389,6 +403,7 @@ class TestFetchTagsBulk:
         When: fetch_tags_bulk
         Then: 그 cid는 빈 리스트, 다른 것은 정상.
         """
+
         def handler(request: httpx.Request) -> httpx.Response:
             cid = request.url.path.split("/")[-2]
             if cid == "missing":

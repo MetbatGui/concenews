@@ -1,8 +1,9 @@
 """SQLAlchemy ORM 정의 — market_classification 테이블."""
+
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import ARRAY, Boolean, DateTime, Float, String
+from sqlalchemy import ARRAY, Boolean, DateTime, Float, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -40,6 +41,7 @@ class MarketSnapshotRow(Base):
 
     id: Mapped[UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True)
     market_id: Mapped[str] = mapped_column(String, nullable=False)
+    condition_id: Mapped[str | None] = mapped_column(String, nullable=True)
     question: Mapped[str] = mapped_column(String, nullable=False)
     outcomes: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     outcome_prices: Mapped[list[float]] = mapped_column(ARRAY(Float), nullable=False)
@@ -54,4 +56,18 @@ class MarketSnapshotRow(Base):
     end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     closed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
+class MarketParticipantSnapshotRow(Base):
+    """market_participant_snapshot 테이블 ORM."""
+
+    __tablename__ = "market_participant_snapshot"
+
+    id: Mapped[UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True)
+    market_id: Mapped[str] = mapped_column(String, nullable=False)
+    condition_id: Mapped[str] = mapped_column(String, nullable=False)
+    wallet_address: Mapped[str] = mapped_column(String, nullable=False)
+    outcome_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    position_amount: Mapped[float] = mapped_column(Numeric, nullable=False)
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

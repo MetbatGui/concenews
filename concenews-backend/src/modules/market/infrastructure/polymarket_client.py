@@ -6,6 +6,7 @@
 Rate limit: 4,000 req/10s (전체), 300 req/10s (/markets).
 스파이크 실측: 50 병렬 콜 = 0.61초. 500 병렬도 리밋 하회.
 """
+
 import asyncio
 import json
 from datetime import datetime
@@ -85,9 +86,7 @@ class PolymarketGammaClient:
 
         return results
 
-    async def fetch_tags_bulk(
-        self, condition_ids: list[str]
-    ) -> dict[str, list[Tag]]:
+    async def fetch_tags_bulk(self, condition_ids: list[str]) -> dict[str, list[Tag]]:
         """마켓별 태그 병렬 조회.
 
         Args:
@@ -149,9 +148,7 @@ class PolymarketGammaClient:
 
     async def _fetch_tags(self, condition_id: str) -> list[Tag]:
         """단일 마켓 태그 조회. 404/error 시 빈 리스트."""
-        resp = await self._client.get(
-            f"{BASE_URL}/markets/{condition_id}/tags"
-        )
+        resp = await self._client.get(f"{BASE_URL}/markets/{condition_id}/tags")
         if resp.status_code != 200:
             return []
         try:
@@ -188,11 +185,16 @@ def _parse_snapshot_payload(raw: object) -> MarketSnapshotPayload | None:
     market_id = raw.get("id")
     end_iso = raw.get("endDate") or raw.get("endDateIso")
     question = raw.get("question")
-    if market_id is None or not isinstance(end_iso, str) or not isinstance(question, str):
+    if (
+        market_id is None
+        or not isinstance(end_iso, str)
+        or not isinstance(question, str)
+    ):
         return None
     try:
         return MarketSnapshotPayload(
             market_id=str(market_id),
+            condition_id=_parse_optional_condition_id(raw.get("conditionId")),
             question=question,
             outcomes=_parse_string_array(raw.get("outcomes")),
             outcome_prices=_parse_float_array(raw.get("outcomePrices")),
@@ -212,10 +214,21 @@ def _parse_snapshot_payload(raw: object) -> MarketSnapshotPayload | None:
         return None
 
 
+def _parse_optional_condition_id(value: object) -> str | None:
+    """Gamma의 conditionId를 비어 있지 않은 문자열로 변환한다."""
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value:
+        raise ValueError("conditionId는 비어 있지 않은 문자열이어야 합니다.")
+    return value
+
+
 def _parse_string_array(value: object) -> tuple[str, ...]:
     """Gamma의 JSON 문자열 배열 또는 배열을 문자열 tuple로 변환한다."""
     parsed = json.loads(value) if isinstance(value, str) else value
-    if not isinstance(parsed, list) or not all(isinstance(item, str) for item in parsed):
+    if not isinstance(parsed, list) or not all(
+        isinstance(item, str) for item in parsed
+    ):
         raise ValueError("문자열 배열이 필요합니다.")
     return tuple(item for item in parsed if isinstance(item, str))
 
@@ -227,9 +240,7 @@ def _parse_float_array(value: object) -> tuple[float, ...]:
         raise ValueError("숫자 배열이 필요합니다.")
     if not all(isinstance(item, (str, int, float)) for item in parsed):
         raise ValueError("숫자 배열이 필요합니다.")
-    return tuple(
-        float(item) for item in parsed if isinstance(item, (str, int, float))
-    )
+    return tuple(float(item) for item in parsed if isinstance(item, (str, int, float)))
 
 
 def _parse_optional_float(value: object) -> float | None:

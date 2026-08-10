@@ -2,6 +2,7 @@
 
 GAMMA_MARKET_SNAPSHOT = {
     "id": "3438892",
+    "conditionId": "0xcondition",
     "question": "금리가 유지될까?",
     "outcomes": '["예", "아니오"]',
     "outcomePrices": '["0.62", "0.38"]',
