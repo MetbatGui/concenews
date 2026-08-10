@@ -21,6 +21,7 @@ Scheduler (5분)
 ## Task 1 — Domain·Repository Walking Skeleton
 
 **브랜치/PR**: `codex/market-snapshot-collection-domain-repository`
+**상태**: 완료 ([PR #35](https://github.com/MetbatGui/concenews/pull/35))
 
 - `MarketSnapshot` 불변 Domain 모델 구현
 - Snapshot Repository Port와 PostgreSQL 구현·ORM 추가
