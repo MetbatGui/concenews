@@ -338,6 +338,6 @@ PR #3: Closes #1 ← 마지막
 | Labels | Epic은 `epic`, 변경은 `type:*`, 상태는 `status:*` |
 | Branch | feature/{slice}-{task} |
 | Commit | 명확한 메시지 (WHAT+WHY) |
-| PR | Self-review 기반, regular merge |
+| PR | Self-review → Ready PR → 독립 리뷰 → merge commit |
 | Release | v0.1, v0.2... (Milestone 완료 후) |
 | Automation | "Closes #N" (마지막 PR이 Issue close) |

@@ -144,6 +144,8 @@ uv run python -m uvicorn src.main:app --reload
 
 ## GitHub 워크플로우 (✨ 중요)
 
+**브랜치 이름 표준**: Task 브랜치는 반드시 `feature/{slice}-{task}`를 사용한다.
+
 **Spec/Plan 작성 후 GitHub 액션 전에 사용자 검토 대기 필수**:
 
 - Issue 생성 전: 사용자 검토 및 승인 기다림
