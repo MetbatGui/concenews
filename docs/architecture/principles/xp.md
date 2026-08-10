@@ -370,12 +370,11 @@ test("NewsList는 뉴스를 fetch하고 표시한다", async () => {
 ```
 spikes/{topic}/
 ├── {api}_spike.py          ← 학습용 (test❌, spike✅)
-├── {approach}_spike.py
-└── LEARNINGS.md            ← 핵심 발견 기록
+└── {approach}_spike.py
 
 ↓ (학습 완료)
 
-spec.md 업데이트 (Decision 섹션 추가)
+docs/research/{topic}.md 기록 → ADR/Spec 업데이트
 
 ↓
 

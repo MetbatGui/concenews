@@ -103,7 +103,7 @@ GET https://api.thenewsapi.com/v1/news/top
 - ⚠️ keywords 필드: 때로 비어있음
 - ⚠️ categories 필드: 자동 추출 (정확도 낮음) → 현재 사용 안 함
 
-**참고:** [spikes/news_spikes/LEARNINGS.md](../spikes/news_spikes/LEARNINGS.md)
+**참고:** [TheNewsAPI 계약 조사](../../docs/research/thenewsapi-contract.md)
 
 ### 저장소
 - Python dict/list (메모리, 테스트용)

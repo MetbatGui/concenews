@@ -24,9 +24,11 @@
 |------|-----|--------|
 | 2026-07-05 | [test-isolation-cache-clear](./2026-07-05-test-isolation-cache-clear.md) | Accepted |
 | 2026-07-05 | [test-fixture-data-pattern](./2026-07-05-test-fixture-data-pattern.md) | Accepted |
-| 2026-07-05 | [on-demand-spike](./2026-07-05-on-demand-spike.md) | Accepted |
+| 2026-07-05 | [on-demand-spike](./2026-07-05-on-demand-spike.md) | Superseded by 2026-08-10 |
 | 2026-08-09 | [classicist-test-strategy](./2026-08-09-classicist-test-strategy.md) | Accepted |
 | 2026-08-10 | [github-work-item-model](./2026-08-10-github-work-item-model.md) | Accepted |
+| 2026-08-10 | [workflow-execution-contract (실행 순서·PR 경계·운영 계약)](./2026-08-10-workflow-execution-contract.md) | Accepted |
+| 2026-08-10 | [spike-knowledge-recording (Spike 결과의 리포 기록)](./2026-08-10-spike-knowledge-recording.md) | Accepted |
 
 ### Architecture & Strategy
 
@@ -36,6 +38,7 @@
 | 2026-07-07 | [spike-learning-spec-fidelity](./2026-07-07-spike-learning-spec-fidelity.md) | Accepted |
 | 2026-07-12 | [polymarket-api-choice (Gamma + CLOB)](./2026-07-12-polymarket-api-choice.md) | Accepted |
 | 2026-07-12 | [market-filtering-strategy (tag + keyword 2단계)](./2026-07-12-market-filtering-strategy.md) | Accepted |
+| 2026-08-10 | [scheduler-runtime-daemon (별도 컨테이너와 공용 실행기)](./2026-08-10-scheduler-runtime-daemon.md) | Proposed |
 
 ### Module Boundaries
 

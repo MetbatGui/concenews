@@ -206,6 +206,4 @@ UNKNOWN → skip
 
 ## 참고
 
-- **Spike LEARNINGS**: `spikes/polymarket-tags/LEARNINGS.md`
-- **Spike 스크립트**: `spikes/polymarket-tags/`
-- **Spike 결과 JSON**: `spikes/polymarket-tags/results/`
+- **Research**: [Polymarket 태그 조사](../../docs/research/polymarket-tags.md)

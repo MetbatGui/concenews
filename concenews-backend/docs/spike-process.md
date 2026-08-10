@@ -3,13 +3,13 @@
 > 불확실성 제거를 위한 로컬 학습 단계
 > **On-demand**: unknown 만날 때마다 즉시 시작 (batch 지양)
 
-관련 결정: [ADR 2026-07-05 on-demand-spike](../../../docs/decisions/2026-07-05-on-demand-spike.md)
+관련 결정: [ADR 2026-08-10 spike-knowledge-recording](../../../docs/decisions/2026-08-10-spike-knowledge-recording.md)
 
 ---
 
 ## 정의
 
-**Spike** = 임시 학습 코드 (commit X, 삭제 O)
+**Spike** = 임시 학습 코드 (commit X, 삭제 O). 학습 결과는 리포 문서에 기록한다.
 
 목표:
 - 기술적 불확실성 제거
@@ -32,7 +32,7 @@
 Spike 결과가 [ADR trigger](../../../docs/adr-process.md) 매칭 시:
 - Spike 완료 → ADR 작성 → docs 갱신 → 코드 착수
 
-Trivial 학습 (API 응답 구조 확인 등) 은 ADR 없이 spec/plan 갱신만.
+Trivial 학습 (API 응답 구조 확인 등) 은 ADR 없이 Research·fixture·Spec/Plan만 갱신한다.
 
 ---
 
@@ -50,11 +50,11 @@ Trivial 학습 (API 응답 구조 확인 등) 은 ADR 없이 spec/plan 갱신만
    실제로 동작하는지 확인
    응답 구조, 제약사항 파악
 
-4. LEARNINGS.md 기록
-   발견사항, 결정, 이유 문서화
+4. Research 기록
+   `docs/research/{topic}.md`에 발견사항, 결정, 이유 문서화
 
 5. 삭제
-   spikes/{topic}/ 완전 삭제 (LEARNINGS는 최상단에 유지)
+   spikes/{topic}/ 완전 삭제
 
 6. 결정 반영
    Spec/Plan에 최종 결정 기록
@@ -72,7 +72,6 @@ spikes/
      ├─ {source1}_spike.py
      ├─ {source2}_spike.py
      ├─ {source3}_spike.py
-     └─ LEARNINGS.md
 
 예:
 spikes/
@@ -80,13 +79,12 @@ spikes/
      ├─ newsapi_spike.py
      ├─ reuters_rss_spike.py
      ├─ alpha_vantage_spike.py
-     └─ LEARNINGS.md
 ```
 
 - 로컬 폴더만 (git commit X)
 - 임시 코드 (production quality 불필요)
 - 명확한 목적 (무엇을 검증하나?)
-- 학습 결과 기록 (LEARNINGS.md)
+- 학습 결과를 `docs/research/{topic}.md`에 기록하고 커밋
 
 ### DON'T ❌
 
@@ -99,7 +97,7 @@ spikes/
 
 - 브랜치 생성 (로컬 폴더만)
 - commit 하기
-- 결과 문서화 안 하기
+- Research 문서 없이 결정·구현으로 진행하기
 
 ---
 
@@ -183,10 +181,10 @@ python reuters_rss_spike.py
   - 설정: URL만 필요
 ```
 
-### 4단계: LEARNINGS.md 작성
+### 4단계: Research 문서 작성
 
 ```markdown
-# News Source Spike: Learnings & Decision
+# News Source Spike
 
 ## Question
 어떤 뉴스 소스를 사용할 것인가?
@@ -234,7 +232,7 @@ python reuters_rss_spike.py
 rm -rf spikes/news_spikes/newsapi_spike.py
 rm -rf spikes/news_spikes/reuters_rss_spike.py
 rm -rf spikes/news_spikes/alpha_vantage_spike.py
-# LEARNINGS.md는 유지
+# 학습 결과는 docs/research/news-sources.md에 이미 기록됨
 ```
 
 ### 6단계: Spec 업데이트
@@ -244,12 +242,12 @@ Spec에 기록:
 ## 기술 결정
 
 - **데이터 소스**: Reuters RSS
-  - 참고: spikes/news_spikes/LEARNINGS.md
+  - 참고: docs/research/news-sources.md
 ```
 
 ---
 
-## LEARNINGS.md 템플릿
+## Research 문서 템플릿
 
 ```markdown
 # {Topic} Spike: Learnings & Decision
@@ -290,7 +288,7 @@ Spec에 기록:
 Spike 완료 전:
 
 - [ ] 각 후보 테스트 완료
-- [ ] LEARNINGS.md 작성 (발견, 결정, 이유)
+- [ ] `docs/research/{topic}.md` 작성 (발견, 결정, 이유)
 - [ ] 최종 선택 명확
-- [ ] Spike 코드 삭제 (LEARNINGS는 유지)
+- [ ] Spike 코드 삭제
 - [ ] Spec/Plan에 결정 반영

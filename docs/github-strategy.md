@@ -50,18 +50,19 @@ v0.3        (뉴스-마켓 매칭)
 
 ### Issue 생성 시기
 
-**Plan까지 완료 후** (개발 직전):
+**Plan 작성·사용자 승인 후** (개발 직전):
 
 ```
-1. Spike (로컬, 학습)
-2. Spec 작성 (사용자 관점)
-3. Plan 작성 (설계 완료)
+1. Spike (임시 코드는 로컬, 결과는 Research 문서)
+2. ADR 작성 (설계 결정 시)
+3. Spec·Plan 작성 (설계 완료)
+4. 사용자 검토·승인
    ↓
-4. Epic 또는 Slice Issue 생성 ← GitHub에 공식화
-5. `feature/{slice}-{task}` 브랜치 시작
+5. Epic 또는 Slice Issue 생성 ← GitHub에 공식화
+6. Task별 `feature/{slice}-{task}` 브랜치 시작
 ```
 
-이유: 설계가 명확할 때 Issue 생성 → 개발 시작 → PR 연결
+이유: 승인된 설계를 Issue로 공식화한 뒤, Task별 PR을 연결한다.
 
 ### Epic과 Slice 정의
 
@@ -73,8 +74,8 @@ Epic Labels: epic
 Slice Labels: type:feat, status:planning
 Milestone: 릴리스 버전 (필요한 경우)
 
-## Spike
-- [Spike 결과](../path/to/spec.md)
+## Research
+- [조사 결과](../path/to/docs/research.md)
 
 ## What
 - 사용자 관점: AC(Acceptance Criteria)
@@ -91,7 +92,7 @@ Parent: News Bounded Context Epic
 Milestone: v0.1 (선택)
 Labels: type:feat, status:planning
 
-## Spike
+## Research
 - NewsAPI 선택 이유, 응답 형식 확인
 - [스펙](../concenews-backend/docs/spec-news-fetch.md)
 
@@ -138,14 +139,14 @@ priority: high/medium/low (필요시)
 
 ### 흐름
 ```
-feature/news-fetch-{task} (Spike 완료 후)
+feature/news-fetch-{task} (사용자 승인·Issue 생성 후)
   ├─ commit 1: Fix: NewsAPI parsing error
   ├─ commit 2: Feat: NewsRepository.find_all()
   ├─ commit 3: Refactor: extract _parse_response()
   │
   └─ Push → Create PR
               ├─ Title: [feature] News Fetch Slice
-              ├─ Link Epic & Spike
+              ├─ Link Epic·Slice·Research
               ├─ Self-review
               └─ Merge (regular) & delete branch
 ```

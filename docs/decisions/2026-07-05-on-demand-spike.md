@@ -1,6 +1,6 @@
 # ADR: Spike 는 unknown 만날 때 on-demand
 
-**Status**: Accepted
+**Status**: Superseded by [spike-knowledge-recording](./2026-08-10-spike-knowledge-recording.md)
 **Date**: 2026-07-05
 **Slice**: Cross-cutting (프로세스)
 

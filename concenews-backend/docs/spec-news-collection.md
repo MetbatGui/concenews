@@ -115,5 +115,5 @@ Each item:
 ## 참고
 
 - 이전 slice: [spec-news-fetch.md](spec-news-fetch.md) — GET /news endpoint
-- TheNewsAPI 학습: `spikes/news_spikes/LEARNINGS.md`
+- TheNewsAPI 학습: [TheNewsAPI 계약 조사](../../docs/research/thenewsapi-contract.md)
 - 원칙: [modular-monolith.md](architecture/modular-monolith.md), [xp.md](../../docs/architecture/principles/xp.md)

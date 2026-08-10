@@ -19,25 +19,24 @@ feature/news-fetch-service       (Service + unit test, GREEN)
 feature/news-fetch-wire          (Endpoint wire-up + integration test, GREEN)
 ```
 - **PR 단위 = TDD cycle 완결** (RED + GREEN + Refactor 결합).
+- **브랜치 단위 = PR 단위 = Task 단위**: Task마다 master에서 새 `feature/{slice}-{task}` 브랜치를 만들고, 하나의 브랜치에는 하나의 PR만 둔다.
   TDD step (RED 만, GREEN 만) 을 별도 PR 로 나누지 않음.
 - **매 PR merge 시 master green 보장** — RED 상태 master merge 금지.
 - master 에서 생성, PR merge 후 삭제
 
 ---
 
-## Spike (로컬만, Git X)
+## Spike (임시 코드는 로컬, 결과는 Git)
 
 ```
 spikes/{topic}/
 ├── {api}_spike.py
-└── LEARNINGS.md
 ```
 
 **중요**: Spike는 브랜치 불필요
-- 로컬 폴더 (.gitignore에 등록)
-- commit 안 함
-- 학습 후 폴더 삭제
-- 결정만 spec.md에 기록
+- 임시 코드만 로컬 폴더에서 실행하고 삭제
+- 학습 결과는 `docs/research/{topic}.md`에 커밋
+- 설계 결정은 ADR, 구현 범위는 Spec/Plan에 링크
 
 ---
 
@@ -102,7 +101,7 @@ requirements.txt 업데이트
 **적용:**
 
 - 사전 설계 단계 (Plan) 에서 PR 스코프 평가
-- Multiple concerns ("bootstrap + lifespan" 등) → 분리
+- Multiple concerns ("bootstrap + lifespan" 등) → 분리. 분리된 각 concern은 별도 Task·PR·feature 브랜치다.
 - 각 PR = 한 가지 책임 (scheduler impl / bootstrap DI / lifespan 각각)
 - **Acceptance criteria: PR body 읽을 때 "그리고" 많으면 분리 신호**
 
@@ -142,7 +141,8 @@ PR 체크리스트:
 
 | 단계 | 브랜치 | 액션 |
 |------|--------|------|
-| Spike (학습) | — (로컬) | spikes/{topic}/ → LEARNINGS.md → 삭제 |
+| Spike (학습) | — (로컬) | 임시 코드 삭제 → `docs/research/{topic}.md` commit |
+| ADR (설계 결정) | master | 결정 기록 후 Spec/Plan에 링크 |
 | Spec 확정 | master | spec.md commit |
 | 개발 | feature/{slice}-{task} | code → test → refactor |
 | PR & Review | feature/{slice}-{task} | self-review → merge |

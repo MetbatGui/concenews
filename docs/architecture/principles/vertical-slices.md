@@ -52,13 +52,12 @@ Detail 검증 integration test 는 fixture 확보 후 (repository 구현 후).
 ```
 spikes/{topic}/
 ├── approach_1.py
-├── approach_2.py
-└── LEARNINGS.md ← 핵심 발견만 기록
+└── approach_2.py
 
 (로컬만, Git 커밋 X)
 ```
 
-학습 후 → **learning.md** (정밀한 학습 문서) → spec.md에 반영 → spikes/ 폴더 삭제
+학습 후 → `docs/research/{topic}.md` (정밀한 학습 문서, 커밋) → ADR/Spec에 반영 → spikes/ 폴더 삭제
 
 **Proper Implementation**:
 ```
@@ -69,7 +68,7 @@ spikes/{topic}/
 
 ## 3.1 Learning → Spec 정밀도 규칙
 
-Spike 코드는 버리지만, **Learning 내용은 완벽히 Spec에 반영해야 함**.
+Spike 코드는 버리지만, **Learning 내용은 `docs/research/`에 보존하고 필요한 결론을 ADR·Spec에 반영해야 함**.
 
 **Learning 작성 (Spike 직후)**:
 - Concrete example: 실제 API 응답, 매개변수 등
@@ -77,7 +76,7 @@ Spike 코드는 버리지만, **Learning 내용은 완벽히 Spec에 반영해�
 - Edge case: 발견한 모든 이상 (type variation, optional field 등)
 - 왜: Spec 단계에서 90%+ 반영 가능해야 함
 
-**예시** (Learning.md):
+**예시** (`docs/research/thenewsapi-contract.md`):
 ```markdown
 ## TheNewsAPI 통합 학습
 

@@ -37,7 +37,8 @@ tests/
 ### Integration
 - `test_{module}_acceptance.py` — endpoint 시나리오 (사용자 관점)
 - `test_{module}_repository_postgres.py` — 실 DB 통합 (미래)
-- `test_{module}_collection.py` — 외부 API 통합 (미래)
+- `test_{module}_collection_integration.py` — 외부 HTTP fixture + 실 DB 통합
+- `test_{module}_collection_real_api.py` — 실제 외부 API + 실 DB E2E (`@pytest.mark.e2e`)
 - `test_{module}_{other}_integration.py` — 다른 모듈 통합 (미래)
 
 ---
@@ -235,6 +236,20 @@ def test_cache_ttl_expiry():
 - 실제 외부 API와 실제 DB를 함께 쓰는 테스트만 `@pytest.mark.e2e`로 표시한다.
 - 외부 API mock 응답은 `tests/fixtures/`의 버전 관리 fixture를 사용한다. Spike에서 응답 계약을 다시 확인하면 fixture부터 갱신한다.
 
+### 경계별 선택 기준
+
+| 대상 | 기본 선택 | 검증 방식 |
+|---|---|---|
+| Domain·Application·Repository | 실제 구현체 조합 | 반환값·저장 상태·관찰 가능한 결과 |
+| PostgreSQL | Integration에서 실제 컨테이너 | 실제 SQL과 스키마 |
+| 외부 HTTP | fixture 기반 Transport/Fake | 요청 계약과 변환 결과 |
+| 시간·주기 대기 | 제어 가능한 시간 또는 수동 trigger | `sleep` 없이 결과 상태 |
+| 실제 외부 API | 수동 E2E | `@pytest.mark.e2e` + 실제 DB |
+
+- 내부 구현의 호출 횟수·순서·private 메서드는 assertion 대상이 아니다.
+- 외부 HTTP fixture는 테스트 안에 다시 쓰지 않는다. `tests/fixtures/`에서 import해 사용한다.
+- Acceptance는 사용자 관점의 **Integration 테스트 하위 유형**이다. 외부 API가 Fake이면 전체 경로를 통과해도 E2E가 아니다.
+
 ## 검증
 
 병합 전:
@@ -266,24 +281,16 @@ THENEWSAPI_TOKEN=your_api_key just check-e2e
 
 ## Test 계층 심화: Mock vs Real 전략
 
-### 3계층 Test Pyramid
-
-```
-         System (E2E)
-            ↑
-      Integration (신호)
-            ↑
-         Unit (빠름)
-```
+### 테스트 분류
 
 각 계층의 Repository 선택:
 
 | 계층 | 파일 | Repository | 속도 | 검증 대상 |
 |------|------|-----------|------|---------|
-| **Unit** | `test_service.py` | `InMemoryNewsRepository` | ~100ms | Service 로직 (dedup, error) |
-| **Integration** | `test_..._integration.py` | `PgNewsRepository(pg_session)` | ~500ms | Scheduler + API mock + Real DB |
-| **System** | `test_..._system_acceptance.py` | `PgNewsRepository(pg_session)` | ~1s | 전체 경로 (collection → retrieval) |
-| **E2E** | `test_..._real_api.py` + `@pytest.mark.e2e` | 실제 외부 API + `PgNewsRepository` | 가변 | 실제 외부 계약과 DB 저장 |
+| **Unit** | `test_service.py` | 상태를 가진 단순 Fake 허용 | 빠름 | 규칙·분기·예외 |
+| **Integration** | `test_..._integration.py` | 실제 `Pg...Repository` + 실제 DB | 보통 | 컴포넌트 협력과 DB 계약 |
+| **Acceptance** | `test_..._acceptance.py` | Integration과 동일 | 보통 | HTTP 사용자 시나리오 |
+| **E2E** | `test_..._real_api.py` + `@pytest.mark.e2e` | 실제 외부 API + 실제 DB | 가변 | 외부 계약과 전체 저장 흐름 |
 
 ### Unit Test (InMemoryNewsRepository)
 
@@ -314,7 +321,7 @@ class TestNewsCollectorServiceLogic:
 **특징**:
 - 속도 우선
 - 로직만 검증 (저장소 구조 무관)
-- Mock API 사용 (responses 불필요)
+- 외부 API 경계를 대체하되, 상호작용 횟수가 아니라 저장 상태를 검증한다.
 
 ### Integration Test + Real DB (pg_session fixture)
 
@@ -365,7 +372,7 @@ class TestNewsCollectionIntegration:
 - pg_session fixture = transaction 격리 (test 간 DB 독립)
 - **목적**: Scheduler + Service 협력 + DB schema 검증
 
-### System Acceptance Test (전체 경로)
+### Acceptance Test (전체 HTTP 경로)
 
 ```python
 # tests/integration/news/test_news_system_acceptance.py
@@ -417,11 +424,11 @@ def pg_client_with_news_data(pg_with_news_data, news_pg_repository):
 **특징**:
 - 전체 경로 검증 (UI → API → DB → Repository → DB)
 - Real data flow (실제 프로덕션 경로 모사)
-- System-level invariant 검증 (정렬, 필드 무결성)
+- 사용자 관점 invariant 검증 (정렬, 필드 무결성). 외부 API가 Fake이므로 E2E가 아니다.
 
-### Mock API 응답 구조 동기화 필수 ⚠️
+### 외부 HTTP Fixture 동기화 필수 ⚠️
 
-**중요**: Mock 과 Real API 응답 구조가 다르면 test green ≠ production working
+**중요**: Fixture와 실제 API 응답 구조가 다르면 test green ≠ production working. 모든 테스트는 `tests/fixtures/`의 버전 관리 fixture를 사용한다.
 
 ```python
 # ❌ 잘못된 예: Test 에서만 되는 구조
@@ -432,18 +439,18 @@ with responses.RequestsMock() as rsps:
         json={"articles": [...]},  # ← 잘못된 응답 key
     )
 
-# ✅ 올바른 예: Real API 와 동기화
+# ✅ 올바른 예: Fixture로 Real API 계약을 재사용
 with responses.RequestsMock() as rsps:
     rsps.add(
         responses.GET,
         "https://api.thenewsapi.com/v1/news/top",  # ← Real endpoint
-        json={"data": [...]},  # ← Real response key
+        json=THENEWSAPI_TOP_RESPONSE,  # ← tests/fixtures/에서 import
     )
 ```
 
 **검증 방법**:
-1. Spike 단계에서 Real API 응답 캡처 (예: spike-news-api.md)
-2. Mock 응답 = Spike 응답 구조 (doc comment 로 참조)
+1. Spike 단계에서 Real API 응답을 확인하고 `docs/research/`에 기록
+2. Research 결과를 바탕으로 `tests/fixtures/` fixture 갱신
 3. Real API test 추가 (THENEWSAPI_TOKEN 환경변수 필요)
 
 ```python

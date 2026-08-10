@@ -163,7 +163,7 @@ Slice 진행 중 아래 시점에 spike:
 
 #### PR #2: Scheduler Port (news 로컬) — `feature/news-scheduler-port`
 
-- **Spike 완료**: stdlib asyncio vs APScheduler 비교 ([LEARNINGS](../spikes/scheduler/LEARNINGS.md))
+- **Spike 완료**: stdlib asyncio vs APScheduler 비교 (결론은 아래 ADR에 기록)
 - **ADR**: [scheduler-choice](../../docs/decisions/2026-07-06-scheduler-choice.md) — stdlib asyncio, news 로컬, lifespan
 - `application/ports.py` 에 `SchedulerPort` Protocol 추가 (Port 만)
 - Adapter 실 impl 은 PR #7 (wire-up, lifespan 통합 시)

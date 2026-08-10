@@ -282,7 +282,7 @@ concenews-backend/
 - [ ] PR #1-#6 모두 merge, master green
 - [ ] Integration test: 스케줄러 실행 → DB에 MACRO/NON_MACRO 저장 확인
 - [ ] 로컬 실측: 실제 Gamma API 대상 실행 → 500 마켓 분류 완료 확인 (10초 이내)
-- [ ] LEARNINGS 참조 링크 유효
+- [ ] Research 참조 링크 유효
 
 ---
 
