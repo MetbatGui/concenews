@@ -1,0 +1,9 @@
+services:
+  api:
+    ports:
+      - "18000:8000"
+
+  scheduler:
+    environment:
+      THENEWSAPI_TOKEN: container-smoke-token
+    network_mode: none

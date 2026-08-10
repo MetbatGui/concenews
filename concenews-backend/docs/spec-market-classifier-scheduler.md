@@ -9,7 +9,7 @@
 
 ## 배경
 
-`NewsCollectorService`와 `MarketClassifierService.run()`은 실제 수집·분류 흐름을 이미 수행한다. 그러나 현재 앱의 lifespan은 뉴스 수집 작업만 API 프로세스 안에서 등록한다. 마켓 분류는 자동 실행되지 않고, API 재시작·확장과 뉴스 수집 실행이 결합되어 있다.
+`NewsCollectorService`와 `MarketClassifierService.run()`은 실제 수집·분류 흐름을 수행한다. API의 lifespan에서 실행되던 뉴스 수집은 제거했고, 별도 Scheduler 진입점이 두 작업을 등록·실행한다. 이 Slice는 컨테이너 실행 경계까지 이를 완성한다.
 
 이 Slice는 도메인 규칙이나 수집·분류 로직을 바꾸지 않는다. 두 작업을 API와 분리된 Scheduler 컨테이너에서 안전하게 실행하도록 런타임 경계를 전환한다.
 
