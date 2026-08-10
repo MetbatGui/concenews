@@ -77,6 +77,25 @@ class TestFindActiveConditionIds:
         result = repo.find_active_condition_ids(now)
         assert result == set()
 
+    def test_returns_only_active_macro_markets(self, pg_session: Session):
+        """Given: 유효한 MACRO·NON_MACRO와 만료된 MACRO 분류
+        When: find_active_macro_condition_ids
+        Then: 유효한 MACRO 식별자만 반환한다.
+        """
+        now = datetime.now(UTC)
+        repo = PgMarketClassificationRepository(pg_session)
+        repo.save_bulk(
+            [
+                _make_classification("macro", now + timedelta(days=1)),
+                _make_classification(
+                    "non-macro", now + timedelta(days=1), Classification.NON_MACRO
+                ),
+                _make_classification("expired", now - timedelta(days=1)),
+            ]
+        )
+
+        assert repo.find_active_macro_condition_ids(now) == {"macro"}
+
 
 class TestSaveBulk:
     """save_bulk: upsert 저장."""

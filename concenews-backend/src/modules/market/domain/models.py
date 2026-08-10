@@ -126,3 +126,58 @@ class MarketSnapshot(BaseModel):
         if any(not 0.0 <= price <= 1.0 for price in self.outcome_prices):
             raise ValueError("결과별 확률은 0과 1 사이여야 합니다.")
         return self
+
+
+class MarketSnapshotPayload(BaseModel):
+    """외부 소스가 제공한 스냅샷 원본을 Domain 스냅샷으로 변환하는 값 객체."""
+
+    model_config = ConfigDict(frozen=True)
+
+    market_id: str = Field(min_length=1)
+    question: str = Field(min_length=1)
+    outcomes: tuple[str, ...]
+    outcome_prices: tuple[float, ...]
+    last_price: float | None = None
+    best_bid: float | None = None
+    best_ask: float | None = None
+    spread: float | None = None
+    liquidity: float | None = None
+    volume_24h: float | None = None
+    volume_1w: float | None = None
+    volume_1m: float | None = None
+    end_date: AwareDatetime
+    active: bool
+    closed: bool
+
+    @model_validator(mode="after")
+    def _validate_outcome_price_pairs(self) -> "MarketSnapshotPayload":
+        """결과별 확률이 유효한 일대일 대응인지 검증한다."""
+        if not self.outcomes:
+            raise ValueError("결과가 하나 이상 있어야 합니다.")
+        if len(self.outcomes) != len(self.outcome_prices):
+            raise ValueError("결과 이름과 확률의 개수가 일치해야 합니다.")
+        if any(not 0.0 <= price <= 1.0 for price in self.outcome_prices):
+            raise ValueError("결과별 확률은 0과 1 사이여야 합니다.")
+        return self
+
+    def to_snapshot(self, snapshot_id: UUID, timestamp: datetime) -> MarketSnapshot:
+        """수집 시각과 식별자를 부여한 불변 스냅샷을 만든다."""
+        return MarketSnapshot(
+            id=snapshot_id,
+            market_id=self.market_id,
+            question=self.question,
+            outcomes=self.outcomes,
+            outcome_prices=self.outcome_prices,
+            last_price=self.last_price,
+            best_bid=self.best_bid,
+            best_ask=self.best_ask,
+            spread=self.spread,
+            liquidity=self.liquidity,
+            volume_24h=self.volume_24h,
+            volume_1w=self.volume_1w,
+            volume_1m=self.volume_1m,
+            end_date=self.end_date,
+            active=self.active,
+            closed=self.closed,
+            timestamp=timestamp,
+        )
