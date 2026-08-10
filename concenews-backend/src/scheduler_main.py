@@ -1,4 +1,5 @@
 """뉴스 수집과 마켓 분류를 실행하는 Scheduler 프로세스 진입점."""
+
 import asyncio
 import logging
 import signal
@@ -6,6 +7,7 @@ from collections.abc import Awaitable, Callable
 
 from src.modules.market.bootstrap import (
     register_market_classifier_job,
+    register_market_participant_snapshot_job,
     register_market_snapshot_job,
 )
 from src.modules.news.bootstrap import register_news_collection_job
@@ -20,6 +22,7 @@ def build_scheduler() -> AsyncioSchedulerAdapter:
     register_news_collection_job(scheduler)
     register_market_classifier_job(scheduler)
     register_market_snapshot_job(scheduler)
+    register_market_participant_snapshot_job(scheduler)
     return scheduler
 
 

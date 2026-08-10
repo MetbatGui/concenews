@@ -1,4 +1,5 @@
 """Scheduler 독립 진입점과 API 실행 경계 테스트."""
+
 import asyncio
 import signal
 
@@ -44,7 +45,9 @@ class TestSchedulerEntrypoint:
         scheduler = _FakeScheduler()
         registered: list[str] = []
 
-        monkeypatch.setattr(scheduler_main, "AsyncioSchedulerAdapter", lambda: scheduler)
+        monkeypatch.setattr(
+            scheduler_main, "AsyncioSchedulerAdapter", lambda: scheduler
+        )
         monkeypatch.setattr(
             scheduler_main,
             "register_news_collection_job",
@@ -58,11 +61,20 @@ class TestSchedulerEntrypoint:
         monkeypatch.setattr(
             scheduler_main,
             "register_market_snapshot_job",
-            lambda target: registered.append("snapshot") if target is scheduler else None,
+            lambda target: (
+                registered.append("snapshot") if target is scheduler else None
+            ),
+        )
+        monkeypatch.setattr(
+            scheduler_main,
+            "register_market_participant_snapshot_job",
+            lambda target: (
+                registered.append("participant") if target is scheduler else None
+            ),
         )
 
         assert scheduler_main.build_scheduler() is scheduler
-        assert registered == ["news", "market", "snapshot"]
+        assert registered == ["news", "market", "snapshot", "participant"]
 
     def test_run_scheduler_stops_on_shutdown_signal(self):
         """종료 대기 완료 뒤 Scheduler를 항상 정리한다."""

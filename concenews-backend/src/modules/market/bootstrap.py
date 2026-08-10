@@ -1,17 +1,32 @@
 """Market 모듈 조립 (Composition Root)."""
+
 import os
 from collections.abc import Callable
 
 from sqlalchemy.orm import Session
 
-from src.modules.market.application.ports import MarketSourcePort, SnapshotIdGeneratorPort
-from src.modules.market.application.services import MarketClassifierService, MarketSnapshotService
+from src.modules.market.application.ports import (
+    MarketSourcePort,
+    ParticipantSourcePort,
+    SnapshotIdGeneratorPort,
+)
+from src.modules.market.application.services import (
+    MarketClassifierService,
+    MarketParticipantSnapshotService,
+    MarketSnapshotService,
+)
+from src.modules.market.infrastructure.polymarket_data_client import (
+    PolymarketDataClient,
+)
 from src.modules.market.infrastructure.polymarket_client import PolymarketGammaClient
 from src.modules.market.infrastructure.repositories import (
     PgMarketClassificationRepository,
+    PgMarketParticipantSnapshotRepository,
     PgMarketSnapshotRepository,
 )
-from src.modules.market.infrastructure.snapshot_id_generator import UuidV7SnapshotIdGenerator
+from src.modules.market.infrastructure.snapshot_id_generator import (
+    UuidV7SnapshotIdGenerator,
+)
 from src.shared_kernel.db.engine import get_engine
 from src.shared_kernel.scheduler import AsyncioSchedulerAdapter
 
@@ -50,9 +65,7 @@ def register_market_classifier_job(
 
     async def run_classifier() -> None:
         """매 실행마다 새 Session으로 마켓 분류를 실행한다."""
-        session = (
-            session_factory() if session_factory else Session(get_engine())
-        )
+        session = session_factory() if session_factory else Session(get_engine())
         source = source_factory() if source_factory else PolymarketGammaClient()
         try:
             service = build_classifier_service(session, source=source)
@@ -99,7 +112,11 @@ def register_market_snapshot_job(
     async def run_snapshot() -> None:
         session = session_factory() if session_factory else Session(get_engine())
         source = source_factory() if source_factory else PolymarketGammaClient()
-        id_generator = id_generator_factory() if id_generator_factory else UuidV7SnapshotIdGenerator()
+        id_generator = (
+            id_generator_factory()
+            if id_generator_factory
+            else UuidV7SnapshotIdGenerator()
+        )
         try:
             await build_snapshot_service(session, source, id_generator).run()
             session.commit()
@@ -112,4 +129,51 @@ def register_market_snapshot_job(
                 await close()
             session.close()
 
-    scheduler.schedule("market_snapshot", run_snapshot, interval_seconds=interval_seconds)
+    scheduler.schedule(
+        "market_snapshot", run_snapshot, interval_seconds=interval_seconds
+    )
+
+
+def register_market_participant_snapshot_job(
+    scheduler: AsyncioSchedulerAdapter,
+    *,
+    session_factory: Callable[[], Session] | None = None,
+    source_factory: Callable[[], ParticipantSourcePort] | None = None,
+    id_generator_factory: Callable[[], SnapshotIdGeneratorPort] | None = None,
+) -> None:
+    """참여자 보유 포지션 수집 작업을 공용 Scheduler에 등록한다."""
+    interval_seconds = int(os.getenv("MARKET_PARTICIPANT_SNAPSHOT_INTERVAL", "300"))
+
+    async def run_participant_snapshot() -> None:
+        session = session_factory() if session_factory else Session(get_engine())
+        source = source_factory() if source_factory else PolymarketDataClient()
+        id_generator = (
+            id_generator_factory()
+            if id_generator_factory
+            else UuidV7SnapshotIdGenerator()
+        )
+        try:
+            service = MarketParticipantSnapshotService(
+                source=source,
+                market_snapshot_repository=PgMarketSnapshotRepository(session),
+                participant_snapshot_repository=PgMarketParticipantSnapshotRepository(
+                    session
+                ),
+                id_generator=id_generator,
+            )
+            await service.run()
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            close = getattr(source, "aclose", None)
+            if close is not None:
+                await close()
+            session.close()
+
+    scheduler.schedule(
+        "market_participant_snapshot",
+        run_participant_snapshot,
+        interval_seconds=interval_seconds,
+    )
