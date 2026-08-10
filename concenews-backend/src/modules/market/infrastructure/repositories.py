@@ -8,8 +8,11 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from src.modules.market.domain.models import MarketClassification
-from src.modules.market.infrastructure.orm import MarketClassificationRow
+from src.modules.market.domain.models import MarketClassification, MarketSnapshot
+from src.modules.market.infrastructure.orm import (
+    MarketClassificationRow,
+    MarketSnapshotRow,
+)
 
 
 class PgMarketClassificationRepository:
@@ -65,6 +68,48 @@ class PgMarketClassificationRepository:
         stmt = insert(MarketClassificationRow).values(rows)
         stmt = stmt.on_conflict_do_nothing(index_elements=["condition_id"])
         self._session.execute(stmt)
+        self._session.flush()
+
+
+class PgMarketSnapshotRepository:
+    """market_snapshot용 PostgreSQL 저장소 어댑터."""
+
+    def __init__(self, session: Session) -> None:
+        """저장소에 사용할 SQLAlchemy Session을 받는다."""
+        self._session = session
+
+    def save_bulk(self, snapshots: list[MarketSnapshot]) -> None:
+        """스냅샷을 한 번에 저장한다.
+
+        Args:
+            snapshots: 저장할 스냅샷 목록.
+        """
+        if not snapshots:
+            return
+
+        rows = [
+            {
+                "id": snapshot.id,
+                "market_id": snapshot.market_id,
+                "question": snapshot.question,
+                "outcomes": list(snapshot.outcomes),
+                "outcome_prices": list(snapshot.outcome_prices),
+                "last_price": snapshot.last_price,
+                "best_bid": snapshot.best_bid,
+                "best_ask": snapshot.best_ask,
+                "spread": snapshot.spread,
+                "liquidity": snapshot.liquidity,
+                "volume_24h": snapshot.volume_24h,
+                "volume_1w": snapshot.volume_1w,
+                "volume_1m": snapshot.volume_1m,
+                "end_date": snapshot.end_date,
+                "active": snapshot.active,
+                "closed": snapshot.closed,
+                "timestamp": snapshot.timestamp,
+            }
+            for snapshot in snapshots
+        ]
+        self._session.execute(insert(MarketSnapshotRow).values(rows))
         self._session.flush()
 
 
