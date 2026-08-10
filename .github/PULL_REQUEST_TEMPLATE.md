@@ -36,6 +36,7 @@ just check-branch-green
 - [ ] 현재 Task 범위와 `origin/master...HEAD` diff가 일치한다.
 - [ ] 테스트가 요구 계약을 실제로 증명한다.
 - [ ] 실제 외부 서비스 요청은 Fake·fixture·격리된 경계로 대체했다.
+- [ ] self-review finding을 PR 생성 전에 조치하고 검증을 다시 실행했다.
 - [ ] readiness·timeout·cleanup을 확인했고, 고정 sleep만으로 성공을 판정하지 않는다.
 - [ ] 컨테이너·운영 변경이면 secret·healthcheck·signal·restart를 확인했다.
 

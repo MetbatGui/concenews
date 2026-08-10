@@ -122,7 +122,7 @@ PR 생성 전 저자는 `origin/master...HEAD`를 읽고 다음 다섯 항목을
 - **결정성**: 고정 sleep 대신 readiness·명시적 상태·제한 시간을 사용하고, cleanup 실패도 보고하는가.
 - **운영 계약**: 환경 변수·secret 제외, healthcheck, signal, restart, volume·포트 충돌을 확인했는가.
 
-Self-review 결과는 PR 본문의 테스트·검토 목록에 요약한다.
+Self-review에서 발견한 사항은 **PR 생성 전에 먼저 수정**하고 `just check-branch-green`을 다시 실행한다. 수정 뒤의 diff와 검증 결과를 확인한 커밋만 push·PR 생성 대상으로 삼는다. PR 본문에는 최종 self-review 결과와 선행 개선 사항을 요약한다.
 
 ---
 
@@ -130,7 +130,7 @@ Self-review 결과는 PR 본문의 테스트·검토 목록에 요약한다.
 
 PR 생성 뒤 Codex는 별도 컨텍스트의 읽기 전용 리뷰를 자동으로 수행하고, 결과를 PR 댓글로 남긴다.
 
-1. 저자가 self-review를 마친 뒤 PR을 생성한다.
+1. 저자는 self-review에서 발견한 사항을 수정하고 전체 검증을 다시 통과한 뒤 PR을 생성한다.
 2. 독립 리뷰는 `Caveman Review` 형식으로 결함·위험·질문만 판정한다.
 3. Codex는 리뷰 결과와 수정 범위를 사용자에게 제시하고 **명시적 수정 승인 전에는 코드를 변경하지 않는다.**
 4. 승인 뒤 수정·`just check-branch-green`·커밋·push를 수행하고, 조치 결과를 PR 댓글로 남긴다.
