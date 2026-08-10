@@ -57,6 +57,10 @@ def register_market_classifier_job(
         try:
             service = build_classifier_service(session, source=source)
             await service.run()
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
         finally:
             close = getattr(source, "aclose", None)
             if close is not None:
@@ -98,6 +102,10 @@ def register_market_snapshot_job(
         id_generator = id_generator_factory() if id_generator_factory else UuidV7SnapshotIdGenerator()
         try:
             await build_snapshot_service(session, source, id_generator).run()
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
         finally:
             close = getattr(source, "aclose", None)
             if close is not None:
