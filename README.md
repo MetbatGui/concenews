@@ -145,6 +145,7 @@ THENEWSAPI_TOKEN=your_api_key just check-e2e
 ## 문서
 
 ### 개발 가이드
+- [제품 비전](docs/product-vision.md)
 - [Vertical Slice 개발 흐름](docs/architecture/principles/vertical-slices.md)
 - [GitHub 관리 규칙](docs/github-strategy.md)
 - [테스트 전략](concenews-backend/docs/conventions/testing.md)
