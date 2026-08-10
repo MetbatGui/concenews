@@ -64,6 +64,7 @@ def _parse_holder(raw: object) -> ParticipantPositionPayload | None:
         or not wallet
         or isinstance(outcome_index, bool)
         or not isinstance(outcome_index, int)
+        or isinstance(amount, bool)
         or not isinstance(amount, (str, int, float))
     ):
         return None

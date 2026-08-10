@@ -48,7 +48,8 @@ class TestPolymarketDataClient:
             {
                 "holders": [
                     {"proxyWallet": "0xok", "amount": 1, "outcomeIndex": 0},
-                    {"proxyWallet": "0xbad", "amount": 0, "outcomeIndex": 0},
+                    {"proxyWallet": "0xbad-zero", "amount": 0, "outcomeIndex": 0},
+                    {"proxyWallet": "0xbad-bool", "amount": True, "outcomeIndex": 0},
                 ]
             }
         ]
