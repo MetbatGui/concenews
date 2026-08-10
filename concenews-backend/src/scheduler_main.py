@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_scheduler() -> AsyncioSchedulerAdapter:
-    """두 주기 작업을 등록한 Scheduler를 조립한다."""
+    """등록된 주기 작업을 포함한 Scheduler를 조립한다."""
     scheduler = AsyncioSchedulerAdapter()
     register_news_collection_job(scheduler)
     register_market_classifier_job(scheduler)
