@@ -8,9 +8,9 @@
 ## 플로우 개요
 
 ```
-간단 기획 → (Spike) → (ADR) → Spec → Plan → 사용자 검토 → Tasks → Walking Skeleton → 구현 → 부가 기능
-                                                                  ↑
-                                                  각 구현 단계 = Integration Test 로 검증
+간단 기획 → (Spike) → (ADR) → Spec → Plan → 사용자 검토 → Issue 생성 → Tasks → Walking Skeleton → 구현 → 부가 기능
+                                                                                  ↑
+                                                                  각 구현 단계 = Integration Test 로 검증
 ```
 
 ---
@@ -55,19 +55,27 @@
 - Spec과 Plan을 사용자에게 제시하고 승인받는다.
 - 승인 전에는 구현 브랜치·프로덕션 코드·GitHub Issue/PR을 만들지 않는다.
 
-### 7. Tasks
+### 7. GitHub Issue 생성 (GitHub로 추적하는 Slice만)
+
+- 사용자가 명시적으로 승인한 경우에만 Epic 또는 Slice Issue를 생성한다.
+- Issue는 승인된 Spec·Plan과 Research·ADR을 링크해 Slice의 공식 기록이 된다.
+- Issue 생성 후 각 Task의 `feature/{slice}-{task}` 브랜치를 만든다.
+- 작은 로컬 작업처럼 GitHub Issue로 추적하지 않는 경우에는 이 단계를 건너뛴다.
+- 상세: [github-strategy.md](github-strategy.md)
+
+### 8. Tasks
 
 - [ ] Walking Skeleton (모든 계층 스텁, Integration test RED → GREEN)
 - [ ] 실제 구현 (Repository, API client, ...)
 - [ ] 부가 기능 (Scheduler, Bootstrap, Lifespan)
 
-### 8. Implement
+### 9. Implement
 
 - Task 순서대로. **Task 하나 = PR 하나 = `feature/{slice}-{task}` 브랜치 하나**.
 - 각 논리 단위 = 1 커밋 ([git-workflow.md § 원자적 커밋](git-workflow.md))
 - Integration 테스트: 스텁 통과 → 실 구현 통과 (회귀 방지)
 
-### 9. Milestone 완료
+### 10. Milestone 완료
 
 - 모든 Integration Test pass
 - Integration Test = Milestone 완료 기준
@@ -105,5 +113,5 @@
 - Epic Issue = Bounded Context 단위 (예: "Market Bounded Context")
 - Milestone = 릴리스 버전 (v1.0, v1.1, ...)
 - Slice = 하위 Issue (Epic 의 sub-issue)
-- Tasks → 각 PR 로 변환
+- Slice Issue → Plan의 Task별 PR로 분해
 - 상세: [github-strategy.md](github-strategy.md)
