@@ -9,7 +9,7 @@ import responses
 from src.modules.news.application.services import NewsCollectorService
 from src.modules.news.infrastructure.cache import InMemoryCacheAdapter
 from src.modules.news.infrastructure.repositories.postgres import PgNewsRepository
-from src.modules.news.infrastructure.scheduler import AsyncioSchedulerAdapter
+from src.shared_kernel.scheduler import AsyncioSchedulerAdapter
 from src.modules.news.infrastructure.the_news_api_client import TheNewsAPIClient
 
 
@@ -169,7 +169,7 @@ class TestNewsCollectionIntegration:
             async def run_collector() -> None:
                 collector.run(keywords=["test"])
 
-            scheduler.schedule(run_collector, interval_seconds=900)
+            scheduler.schedule("news_collector", run_collector, interval_seconds=900)
 
             # Start, trigger, stop
             await scheduler.start()
