@@ -41,7 +41,7 @@ Domain
 Infrastructure
    ├─ PolymarketGammaClient  (httpx.AsyncClient)
    ├─ PgMarketClassificationRepository (SQLAlchemy 2.0)
-   └─ SchedulerAdapter (기존, news 모듈에서 도입)
+   └─ Scheduler Runtime (별도 컨테이너, shared kernel; [ADR](../../docs/decisions/2026-08-10-scheduler-runtime-daemon.md))
 
 Shared Kernel
    └─ db/ (기존)
@@ -220,11 +220,14 @@ CREATE INDEX idx_market_classification_type
 - Unit test: Fake source + Fake repo, UNKNOWN skip 검증
 - 파일: `tests/unit/market/test_classifier_service.py`
 
-### PR #6: Scheduler 등록 완성 — `feature/market-classifier-wire`
+### PR #6: Scheduler Runtime 분리로 이관
 
-- `bootstrap.py`: FastAPI lifespan 에 5분 주기 스케줄러 등록 (PR #1 뼈대에 실제 등록 추가)
-- Integration test 확장 (스케줄러 tick 검증)
-- `Closes #23`
+마켓 분류의 주기 실행은 별도 Slice인 [Scheduler Runtime Plan](plan-scheduler-runtime.md)에서 구현한다.
+
+- FastAPI lifespan 등록은 수행하지 않는다.
+- 별도 Scheduler 컨테이너가 뉴스 수집과 마켓 분류 작업을 함께 등록한다.
+- Scheduler tick 검증은 Scheduler Runtime Slice의 Integration 테스트에서 수행한다.
+- 이 Slice 완료 PR은 마켓 분류 서비스·저장 흐름까지만 포함한다.
 
 ---
 

@@ -197,7 +197,7 @@ UNKNOWN → skip
 | API | Gamma API | [ADR 2026-07-12](../../docs/decisions/2026-07-12-polymarket-api-choice.md) |
 | 필터 전략 | 블랙리스트 우선 → 화이트리스트 | [ADR 2026-07-12](../../docs/decisions/2026-07-12-market-filtering-strategy.md) |
 | DB | SQLAlchemy 2.0 + psycopg + PostgreSQL | [ADR 2026-07-06](../../docs/decisions/2026-07-06-db-library.md) |
-| Scheduler | asyncio + FastAPI lifespan | [ADR 2026-07-06](../../docs/decisions/2026-07-06-scheduler-choice.md) |
+| Scheduler | 별도 Scheduler 컨테이너 + stdlib asyncio | [ADR 2026-08-10](../../docs/decisions/2026-08-10-scheduler-runtime-daemon.md) |
 | 시간대 | TIMESTAMPTZ (UTC 저장) | [ADR 2026-07-05](../../docs/decisions/2026-07-05-timezone-policy.md) |
 | 태그 캐시 | DB 기반, end_date 만료 | Spike 실측 |
 | 태그 병렬 조회 | asyncio.gather | Spike 실측: 50콜/0.61초, 레이트리밋 없음 |

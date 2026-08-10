@@ -16,7 +16,7 @@
 | 2026-07-05 | [timezone-policy](./2026-07-05-timezone-policy.md) | Accepted |
 | 2026-07-06 | [db-library (SQLAlchemy sync + psycopg)](./2026-07-06-db-library.md) | Accepted |
 | 2026-07-06 | [repository-strategy (Port 추출 + Fake/PG test)](./2026-07-06-repository-strategy.md) | Accepted |
-| 2026-07-06 | [scheduler-choice (stdlib asyncio + news 로컬 + lifespan)](./2026-07-06-scheduler-choice.md) | Accepted |
+| 2026-07-06 | [scheduler-choice (stdlib asyncio + news 로컬 + lifespan)](./2026-07-06-scheduler-choice.md) | Superseded by 2026-08-10 |
 
 ### Process & Convention
 
@@ -38,7 +38,7 @@
 | 2026-07-07 | [spike-learning-spec-fidelity](./2026-07-07-spike-learning-spec-fidelity.md) | Accepted |
 | 2026-07-12 | [polymarket-api-choice (Gamma + CLOB)](./2026-07-12-polymarket-api-choice.md) | Accepted |
 | 2026-07-12 | [market-filtering-strategy (tag + keyword 2단계)](./2026-07-12-market-filtering-strategy.md) | Accepted |
-| 2026-08-10 | [scheduler-runtime-daemon (별도 컨테이너와 공용 실행기)](./2026-08-10-scheduler-runtime-daemon.md) | Proposed |
+| 2026-08-10 | [scheduler-runtime-daemon (별도 컨테이너와 공용 실행기)](./2026-08-10-scheduler-runtime-daemon.md) | Accepted |
 
 ### Module Boundaries
 

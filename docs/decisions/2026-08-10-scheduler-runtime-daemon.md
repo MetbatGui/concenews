@@ -1,6 +1,6 @@
 # ADR: Scheduler Runtime — 별도 컨테이너와 공용 실행기
 
-**Status**: Proposed
+**Status**: Accepted
 **Date**: 2026-08-10
 **Slice**: scheduler-runtime
 

@@ -1,6 +1,6 @@
 # Plan: Scheduler Runtime 분리
 
-**상태**: Proposed — 사용자 검토 대기
+**상태**: Accepted
 **Spec**: [spec-market-classifier-scheduler.md](spec-market-classifier-scheduler.md)
 **관련 결정**: [Scheduler Runtime ADR](../../docs/decisions/2026-08-10-scheduler-runtime-daemon.md)
 **운영 규약**: [주기 작업 운영 계약](conventions/scheduled-workloads.md)

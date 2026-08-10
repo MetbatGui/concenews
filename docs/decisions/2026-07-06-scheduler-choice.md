@@ -1,6 +1,6 @@
 # ADR: Scheduler — stdlib asyncio (초기), 로컬 news 모듈, lifespan 통합
 
-**Status**: Accepted
+**Status**: Superseded by [scheduler-runtime-daemon](./2026-08-10-scheduler-runtime-daemon.md)
 **Date**: 2026-07-06
 **Slice**: news-collection
 
