@@ -136,6 +136,13 @@ PR 생성 뒤 Codex는 별도 컨텍스트의 읽기 전용 리뷰를 자동으�
 4. 승인 뒤 수정·`just check-branch-green`·커밋·push를 수행하고, 조치 결과를 PR 댓글로 남긴다.
 5. 승인된 수정이 모두 검증되면 병합한다.
 
+### 병합 방식
+
+Task PR은 **merge commit** 방식으로 병합한다. Task 안의 원자 커밋과 TDD·리뷰 이력을 보존해, `master`에서 변경의 흐름을 추적할 수 있게 한다.
+
+- `gh pr merge --merge`를 사용한다.
+- squash merge와 rebase merge는 사용하지 않는다.
+
 ---
 
 ## Pull Request
