@@ -4,6 +4,7 @@ services:
       - "18000:8000"
 
   scheduler:
+    command: ["python", "-m", "scripts.scheduler_smoke"]
     environment:
-      THENEWSAPI_TOKEN: container-smoke-token
+      SCHEDULER_SMOKE_READY_FILE: /tmp/scheduler-ready
     network_mode: none

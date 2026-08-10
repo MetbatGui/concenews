@@ -12,13 +12,13 @@
 - `migrate`·`api`·`scheduler` 서비스는 하나의 `concenews-backend:local` 이미지를 서로 다른 명령으로 실행할 수 있다.
 - `migrate`가 PostgreSQL healthcheck 뒤 완료되어야 API와 Scheduler가 시작되도록 Compose 의존성을 둘 수 있다.
 - API는 migration 뒤 `/health` 응답으로 기동을 확인한다.
-- Scheduler smoke에서는 `network_mode: none`으로 외부 네트워크를 차단하고, 더미 토큰으로 조립만 통과시킨다. 작업 실행 중 네트워크 오류는 Scheduler의 작업별 예외 격리 대상이며, 실제 외부 API 호출은 발생하지 않는다.
-- Scheduler 시작 직후 종료 signal handler 준비에 시간이 필요하므로, smoke는 5초 뒤 SIGTERM을 보내고 정상 종료 코드를 확인한다.
+- Scheduler smoke는 외부 API·DB를 호출하지 않는 Fake 작업 두 개를 실제 `AsyncioSchedulerAdapter`에 등록한다. `network_mode: none`은 추가 방어 계층으로 유지한다.
+- Fake 작업이 등록·시작되면 readiness 파일을 만들고, smoke는 이 파일을 제한 시간 안에 확인한 뒤 SIGTERM을 보낸다.
 
 ## 적용
 
-`just check-container`는 이미지 build, PostgreSQL·migration·API healthcheck, 네트워크 차단 Scheduler의 SIGTERM 종료를 차례로 검증한다.
+`just check-container`는 이미지 build, PostgreSQL·migration·API healthcheck, Fake 작업 Scheduler의 readiness·SIGTERM 종료를 차례로 검증한다.
 
 ## 후속 조건
 
-Scheduler에 명시적 readiness 신호 또는 health endpoint가 생기면, 고정 5초 대기 대신 readiness 기반으로 smoke 종료 시점을 바꾼다.
+운영 Scheduler에 health endpoint가 생기면, smoke의 파일 readiness를 해당 healthcheck로 교체할 수 있다.

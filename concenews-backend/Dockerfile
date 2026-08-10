@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir uv \
 
 COPY alembic ./alembic
 COPY alembic.ini ./
+COPY scripts ./scripts
 COPY src ./src
 
 RUN useradd --create-home appuser \

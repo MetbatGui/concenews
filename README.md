@@ -17,6 +17,7 @@ docker compose up --build
 - `migrate`가 PostgreSQL healthcheck 뒤 Alembic migration을 한 번 실행한다.
 - `api`는 `http://localhost:8000/health`에서 HTTP 요청만 처리한다.
 - `scheduler`는 같은 백엔드 이미지에서 별도 명령으로 뉴스 수집과 마켓 분류를 실행한다.
+- `scheduler`는 비정상 종료 뒤 `unless-stopped` 정책으로 재시작하고, 종료 시 최대 20초 동안 작업 정리를 기다린다.
 - 종료는 `docker compose down`을 사용한다.
 
 실제 외부 API 호출 없이 컨테이너 경계를 확인하려면 다음을 실행한다.
