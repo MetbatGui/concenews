@@ -1,5 +1,31 @@
 # Concenews
 
+## 컨테이너 실행
+
+`.env` 파일을 이미지에 포함하지 않는다. Scheduler 실행 전 호스트 환경에 TheNewsAPI 토큰을 설정한다.
+
+```powershell
+$env:THENEWSAPI_TOKEN="your_api_key"
+docker compose up --build
+```
+
+```bash
+export THENEWSAPI_TOKEN=your_api_key
+docker compose up --build
+```
+
+- `migrate`가 PostgreSQL healthcheck 뒤 Alembic migration을 한 번 실행한다.
+- `api`는 `http://localhost:8000/health`에서 HTTP 요청만 처리한다.
+- `scheduler`는 같은 백엔드 이미지에서 별도 명령으로 뉴스 수집과 마켓 분류를 실행한다.
+- `scheduler`는 비정상 종료 뒤 `unless-stopped` 정책으로 재시작하고, 종료 시 최대 20초 동안 작업 정리를 기다린다.
+- 종료는 `docker compose down`을 사용한다.
+
+실제 외부 API 호출 없이 컨테이너 경계를 확인하려면 다음을 실행한다.
+
+```bash
+just check-container
+```
+
 **개인 거시경제 투자자를 위한 뉴스-예측시장 실시간 분석 플랫폼**
 
 ---

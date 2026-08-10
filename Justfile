@@ -32,4 +32,9 @@ check-e2e:
     $project_root = $PWD; $started = $false; try { if (-not $env:THENEWSAPI_TOKEN) { throw "THENEWSAPI_TOKEN 환경 변수가 필요합니다." }; docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" up -d --wait; if ($LASTEXITCODE -ne 0) { throw "테스트 데이터베이스 기동에 실패했습니다." }; $started = $true; $env:DATABASE_URL = "{{test_database_url}}"; Set-Location "$project_root\\{{backend_dir}}"; uv run pytest tests/integration -q -m e2e --ignore=spikes; if ($LASTEXITCODE -ne 0) { throw "E2E 테스트에 실패했습니다." } } finally { if ($started) { docker compose --project-name concenews-test -f "$project_root\\docker-compose.test.yml" down } }
 
 # 병합 전 전체 품질 게이트. 모든 하위 작업이 성공해야 한다.
+# API·Scheduler 컨테이너의 기동·종료 경계를 실제 Docker에서 검증한다.
+check-container:
+    powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-container.ps1
+
+# 병합 전 전체 로컬 게이트: 모든 하위 작업이 성공해야 한다.
 check-branch-green: check-ruff check-ty check-imports check-unit check-integration

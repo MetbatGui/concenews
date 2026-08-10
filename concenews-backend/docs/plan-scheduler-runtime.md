@@ -16,6 +16,7 @@
 ### Task 1. 공용 Scheduler와 작업 조립
 
 **브랜치**: `feature/scheduler-runtime-daemon`
+**상태**: 완료 (PR #31)
 
 - `AsyncioSchedulerAdapter`를 `shared_kernel/scheduler/`로 이관한다.
 - 뉴스·마켓 bootstrap에 “작업 하나를 Scheduler에 등록하는” 공개 조립 함수를 둔다.
@@ -31,6 +32,7 @@
 ### Task 2. Scheduler 진입점과 API 분리
 
 **브랜치**: `feature/scheduler-runtime-entrypoint`
+**상태**: 완료 (PR #32)
 
 - `src/scheduler_main.py`에서 두 작업 등록, 시작, SIGTERM/KeyboardInterrupt 종료를 구현한다.
 - `src/main.py`에서 Scheduler lifespan 시작 코드를 제거한다.
@@ -45,6 +47,7 @@
 ### Task 3. 컨테이너 실행 구성
 
 **브랜치**: `feature/scheduler-runtime-container`
+**상태**: 완료
 
 - 백엔드 이미지 Dockerfile을 추가한다.
 - Compose에 동일 이미지를 서로 다른 명령으로 실행하는 `api`, `scheduler` 서비스를 추가한다.
@@ -75,12 +78,12 @@ Task 1에서 이 흐름을 수동 trigger 기반 Integration 테스트로 GREEN�
 
 ## 완료 조건
 
-- [ ] API 컨테이너가 Scheduler 없이 HTTP만 제공한다.
-- [ ] Scheduler 컨테이너가 뉴스 수집과 마켓 분류를 각각 등록한다.
-- [ ] 두 작업이 독립 Session을 사용하고 오류가 격리된다.
-- [ ] SIGTERM에 등록 작업이 정리된다.
-- [ ] API·Scheduler·PostgreSQL Compose 구성이 문서화되고 기동된다.
-- [ ] `just check-branch-green`이 통과한다.
+- [x] API 컨테이너가 Scheduler 없이 HTTP만 제공한다.
+- [x] Scheduler 컨테이너가 뉴스 수집과 마켓 분류를 각각 등록한다.
+- [x] 두 작업이 독립 Session을 사용하고 오류가 격리된다.
+- [x] SIGTERM에 등록 작업이 정리된다.
+- [x] API·Scheduler·PostgreSQL Compose 구성이 문서화되고 기동된다.
+- [x] `just check-branch-green`이 통과한다.
 
 ## 승인 후 문서 정리
 

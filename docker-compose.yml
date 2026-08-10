@@ -1,7 +1,11 @@
+x-backend-image: &backend-image
+  image: concenews-backend:local
+  build:
+    context: ./concenews-backend
+
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: concenews-postgres
     environment:
       POSTGRES_USER: concenews
       POSTGRES_PASSWORD: concenews
@@ -15,6 +19,39 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  migrate:
+    <<: *backend-image
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://concenews:concenews@postgres:5432/concenews
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    <<: *backend-image
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://concenews:concenews@postgres:5432/concenews
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+
+  scheduler:
+    <<: *backend-image
+    command: ["python", "-m", "src.scheduler_main"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://concenews:concenews@postgres:5432/concenews
+      THENEWSAPI_TOKEN: ${THENEWSAPI_TOKEN:-}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    stop_grace_period: 20s
 
 volumes:
   postgres_data:

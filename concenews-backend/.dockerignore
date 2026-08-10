@@ -1,0 +1,12 @@
+.env
+.env.*
+.venv
+.pytest_cache
+.ruff_cache
+.import_linter_cache
+__pycache__
+alembic/__pycache__
+docs
+spikes
+tests
+.github

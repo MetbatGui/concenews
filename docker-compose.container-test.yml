@@ -1,0 +1,10 @@
+services:
+  api:
+    ports:
+      - "18000:8000"
+
+  scheduler:
+    command: ["python", "-m", "scripts.scheduler_smoke"]
+    environment:
+      SCHEDULER_SMOKE_READY_FILE: /tmp/scheduler-ready
+    network_mode: none
