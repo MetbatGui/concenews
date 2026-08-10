@@ -144,7 +144,7 @@ uv run python -m uvicorn src.main:app --reload
 
 ## GitHub 워크플로우 (✨ 중요)
 
-**브랜치 이름 표준**: Task 브랜치는 반드시 `feature/{slice}-{task}`를 사용한다.
+**브랜치 생성 전 필수 참조**: [git-workflow.md § 브랜치 전략](docs/git-workflow.md)를 읽고, Task마다 그 문서가 정한 `feature/{slice}-{task}` 형식으로 브랜치를 만든다.
 
 **Spec/Plan 작성 후 GitHub 액션 전에 사용자 검토 대기 필수**:
 
