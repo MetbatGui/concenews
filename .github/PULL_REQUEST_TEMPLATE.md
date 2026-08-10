@@ -31,7 +31,13 @@ just check-branch-green
 
 ## 관련 이슈
 
-Closes #00 (해당하면)
+### Slice Issue
+
+Related to #00
+
+- 일반 Task PR은 반드시 Slice Issue를 `Related to #번호`로 연결한다.
+- Slice의 완료 조건을 모두 충족하는 마지막 Task PR만 `Fixes #번호`를 사용한다.
+- Epic Issue는 Task PR에 직접 닫지 않는다.
 
 ## 추가 노트
 
