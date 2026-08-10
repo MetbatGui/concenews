@@ -1,6 +1,6 @@
 # Plan: 상위 보유 포지션 스냅샷 수집
 
-**Spec**: [spec-market-participant-snapshot.md](./spec-market-participant-snapshot.md)  
+**Spec**: [spec-market-participant-snapshot.md](./spec-market-participant-snapshot.md)
 **상태**: 검토 요청
 
 ## 설계 요약

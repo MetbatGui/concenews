@@ -1,6 +1,6 @@
 # Spec: 상위 보유 포지션 스냅샷 수집
 
-**상태**: 검토 요청  
+**상태**: 검토 요청
 **Slice**: market-participant-snapshot
 
 ## 사용자 가치

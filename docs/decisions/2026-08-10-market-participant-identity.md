@@ -1,7 +1,7 @@
 # ADR: 마켓 스냅샷에 Polymarket condition ID를 함께 보존
 
-**Status**: Proposed  
-**Date**: 2026-08-10  
+**Status**: Proposed
+**Date**: 2026-08-10
 **Slice**: market-participant-snapshot
 
 ## Context
