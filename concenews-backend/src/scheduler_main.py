@@ -29,24 +29,27 @@ async def run_scheduler(
         scheduler: 테스트에서 주입할 Scheduler. 생략하면 운영 조립을 사용한다.
         wait_for_shutdown: 테스트용 종료 대기 함수. 생략하면 SIGTERM을 기다린다.
     """
-    active_scheduler = scheduler or build_scheduler()
-    await active_scheduler.start()
-    logger.info("Scheduler 작업을 시작했습니다.")
-
+    active_scheduler: AsyncioSchedulerAdapter | None = None
     try:
+        stop_event = _install_shutdown_signal_handlers()
+        active_scheduler = scheduler or build_scheduler()
+        await active_scheduler.start()
+        logger.info("Scheduler 작업을 시작했습니다.")
+
         if wait_for_shutdown is None:
-            await _wait_for_shutdown_signal()
+            await stop_event.wait()
         else:
             await wait_for_shutdown()
     except KeyboardInterrupt:
         logger.info("KeyboardInterrupt를 받아 Scheduler를 종료합니다.")
     finally:
-        await active_scheduler.stop()
-        logger.info("Scheduler 작업을 정리했습니다.")
+        if active_scheduler is not None:
+            await active_scheduler.stop()
+            logger.info("Scheduler 작업을 정리했습니다.")
 
 
-async def _wait_for_shutdown_signal() -> None:
-    """SIGTERM 또는 SIGINT를 기다린다."""
+def _install_shutdown_signal_handlers() -> asyncio.Event:
+    """SIGTERM 또는 SIGINT를 받을 종료 Event를 준비한다."""
     stop_event = asyncio.Event()
     loop = asyncio.get_running_loop()
 
@@ -56,7 +59,7 @@ async def _wait_for_shutdown_signal() -> None:
         except NotImplementedError:
             signal.signal(shutdown_signal, lambda *_: stop_event.set())
 
-    await stop_event.wait()
+    return stop_event
 
 
 def main() -> None:

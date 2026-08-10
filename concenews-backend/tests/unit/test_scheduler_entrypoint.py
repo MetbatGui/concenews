@@ -7,6 +7,7 @@ import pytest
 
 import src.main as api_main
 from src import scheduler_main
+from src.modules.news import bootstrap as news_bootstrap
 
 
 class _FakeScheduler:
@@ -29,6 +30,7 @@ class TestApiRuntimeBoundary:
     def test_api_lifespan_does_not_start_scheduler(self):
         """API 기동은 Scheduler 조립 함수를 호출하지 않는다."""
         assert not hasattr(api_main, "setup_news_collector")
+        assert not hasattr(news_bootstrap, "setup_news_collector")
 
         with TestClient(api_main.app) as client:
             assert client.get("/health").json() == {"status": "ok"}
@@ -75,8 +77,10 @@ class TestSchedulerEntrypoint:
         assert scheduler.stopped
 
     @pytest.mark.asyncio
-    async def test_wait_for_shutdown_returns_after_sigterm(self, monkeypatch):
-        """SIGTERM handler가 종료 대기를 해제한다."""
+    async def test_run_scheduler_stops_when_sigterm_arrives_during_startup(
+        self, monkeypatch
+    ):
+        """SIGTERM handler는 Scheduler 시작 전에 준비되어 정리를 보장한다."""
         callbacks: dict[signal.Signals, object] = {}
         loop = asyncio.get_running_loop()
 
@@ -88,9 +92,33 @@ class TestSchedulerEntrypoint:
             ),
         )
 
-        wait_task = asyncio.create_task(scheduler_main._wait_for_shutdown_signal())
-        await asyncio.sleep(0)
-        callback = callbacks[signal.SIGTERM]
-        assert callable(callback)
-        callback()
-        await wait_task
+        class SignalOnStartScheduler(_FakeScheduler):
+            async def start(self) -> None:
+                await super().start()
+                callback = callbacks[signal.SIGTERM]
+                assert callable(callback)
+                callback()
+
+        scheduler = SignalOnStartScheduler()
+
+        await scheduler_main.run_scheduler(scheduler=scheduler)
+
+        assert scheduler.started
+        assert scheduler.stopped
+
+    def test_run_scheduler_stops_after_keyboard_interrupt(self):
+        """KeyboardInterrupt를 받아도 Scheduler를 정리한다."""
+        scheduler = _FakeScheduler()
+
+        async def raise_keyboard_interrupt() -> None:
+            raise KeyboardInterrupt
+
+        asyncio.run(
+            scheduler_main.run_scheduler(
+                scheduler=scheduler,
+                wait_for_shutdown=raise_keyboard_interrupt,
+            )
+        )
+
+        assert scheduler.started
+        assert scheduler.stopped

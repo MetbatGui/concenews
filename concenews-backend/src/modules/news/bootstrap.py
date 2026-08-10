@@ -1,11 +1,5 @@
-"""News 모듈 조립 (Composition Root).
-
-Repository / Service / Endpoint 조합을 여기서 결정.
-Layer 안쪽 (application, domain) 는 이 파일을 몰라도 됨.
-Router 는 provider 함수만 참조 — Infrastructure 직접 import 금지.
-"""
+"""News 모듈 조립(Composition Root)."""
 import asyncio
-import logging
 import os
 from typing import Annotated
 
@@ -22,54 +16,19 @@ from .infrastructure.cache import InMemoryCacheAdapter
 from .infrastructure.repositories.postgres import PgNewsRepository
 from .infrastructure.the_news_api_client import TheNewsAPIClient
 
-logger = logging.getLogger(__name__)
-
 
 def get_repository(
     session: Annotated[Session, Depends(get_session)],
 ) -> NewsRepositoryPort:
-    """Repository provider (Session 주입).
-
-    Production: PgNewsRepository (PostgreSQL adapter).
-    Test: app.dependency_overrides 로 교체.
-
-    Args:
-        session: SQLAlchemy Session (request-scoped).
-
-    Returns:
-        NewsRepositoryPort 구현체 (PgNewsRepository).
-    """
+    """요청 범위 Session으로 뉴스 Repository를 조립한다."""
     return PgNewsRepository(session)
 
 
 def get_service(
     repository: Annotated[NewsRepositoryPort, Depends(get_repository)],
 ) -> NewsService:
-    """NewsService provider (Repository 주입).
-
-    Args:
-        repository: 저장소 (Depends 주입).
-
-    Returns:
-        NewsService 인스턴스.
-    """
+    """뉴스 조회 서비스를 조립한다."""
     return NewsService(repository=repository)
-
-
-async def setup_news_collector() -> AsyncioSchedulerAdapter:
-    """News collector 및 scheduler 초기화 (lifespan startup 용).
-
-    매 실행마다 새 session 생성 (격리 + lifecycle 단순화).
-
-    Returns:
-        AsyncioSchedulerAdapter 스케줄러.
-
-    Raises:
-        ValueError: NEWS_API_KEY 환경 변수 미설정.
-    """
-    scheduler = AsyncioSchedulerAdapter()
-    register_news_collection_job(scheduler)
-    return scheduler
 
 
 def register_news_collection_job(scheduler: AsyncioSchedulerAdapter) -> None:
@@ -83,16 +42,14 @@ def register_news_collection_job(scheduler: AsyncioSchedulerAdapter) -> None:
     """
     api_key = os.getenv("THENEWSAPI_TOKEN")
     if not api_key:
-        raise ValueError("THENEWSAPI_TOKEN 환경 변수 미설정")
+        raise ValueError("THENEWSAPI_TOKEN 환경 변수가 설정되지 않았습니다.")
 
     api_client = TheNewsAPIClient(api_key=api_key)
     cache = InMemoryCacheAdapter()
-
-    # Schedule collector job (환경변수로 설정 가능, 기본 15분)
     interval_seconds = int(os.getenv("NEWS_COLLECTOR_INTERVAL", 900))
 
     async def run_collector() -> None:
-        """매 실행마다 새 session 생성 후 실행."""
+        """실행마다 새 Session을 생성해 뉴스 수집을 실행한다."""
         session = Session(get_engine())
         try:
             repository = PgNewsRepository(session)
@@ -101,7 +58,6 @@ def register_news_collection_job(scheduler: AsyncioSchedulerAdapter) -> None:
                 cache=cache,
                 repository=repository,
             )
-            # Blocking call을 executor에서 실행 (non-blocking)
             await asyncio.to_thread(
                 collector.run,
                 keywords=["interest rate", "forex", "central bank"],
