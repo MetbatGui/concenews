@@ -84,7 +84,7 @@
 | 커밋 메시지 형식 | 이 파일 위 (커밋 컨벤션) |
 | 커밋 단위 (원자성, 언제 커밋할지) | [git-workflow.md § 원자적 커밋](docs/git-workflow.md) |
 | 순수 docs 변경은 어떻게 (직접 master?) | [git-workflow.md § 문서 전용 변경](docs/git-workflow.md) |
-| PR 만들 때 (단위/브랜치명/master green 규칙) | [git-workflow.md](docs/git-workflow.md) |
+| 브랜치 만들 때 / PR 만들 때 (단위·이름·master green 규칙) | [git-workflow.md § 브랜치 전략](docs/git-workflow.md) |
 | PR 크기 (언제 분리?) | [git-workflow.md § PR 크기 원칙](docs/git-workflow.md) |
 | Walking Skeleton PR 구성 (모든 계층 스텁) | [xp.md § Walking Skeleton 스텁 규칙](docs/architecture/principles/xp.md) |
 | 개발 플로우 (Spike → Spec → Plan → Tasks → Skeleton → 구현) | [workflow.md](docs/workflow.md) |
@@ -143,8 +143,6 @@ uv run python -m uvicorn src.main:app --reload
 ---
 
 ## GitHub 워크플로우 (✨ 중요)
-
-**브랜치 생성 전 필수 참조**: [git-workflow.md § 브랜치 전략](docs/git-workflow.md)를 읽고, Task마다 그 문서가 정한 `feature/{slice}-{task}` 형식으로 브랜치를 만든다.
 
 **Spec/Plan 작성 후 GitHub 액션 전에 사용자 검토 대기 필수**:
 
