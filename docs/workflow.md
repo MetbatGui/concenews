@@ -75,7 +75,13 @@
 - 각 논리 단위 = 1 커밋 ([git-workflow.md § 원자적 커밋](git-workflow.md))
 - Integration 테스트: 스텁 통과 → 실 구현 통과 (회귀 방지)
 
-### 10. Milestone 완료
+### 10. Self-review와 독립 리뷰
+
+- PR 생성 전 `git-workflow.md`의 Self-review 최소 계약으로 범위·계약 증명·외부 경계·결정성·운영 계약을 확인한다.
+- Draft PR 생성 뒤 별도 컨텍스트의 읽기 전용 Caveman Review를 수행하고 결과를 PR 댓글로 남긴다.
+- 리뷰 finding은 사용자 수정 승인 뒤에만 변경하고, 조치 결과와 최신 검증 결과를 PR에 기록한 다음 병합한다.
+
+### 11. Milestone 완료
 
 - 모든 Integration Test pass
 - Integration Test = Milestone 완료 기준

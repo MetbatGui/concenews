@@ -31,6 +31,14 @@ just check-branch-green
 
 ## 관련 이슈
 
+## Self-review
+
+- [ ] 현재 Task 범위와 `origin/master...HEAD` diff가 일치한다.
+- [ ] 테스트가 요구 계약을 실제로 증명한다.
+- [ ] 실제 외부 서비스 요청은 Fake·fixture·격리된 경계로 대체했다.
+- [ ] readiness·timeout·cleanup을 확인했고, 고정 sleep만으로 성공을 판정하지 않는다.
+- [ ] 컨테이너·운영 변경이면 secret·healthcheck·signal·restart를 확인했다.
+
 ### Slice Issue
 
 Related to #00
