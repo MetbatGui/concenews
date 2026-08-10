@@ -1,8 +1,9 @@
 """SQLAlchemy ORM 정의 — market_classification 테이블."""
 from datetime import datetime
+from uuid import UUID
 
-from sqlalchemy import DateTime, String
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import ARRAY, Boolean, DateTime, Float, String
+from sqlalchemy.dialects.postgresql import JSONB, UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.shared_kernel.db.base import Base
@@ -30,3 +31,27 @@ class MarketClassificationRow(Base):
     classified_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )
+
+
+class MarketSnapshotRow(Base):
+    """market_snapshot 테이블 ORM."""
+
+    __tablename__ = "market_snapshot"
+
+    id: Mapped[UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True)
+    market_id: Mapped[str] = mapped_column(String, nullable=False)
+    question: Mapped[str] = mapped_column(String, nullable=False)
+    outcomes: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
+    outcome_prices: Mapped[list[float]] = mapped_column(ARRAY(Float), nullable=False)
+    last_price: Mapped[float | None] = mapped_column(Float, nullable=True)
+    best_bid: Mapped[float | None] = mapped_column(Float, nullable=True)
+    best_ask: Mapped[float | None] = mapped_column(Float, nullable=True)
+    spread: Mapped[float | None] = mapped_column(Float, nullable=True)
+    liquidity: Mapped[float | None] = mapped_column(Float, nullable=True)
+    volume_24h: Mapped[float | None] = mapped_column(Float, nullable=True)
+    volume_1w: Mapped[float | None] = mapped_column(Float, nullable=True)
+    volume_1m: Mapped[float | None] = mapped_column(Float, nullable=True)
+    end_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    closed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

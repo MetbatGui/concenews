@@ -9,6 +9,7 @@ from typing import Protocol
 from src.modules.market.domain.models import (
     MarketClassification,
     MarketMetadata,
+    MarketSnapshot,
     Tag,
 )
 
@@ -64,5 +65,17 @@ class ClassificationRepositoryPort(Protocol):
 
         Args:
             classifications: 저장할 분류 결과 리스트.
+        """
+        ...
+
+
+class SnapshotRepositoryPort(Protocol):
+    """마켓 스냅샷 저장소."""
+
+    def save_bulk(self, snapshots: list[MarketSnapshot]) -> None:
+        """스냅샷을 한 번에 저장한다.
+
+        Args:
+            snapshots: 저장할 스냅샷 목록.
         """
         ...

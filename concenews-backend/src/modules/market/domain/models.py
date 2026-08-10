@@ -4,8 +4,9 @@ Walking Skeleton 단계: 최소 필드만 정의. 후속 PR 에서 필드/불변
 """
 from datetime import datetime
 from enum import Enum
+from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
 
 class Classification(str, Enum):
@@ -67,3 +68,57 @@ class MarketClassification(BaseModel):
     tags: tuple[Tag, ...]
     end_date: datetime
     classified_at: datetime
+
+
+class MarketSnapshot(BaseModel):
+    """거래량 상위 마켓의 한 시점 관측값.
+
+    동일 마켓이라도 수집 시각이 다르면 각각 별도 관측값이다. 결과 이름과
+    결과별 확률은 외부 API의 순서를 보존하는 immutable tuple로 둔다.
+
+    Attributes:
+        id: 스냅샷 고유 식별자(UUID v7).
+        market_id: Gamma API 시장 식별자.
+        question: 시장 질문.
+        outcomes: 결과 이름의 순서 있는 목록.
+        outcome_prices: outcomes와 같은 순서의 결과별 확률.
+        last_price: 가장 최근 체결 가격.
+        best_bid: 최고 매수 호가.
+        best_ask: 최저 매도 호가.
+        spread: 호가 스프레드.
+        liquidity: 시장 유동성.
+        volume_24h: 최근 24시간 거래량.
+        volume_1w: 최근 1주 거래량.
+        volume_1m: 최근 1개월 거래량.
+        end_date: 시장 종료 시각(UTC).
+        active: 활성 상태.
+        closed: 종료 상태.
+        timestamp: 스냅샷 수집 시각(UTC).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    id: UUID
+    market_id: str = Field(min_length=1)
+    question: str = Field(min_length=1)
+    outcomes: tuple[str, ...]
+    outcome_prices: tuple[float, ...]
+    last_price: float | None = None
+    best_bid: float | None = None
+    best_ask: float | None = None
+    spread: float | None = None
+    liquidity: float | None = None
+    volume_24h: float | None = None
+    volume_1w: float | None = None
+    volume_1m: float | None = None
+    end_date: AwareDatetime
+    active: bool
+    closed: bool
+    timestamp: AwareDatetime
+
+    @model_validator(mode="after")
+    def _validate_outcome_price_pairs(self) -> "MarketSnapshot":
+        """결과 이름과 확률이 일대일로 대응하는지 검증한다."""
+        if len(self.outcomes) != len(self.outcome_prices):
+            raise ValueError("결과 이름과 확률의 개수가 일치해야 합니다.")
+        return self
