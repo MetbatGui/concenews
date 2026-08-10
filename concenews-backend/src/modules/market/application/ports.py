@@ -3,6 +3,7 @@
 Domain 계층이 의존하는 외부 접점 정의.
 Infrastructure 구현체는 이 Protocol을 만족.
 """
+
 from datetime import datetime
 from typing import Protocol
 from uuid import UUID
@@ -12,7 +13,9 @@ from src.modules.market.domain.models import (
     MarketMetadata,
     MarketSnapshot,
     MarketSnapshotPayload,
+    MarketParticipantSnapshot,
     Tag,
+    TrackedMarket,
 )
 
 
@@ -34,9 +37,7 @@ class MarketSourcePort(Protocol):
         """
         ...
 
-    async def fetch_tags_bulk(
-        self, condition_ids: list[str]
-    ) -> dict[str, list[Tag]]:
+    async def fetch_tags_bulk(self, condition_ids: list[str]) -> dict[str, list[Tag]]:
         """마켓별 태그 병렬 조회.
 
         Args:
@@ -90,6 +91,18 @@ class SnapshotRepositoryPort(Protocol):
         Args:
             snapshots: 저장할 스냅샷 목록.
         """
+        ...
+
+    def find_latest_tracked_markets(self, limit: int) -> list[TrackedMarket]:
+        """condition ID가 있는 가장 최근 마켓 스냅샷의 추적 대상을 조회한다."""
+        ...
+
+
+class ParticipantSnapshotRepositoryPort(Protocol):
+    """마켓 참여자 보유 포지션 스냅샷 저장소."""
+
+    def save_bulk(self, snapshots: list[MarketParticipantSnapshot]) -> None:
+        """보유 포지션 관측값을 한 번에 저장한다."""
         ...
 
 

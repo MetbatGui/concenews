@@ -1,4 +1,5 @@
 """PgMarketSnapshotRepository 통합 테스트."""
+
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
@@ -15,6 +16,7 @@ def _make_snapshot(snapshot_id: UUID, timestamp: datetime) -> MarketSnapshot:
     return MarketSnapshot(
         id=snapshot_id,
         market_id="market-1",
+        condition_id="0xcondition",
         question="금리가 유지될까?",
         outcomes=("예", "아니오"),
         outcome_prices=(0.62, 0.38),
@@ -36,9 +38,7 @@ def _make_snapshot(snapshot_id: UUID, timestamp: datetime) -> MarketSnapshot:
 class TestPgMarketSnapshotRepository:
     """실제 PostgreSQL market_snapshot 저장 계약."""
 
-    def test_save_bulk_persists_two_times_for_same_market(
-        self, pg_session: Session
-    ):
+    def test_save_bulk_persists_two_times_for_same_market(self, pg_session: Session):
         """Given: 수집 시각이 다른 같은 마켓 스냅샷 두 건
         When: save_bulk
         Then: 두 행의 배열·숫자·시각이 모두 보존된다.
@@ -67,6 +67,7 @@ class TestPgMarketSnapshotRepository:
         )
 
         assert [row.market_id for row in rows] == ["market-1", "market-1"]
+        assert [row.condition_id for row in rows] == ["0xcondition", "0xcondition"]
         assert [row.timestamp for row in rows] == [first_time, second_time]
         assert rows[0].outcomes == ["예", "아니오"]
         assert rows[0].outcome_prices == [0.62, 0.38]

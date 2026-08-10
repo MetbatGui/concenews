@@ -2,15 +2,22 @@
 
 Walking Skeleton 단계에서 이미 실제 SQL 구현 (E2E 검증에 필요).
 """
+
 from datetime import datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from src.modules.market.domain.models import MarketClassification, MarketSnapshot
+from src.modules.market.domain.models import (
+    MarketClassification,
+    MarketParticipantSnapshot,
+    MarketSnapshot,
+    TrackedMarket,
+)
 from src.modules.market.infrastructure.orm import (
     MarketClassificationRow,
+    MarketParticipantSnapshotRow,
     MarketSnapshotRow,
 )
 
@@ -100,6 +107,7 @@ class PgMarketSnapshotRepository:
             {
                 "id": snapshot.id,
                 "market_id": snapshot.market_id,
+                "condition_id": snapshot.condition_id,
                 "question": snapshot.question,
                 "outcomes": list(snapshot.outcomes),
                 "outcome_prices": list(snapshot.outcome_prices),
@@ -121,4 +129,49 @@ class PgMarketSnapshotRepository:
         self._session.execute(insert(MarketSnapshotRow).values(rows))
         self._session.flush()
 
+    def find_latest_tracked_markets(self, limit: int) -> list[TrackedMarket]:
+        """condition ID가 있는 최신 수집 시점의 마켓을 최대 개수만큼 조회한다."""
+        latest_timestamp = select(
+            func.max(MarketSnapshotRow.timestamp)
+        ).scalar_subquery()
+        stmt = (
+            select(MarketSnapshotRow.market_id, MarketSnapshotRow.condition_id)
+            .where(
+                MarketSnapshotRow.timestamp == latest_timestamp,
+                MarketSnapshotRow.condition_id.is_not(None),
+            )
+            .order_by(MarketSnapshotRow.market_id)
+            .limit(limit)
+        )
+        return [
+            TrackedMarket(market_id=market_id, condition_id=condition_id)
+            for market_id, condition_id in self._session.execute(stmt)
+        ]
 
+
+class PgMarketParticipantSnapshotRepository:
+    """market_participant_snapshot PostgreSQL 저장소 어댑터."""
+
+    def __init__(self, session: Session) -> None:
+        """SQLAlchemy Session을 받는다."""
+        self._session = session
+
+    def save_bulk(self, snapshots: list[MarketParticipantSnapshot]) -> None:
+        """보유 포지션 관측값을 한 번에 저장한다."""
+        if not snapshots:
+            return
+
+        rows = [
+            {
+                "id": snapshot.id,
+                "market_id": snapshot.market_id,
+                "condition_id": snapshot.condition_id,
+                "wallet_address": snapshot.wallet_address,
+                "outcome_index": snapshot.outcome_index,
+                "position_amount": snapshot.position_amount,
+                "timestamp": snapshot.timestamp,
+            }
+            for snapshot in snapshots
+        ]
+        self._session.execute(insert(MarketParticipantSnapshotRow).values(rows))
+        self._session.flush()

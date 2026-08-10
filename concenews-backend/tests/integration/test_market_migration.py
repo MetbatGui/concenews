@@ -34,7 +34,7 @@ class TestMarketSnapshotMigration:
         """
         inspector = inspect(engine)
         tables = inspector.get_table_names()
-        assert 'market_snapshot' in tables
+        assert "market_snapshot" in tables
 
     def test_market_snapshot_table_columns(self, engine):
         """market_snapshot 테이블이 필수 컬럼 보유.
@@ -44,13 +44,28 @@ class TestMarketSnapshotMigration:
         Then: 필수 컬럼 18개 존재
         """
         inspector = inspect(engine)
-        columns = {col['name']: col for col in inspector.get_columns('market_snapshot')}
+        columns = {col["name"]: col for col in inspector.get_columns("market_snapshot")}
 
         expected_columns = {
-            'id', 'market_id', 'question', 'outcomes', 'outcome_prices',
-            'last_price', 'best_bid', 'best_ask', 'spread', 'liquidity',
-            'volume_24h', 'volume_1w', 'volume_1m', 'end_date',
-            'active', 'closed', 'timestamp', 'created_at'
+            "id",
+            "market_id",
+            "condition_id",
+            "question",
+            "outcomes",
+            "outcome_prices",
+            "last_price",
+            "best_bid",
+            "best_ask",
+            "spread",
+            "liquidity",
+            "volume_24h",
+            "volume_1w",
+            "volume_1m",
+            "end_date",
+            "active",
+            "closed",
+            "timestamp",
+            "created_at",
         }
 
         actual_columns = set(columns.keys())
@@ -64,13 +79,38 @@ class TestMarketSnapshotMigration:
         Then: 3개 인덱스 (market_id, timestamp, market_id+timestamp) 존재
         """
         inspector = inspect(engine)
-        indexes = inspector.get_indexes('market_snapshot')
-        index_names = {idx['name'] for idx in indexes}
+        indexes = inspector.get_indexes("market_snapshot")
+        index_names = {idx["name"] for idx in indexes}
 
         expected_indexes = {
-            'ix_market_snapshot_market_id',
-            'ix_market_snapshot_timestamp',
-            'ix_market_snapshot_market_time'
+            "ix_market_snapshot_market_id",
+            "ix_market_snapshot_timestamp",
+            "ix_market_snapshot_market_time",
+            "ix_market_snapshot_condition_id",
         }
 
         assert expected_indexes.issubset(index_names)
+
+    def test_market_participant_snapshot_table_columns(self, engine):
+        """Given: 참여자 스냅샷 마이그레이션 적용
+        When: 테이블과 컬럼을 조회
+        Then: 공개 보유 포지션 관측에 필요한 스키마가 존재한다.
+        """
+        inspector = inspect(engine)
+
+        assert "market_participant_snapshot" in inspector.get_table_names()
+        columns = {
+            column["name"]
+            for column in inspector.get_columns("market_participant_snapshot")
+        }
+
+        assert columns == {
+            "id",
+            "market_id",
+            "condition_id",
+            "wallet_address",
+            "outcome_index",
+            "position_amount",
+            "timestamp",
+            "created_at",
+        }

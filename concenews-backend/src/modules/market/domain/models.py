@@ -2,6 +2,7 @@
 
 Walking Skeleton 단계: 최소 필드만 정의. 후속 PR 에서 필드/불변식 확장.
 """
+
 from datetime import datetime
 from enum import Enum
 from uuid import UUID
@@ -100,6 +101,7 @@ class MarketSnapshot(BaseModel):
 
     id: UUID
     market_id: str = Field(min_length=1)
+    condition_id: str | None = Field(default=None, min_length=1)
     question: str = Field(min_length=1)
     outcomes: tuple[str, ...]
     outcome_prices: tuple[float, ...]
@@ -134,6 +136,7 @@ class MarketSnapshotPayload(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     market_id: str = Field(min_length=1)
+    condition_id: str | None = Field(default=None, min_length=1)
     question: str = Field(min_length=1)
     outcomes: tuple[str, ...]
     outcome_prices: tuple[float, ...]
@@ -165,6 +168,7 @@ class MarketSnapshotPayload(BaseModel):
         return MarketSnapshot(
             id=snapshot_id,
             market_id=self.market_id,
+            condition_id=self.condition_id,
             question=self.question,
             outcomes=self.outcomes,
             outcome_prices=self.outcome_prices,
@@ -181,3 +185,26 @@ class MarketSnapshotPayload(BaseModel):
             closed=self.closed,
             timestamp=timestamp,
         )
+
+
+class TrackedMarket(BaseModel):
+    """참여자 보유 포지션 수집 대상 마켓의 외부 식별자 쌍."""
+
+    model_config = ConfigDict(frozen=True)
+
+    market_id: str = Field(min_length=1)
+    condition_id: str = Field(min_length=1)
+
+
+class MarketParticipantSnapshot(BaseModel):
+    """한 지갑의 결과별 공개 보유 포지션 관측값."""
+
+    model_config = ConfigDict(frozen=True)
+
+    id: UUID
+    market_id: str = Field(min_length=1)
+    condition_id: str = Field(min_length=1)
+    wallet_address: str = Field(min_length=1)
+    outcome_index: int = Field(ge=0)
+    position_amount: float = Field(gt=0)
+    timestamp: AwareDatetime
