@@ -208,3 +208,13 @@ class MarketParticipantSnapshot(BaseModel):
     outcome_index: int = Field(ge=0)
     position_amount: float = Field(gt=0)
     timestamp: AwareDatetime
+
+
+class ParticipantPositionPayload(BaseModel):
+    """Data API가 반환한 결과별 보유 포지션의 원시 값."""
+
+    model_config = ConfigDict(frozen=True)
+
+    wallet_address: str = Field(min_length=1)
+    outcome_index: int = Field(ge=0)
+    position_amount: float = Field(gt=0)

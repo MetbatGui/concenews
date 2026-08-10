@@ -18,3 +18,19 @@ GAMMA_MARKET_SNAPSHOT = {
     "closed": False,
     "endDate": "2026-09-01T00:00:00Z",
 }
+
+POLYMARKET_TOP_HOLDERS = [
+    {
+        "token": "token-yes",
+        "holders": [
+            {"proxyWallet": "0xwallet-yes", "amount": "125.5", "outcomeIndex": 0},
+            {"proxyWallet": "0xwallet-yes-2", "amount": "10", "outcomeIndex": 0},
+        ],
+    },
+    {
+        "token": "token-no",
+        "holders": [
+            {"proxyWallet": "0xwallet-no", "amount": "75.25", "outcomeIndex": 1},
+        ],
+    },
+]
