@@ -78,8 +78,8 @@
 ### 10. Self-review와 독립 리뷰
 
 - PR 생성 전 `git-workflow.md`의 Self-review 최소 계약으로 범위·계약 증명·외부 경계·결정성·운영 계약을 확인하고, 발견한 사항을 먼저 수정한다.
-- Self-review 개선 후 전체 검증을 다시 통과한 커밋만 push·Draft PR 생성 대상으로 삼는다.
-- Draft PR 생성 뒤 별도 컨텍스트의 읽기 전용 Caveman Review를 수행하고 결과를 PR 댓글로 남긴다.
+- Self-review 개선 후 전체 검증을 다시 통과한 커밋만 push·Ready PR 오픈 대상으로 삼는다.
+- Ready PR을 연 뒤 별도 컨텍스트의 읽기 전용 Caveman Review를 수행하고 결과를 PR 댓글로 남긴다. Draft PR은 구현 진행 상황 공유에만 사용하며 독립 리뷰의 시작점이 아니다.
 - 리뷰 finding은 사용자 수정 승인 뒤에만 변경하고, 조치 결과와 최신 검증 결과를 PR에 기록한 다음 병합한다.
 
 ### 11. Milestone 완료
