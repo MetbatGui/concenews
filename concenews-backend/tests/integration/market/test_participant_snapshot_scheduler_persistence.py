@@ -45,49 +45,60 @@ async def test_scheduler_participant_job_commits_for_fresh_session(pg_engine):
     Then: 새 Session에서 보유 포지션을 읽을 수 있다.
     """
     observed_at = datetime(2026, 8, 10, 5, 0, tzinfo=UTC)
-    seed = Session(pg_engine)
+    market_snapshot_id = UUID("018f0d3d-5b5a-7a3d-8b54-8f3c11a20d09")
+    participant_snapshot_id = UUID("018f0d3d-5b5a-7a3d-8b54-8f3c11a20d08")
     try:
-        PgMarketSnapshotRepository(seed).save_bulk(
-            [
-                MarketSnapshot(
-                    id=UUID("018f0d3d-5b5a-7a3d-8b54-8f3c11a20d09"),
-                    market_id="m1",
-                    condition_id="0xcondition",
-                    question="질문",
-                    outcomes=("Yes", "No"),
-                    outcome_prices=(0.6, 0.4),
-                    end_date=datetime(2026, 9, 1, tzinfo=UTC),
-                    active=True,
-                    closed=False,
-                    timestamp=observed_at,
-                )
-            ]
+        seed = Session(pg_engine)
+        try:
+            PgMarketSnapshotRepository(seed).save_bulk(
+                [
+                    MarketSnapshot(
+                        id=market_snapshot_id,
+                        market_id="m1",
+                        condition_id="0xcondition",
+                        question="질문",
+                        outcomes=("Yes", "No"),
+                        outcome_prices=(0.6, 0.4),
+                        end_date=datetime(2026, 9, 1, tzinfo=UTC),
+                        active=True,
+                        closed=False,
+                        timestamp=observed_at,
+                    )
+                ]
+            )
+            seed.commit()
+        finally:
+            seed.close()
+
+        scheduler = AsyncioSchedulerAdapter()
+        register_market_participant_snapshot_job(
+            scheduler,
+            session_factory=lambda: Session(pg_engine),
+            source_factory=_Source,
+            id_generator_factory=_Ids,
         )
-        seed.commit()
-    finally:
-        seed.close()
+        await scheduler.trigger_all()
 
-    scheduler = AsyncioSchedulerAdapter()
-    register_market_participant_snapshot_job(
-        scheduler,
-        session_factory=lambda: Session(pg_engine),
-        source_factory=_Source,
-        id_generator_factory=_Ids,
-    )
-    await scheduler.trigger_all()
-
-    verify = Session(pg_engine)
-    try:
-        assert verify.execute(
-            select(MarketParticipantSnapshotRow.wallet_address)
-        ).scalars().all() == ["0xwallet"]
+        verify = Session(pg_engine)
+        try:
+            assert verify.execute(
+                select(MarketParticipantSnapshotRow.wallet_address)
+            ).scalars().all() == ["0xwallet"]
+        finally:
+            verify.close()
     finally:
-        verify.close()
-
-    cleanup = Session(pg_engine)
-    try:
-        cleanup.execute(delete(MarketParticipantSnapshotRow))
-        cleanup.execute(delete(MarketSnapshotRow))
-        cleanup.commit()
-    finally:
-        cleanup.close()
+        cleanup = Session(pg_engine)
+        try:
+            cleanup.execute(
+                delete(MarketParticipantSnapshotRow).where(
+                    MarketParticipantSnapshotRow.id == participant_snapshot_id
+                )
+            )
+            cleanup.execute(
+                delete(MarketSnapshotRow).where(
+                    MarketSnapshotRow.id == market_snapshot_id
+                )
+            )
+            cleanup.commit()
+        finally:
+            cleanup.close()
