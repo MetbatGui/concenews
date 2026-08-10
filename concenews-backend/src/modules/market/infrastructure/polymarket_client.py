@@ -36,6 +36,10 @@ class PolymarketGammaClient:
             base_url=BASE_URL, timeout=httpx.Timeout(10.0)
         )
 
+    async def aclose(self) -> None:
+        """내부 HTTP 연결 풀을 명시적으로 종료한다."""
+        await self._client.aclose()
+
     async def fetch_active_markets(
         self, limit: int, order: str, ascending: bool
     ) -> list[MarketMetadata]:

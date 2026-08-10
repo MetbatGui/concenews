@@ -78,6 +78,20 @@ class TestFetchActiveMarkets:
         assert m.question == "Will Fed cut rates?"
         assert m.end_date.isoformat().startswith("2027-01-01")
 
+
+class TestPolymarketGammaClientLifecycle:
+    """Polymarket HTTP 클라이언트의 자원 종료 계약."""
+
+    @pytest.mark.asyncio
+    async def test_aclose_closes_injected_http_client(self):
+        """명시적 종료가 내부 HTTP 연결 풀을 닫는다."""
+        client = httpx.AsyncClient()
+        adapter = PolymarketGammaClient(client=client)
+
+        await adapter.aclose()
+
+        assert client.is_closed
+
     @pytest.mark.asyncio
     async def test_stops_early_on_incomplete_page(self):
         """Given: 1st 페이지 100개, 2nd 페이지 50개 (< PAGE_SIZE)

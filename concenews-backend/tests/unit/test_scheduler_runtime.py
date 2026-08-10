@@ -32,6 +32,27 @@ class TestAsyncioSchedulerAdapter:
         assert executed == ["success"]
         assert "fail" in caplog.text
 
+    @pytest.mark.asyncio
+    async def test_start_twice_is_rejected_without_leaving_an_orphan_task(self):
+        """이미 시작한 Scheduler를 다시 시작하면 명시적으로 거절한다."""
+        scheduler = AsyncioSchedulerAdapter()
+        started = False
+
+        async def job() -> None:
+            nonlocal started
+            started = True
+
+        scheduler.schedule("job", job, interval_seconds=60)
+
+        await scheduler.start()
+
+        with pytest.raises(RuntimeError, match="이미 시작"):
+            await scheduler.start()
+
+        await scheduler.stop()
+
+        assert started is False
+
 
 class TestSchedulerJobRegistration:
     """뉴스·마켓 작업 조립 계약."""

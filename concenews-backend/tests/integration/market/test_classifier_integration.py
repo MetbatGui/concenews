@@ -9,12 +9,14 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.modules.market.bootstrap import register_market_classifier_job
 from src.modules.market.application.services import MarketClassifierService
 from src.modules.market.domain.models import MarketMetadata, Tag
 from src.modules.market.infrastructure.orm import MarketClassificationRow
 from src.modules.market.infrastructure.repositories import (
     PgMarketClassificationRepository,
 )
+from src.shared_kernel.scheduler import AsyncioSchedulerAdapter
 
 
 class _FakeSource:
@@ -27,6 +29,7 @@ class _FakeSource:
     ) -> None:
         self._markets = markets
         self._tag_map = tag_map
+        self.closed = False
 
     async def fetch_active_markets(
         self, limit: int, order: str, ascending: bool
@@ -38,6 +41,10 @@ class _FakeSource:
         self, condition_ids: list[str]
     ) -> dict[str, list[Tag]]:
         return {cid: self._tag_map.get(cid, []) for cid in condition_ids}
+
+    async def aclose(self) -> None:
+        """Scheduler가 외부 경계 자원을 정리했는지 기록한다."""
+        self.closed = True
 
 
 class TestClassifierIntegration:
@@ -122,6 +129,55 @@ class TestClassifierIntegration:
         rows = pg_session.execute(select(MarketClassificationRow)).scalars().all()
         saved_ids = {r.condition_id for r in rows}
         assert saved_ids == {"0xcached", "0xnew"}
+
+    @pytest.mark.asyncio
+    async def test_registered_job_uses_own_session_and_closes_external_source(
+        self, pg_session: Session
+    ):
+        """등록된 작업은 실제 DB에 저장하고 매 실행 자원을 정리한다."""
+        future = datetime.now(UTC) + timedelta(days=30)
+        source = _FakeSource(
+            markets=[
+                MarketMetadata(
+                    condition_id="0xjob",
+                    question="Will Fed cut rates in 2026?",
+                    end_date=future,
+                )
+            ],
+            tag_map={"0xjob": [Tag(id=159, label="Fed", slug="fed")]},
+        )
+        scheduler = AsyncioSchedulerAdapter()
+        created_sessions: list[Session] = []
+
+        class TrackingSession(Session):
+            """작업 전용 Session 종료 여부를 관찰한다."""
+
+            def __init__(self, **kwargs) -> None:
+                super().__init__(**kwargs)
+                self.closed_by_job = False
+
+            def close(self) -> None:
+                self.closed_by_job = True
+                super().close()
+
+        def create_session() -> Session:
+            session = TrackingSession(bind=pg_session.connection())
+            created_sessions.append(session)
+            return session
+
+        register_market_classifier_job(
+            scheduler,
+            session_factory=create_session,
+            source_factory=lambda: source,
+        )
+
+        await scheduler.trigger_all()
+
+        rows = pg_session.execute(select(MarketClassificationRow)).scalars().all()
+        assert {row.condition_id for row in rows} == {"0xjob"}
+        assert len(created_sessions) == 1
+        assert source.closed
+        assert created_sessions[0].closed_by_job
 
 
 def _make_classification(condition_id, question, end_date, tags):

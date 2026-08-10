@@ -47,6 +47,8 @@ class AsyncioSchedulerAdapter:
 
     async def start(self) -> None:
         """등록된 모든 작업의 주기 실행을 시작한다."""
+        if self._running:
+            raise RuntimeError("Scheduler가 이미 시작되었습니다.")
         self._running = True
         for name, (func, interval) in self._jobs.items():
             self._tasks[name] = asyncio.create_task(
