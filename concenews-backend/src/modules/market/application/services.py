@@ -8,6 +8,8 @@ from datetime import UTC, datetime
 from src.modules.market.application.ports import (
     ClassificationRepositoryPort,
     MarketSourcePort,
+    SnapshotIdGeneratorPort,
+    SnapshotRepositoryPort,
 )
 from src.modules.market.domain.classifier import classify
 from src.modules.market.domain.models import MarketClassification
@@ -43,7 +45,7 @@ class MarketClassifierService:
         cached_ids = self._repository.find_active_condition_ids(now)
 
         markets = await self._source.fetch_active_markets(
-            limit=100, order="volume24hr", ascending=False
+            limit=200, order="volume24hr", ascending=False
         )
         new_markets = [m for m in markets if m.condition_id not in cached_ids]
 
@@ -73,3 +75,39 @@ class MarketClassifierService:
 
         if classifications:
             self._repository.save_bulk(classifications)
+
+
+class MarketSnapshotService:
+    """거래량 상위 거시경제 마켓의 스냅샷 수집 유스케이스."""
+
+    def __init__(
+        self,
+        source: MarketSourcePort,
+        classification_repository: ClassificationRepositoryPort,
+        snapshot_repository: SnapshotRepositoryPort,
+        id_generator: SnapshotIdGeneratorPort,
+    ) -> None:
+        """외부 소스, 분류 캐시, 저장소와 식별자 발급기를 조립한다."""
+        self._source = source
+        self._classification_repository = classification_repository
+        self._snapshot_repository = snapshot_repository
+        self._id_generator = id_generator
+
+    async def run(self) -> None:
+        """상위 200 후보 중 유효한 MACRO 상위 50개를 저장한다."""
+        now = datetime.now(UTC)
+        macro_ids = self._classification_repository.find_active_macro_condition_ids(now)
+        if not macro_ids:
+            return
+
+        candidates = await self._source.fetch_active_market_snapshots(
+            limit=200, order="volume24hr", ascending=False
+        )
+        selected = [
+            candidate for candidate in candidates if candidate.market_id in macro_ids
+        ][:50]
+        snapshots = [
+            candidate.to_snapshot(self._id_generator.generate(), now)
+            for candidate in selected
+        ]
+        self._snapshot_repository.save_bulk(snapshots)

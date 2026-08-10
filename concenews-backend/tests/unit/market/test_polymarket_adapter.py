@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from src.modules.market.infrastructure.polymarket_client import PolymarketGammaClient
+from tests.fixtures.polymarket import GAMMA_MARKET_SNAPSHOT
 
 
 def _mock_transport(handler) -> httpx.MockTransport:
@@ -148,6 +149,78 @@ class TestPolymarketGammaClientLifecycle:
         assert captured["order"] == "volume24hr"
         assert captured["ascending"] == "false"
         assert captured["limit"] == "100"
+
+
+class TestFetchActiveMarketSnapshots:
+    """fetch_active_market_snapshots: Spike fixture 기반 변환 계약."""
+
+    @pytest.mark.asyncio
+    async def test_parses_snapshot_fields_from_gamma_fixture(self):
+        """Given: Gamma API 실제 형식의 JSON 문자열 배열 fixture
+        When: fetch_active_market_snapshots(limit=200)
+        Then: 배열·숫자·상태 필드가 값 객체로 변환된다.
+        """
+        offsets_seen: list[int] = []
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            offset = int(request.url.params.get("offset", "0"))
+            offsets_seen.append(offset)
+            return httpx.Response(
+                200, json=[GAMMA_MARKET_SNAPSHOT] if offset == 0 else []
+            )
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_active_market_snapshots(
+                limit=200, order="volume24hr", ascending=False
+            )
+
+        assert offsets_seen == [0]
+        assert len(result) == 1
+        snapshot = result[0]
+        assert snapshot.market_id == "3438892"
+        assert snapshot.outcomes == ("예", "아니오")
+        assert snapshot.outcome_prices == (0.62, 0.38)
+        assert snapshot.volume_24h == 8000.0
+        assert snapshot.end_date.isoformat().startswith("2026-09-01")
+
+    @pytest.mark.asyncio
+    async def test_skips_invalid_snapshot_payload(self):
+        """Given: 결과별 확률이 범위를 벗어난 Gamma 응답
+        When: fetch_active_market_snapshots
+        Then: 잘못된 후보를 저장 대상에서 제외한다.
+        """
+        invalid = {**GAMMA_MARKET_SNAPSHOT, "outcomePrices": '["1.2", "-0.2"]'}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            del request
+            return httpx.Response(200, json=[invalid])
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_active_market_snapshots(
+                limit=200, order="volume24hr", ascending=False
+            )
+
+        assert result == []
+
+    @pytest.mark.asyncio
+    async def test_skips_non_object_entry_without_stopping_page(self):
+        """Given: 객체가 아닌 항목과 정상 Gamma 마켓이 섞인 응답
+        When: fetch_active_market_snapshots
+        Then: 잘못된 항목만 건너뛰고 정상 후보는 반환한다.
+        """
+        def handler(request: httpx.Request) -> httpx.Response:
+            del request
+            return httpx.Response(200, json=["invalid", GAMMA_MARKET_SNAPSHOT])
+
+        async with httpx.AsyncClient(transport=_mock_transport(handler)) as client:
+            adapter = PolymarketGammaClient(client=client)
+            result = await adapter.fetch_active_market_snapshots(
+                limit=200, order="volume24hr", ascending=False
+            )
+
+        assert [snapshot.market_id for snapshot in result] == ["3438892"]
 
 
 class TestParseMarketSkipsInvalid:

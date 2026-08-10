@@ -45,6 +45,15 @@ class PgMarketClassificationRepository:
         rows = self._session.execute(stmt).scalars().all()
         return set(rows)
 
+    def find_active_macro_condition_ids(self, now: datetime) -> set[str]:
+        """유효 기간이 남은 MACRO 분류의 시장 식별자만 조회한다."""
+        stmt = select(MarketClassificationRow.condition_id).where(
+            MarketClassificationRow.end_date > now,
+            MarketClassificationRow.classification == "MACRO",
+        )
+        rows = self._session.execute(stmt).scalars().all()
+        return set(rows)
+
     def save_bulk(self, classifications: list[MarketClassification]) -> None:
         """분류 결과 일괄 저장 (upsert).
 

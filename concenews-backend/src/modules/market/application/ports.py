@@ -5,11 +5,13 @@ Infrastructure 구현체는 이 Protocol을 만족.
 """
 from datetime import datetime
 from typing import Protocol
+from uuid import UUID
 
 from src.modules.market.domain.models import (
     MarketClassification,
     MarketMetadata,
     MarketSnapshot,
+    MarketSnapshotPayload,
     Tag,
 )
 
@@ -45,6 +47,12 @@ class MarketSourcePort(Protocol):
         """
         ...
 
+    async def fetch_active_market_snapshots(
+        self, limit: int, order: str, ascending: bool
+    ) -> list[MarketSnapshotPayload]:
+        """스냅샷 후보가 될 활성 마켓 원본을 조회한다."""
+        ...
+
 
 class ClassificationRepositoryPort(Protocol):
     """분류 결과 저장소."""
@@ -68,6 +76,10 @@ class ClassificationRepositoryPort(Protocol):
         """
         ...
 
+    def find_active_macro_condition_ids(self, now: datetime) -> set[str]:
+        """유효한 MACRO 분류의 시장 식별자만 조회한다."""
+        ...
+
 
 class SnapshotRepositoryPort(Protocol):
     """마켓 스냅샷 저장소."""
@@ -78,4 +90,12 @@ class SnapshotRepositoryPort(Protocol):
         Args:
             snapshots: 저장할 스냅샷 목록.
         """
+        ...
+
+
+class SnapshotIdGeneratorPort(Protocol):
+    """마켓 스냅샷 식별자 발급기."""
+
+    def generate(self) -> UUID:
+        """새 스냅샷 UUID를 발급한다."""
         ...
