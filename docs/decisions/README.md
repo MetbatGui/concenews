@@ -40,6 +40,12 @@
 | 2026-07-12 | [market-filtering-strategy (tag + keyword 2단계)](./2026-07-12-market-filtering-strategy.md) | Accepted |
 | 2026-08-10 | [scheduler-runtime-daemon (별도 컨테이너와 공용 실행기)](./2026-08-10-scheduler-runtime-daemon.md) | Accepted |
 
+### Architecture & Strategy (continued)
+
+| Date | ADR | Status |
+|------|-----|--------|
+| 2026-08-10 | [market-snapshot-selection](./2026-08-10-market-snapshot-selection.md) | Accepted |
+
 ### Module Boundaries
 
 _(없음, 필요 시 추가)_

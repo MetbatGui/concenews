@@ -1,6 +1,6 @@
 # ADR: Polymarket API 선택 — Gamma + CLOB (Phase 1)
 
-**Status**: Accepted  
+**Status**: Superseded by [market-snapshot-selection](./2026-08-10-market-snapshot-selection.md)
 **Date**: 2026-07-12  
 **Slice**: market-tracking
 
