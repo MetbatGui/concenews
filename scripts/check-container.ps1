@@ -14,6 +14,8 @@ function Invoke-Compose {
     }
 }
 
+$completed = $false
+
 try {
     Invoke-Compose config --quiet
     Invoke-Compose build
@@ -38,9 +40,14 @@ try {
     }
 
     Invoke-Compose run --rm --no-deps scheduler sh -c 'rm -f /tmp/scheduler-ready; python -m scripts.scheduler_smoke >/tmp/scheduler.log 2>&1 & process_id=$!; attempt=0; while [ ! -f /tmp/scheduler-ready ] && [ $attempt -lt 30 ]; do sleep 1; attempt=$((attempt + 1)); done; test -f /tmp/scheduler-ready; kill -TERM $process_id; wait $process_id'
+    $completed = $true
 } finally {
     & docker compose --project-name $projectName @composeFiles down --volumes --remove-orphans
     if ($LASTEXITCODE -ne 0) {
-        Write-Warning "컨테이너 smoke 정리에 실패했습니다."
+        $message = "컨테이너 smoke 정리에 실패했습니다."
+        Write-Warning $message
+        if ($completed) {
+            throw $message
+        }
     }
 }
