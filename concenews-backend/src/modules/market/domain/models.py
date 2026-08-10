@@ -118,7 +118,11 @@ class MarketSnapshot(BaseModel):
 
     @model_validator(mode="after")
     def _validate_outcome_price_pairs(self) -> "MarketSnapshot":
-        """결과 이름과 확률이 일대일로 대응하는지 검증한다."""
+        """결과 이름·확률의 유효한 일대일 대응을 검증한다."""
+        if not self.outcomes:
+            raise ValueError("결과가 하나 이상 있어야 합니다.")
         if len(self.outcomes) != len(self.outcome_prices):
             raise ValueError("결과 이름과 확률의 개수가 일치해야 합니다.")
+        if any(not 0.0 <= price <= 1.0 for price in self.outcome_prices):
+            raise ValueError("결과별 확률은 0과 1 사이여야 합니다.")
         return self

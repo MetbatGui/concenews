@@ -73,3 +73,20 @@ class TestMarketSnapshot:
         """
         with pytest.raises(ValidationError):
             _make_snapshot(outcome_prices=[0.62])
+
+    @pytest.mark.parametrize("price", [-0.01, 1.01])
+    def test_rejects_probability_outside_zero_to_one(self, price: float):
+        """Given: 0~1 범위를 벗어난 결과별 확률
+        When: MarketSnapshot 생성
+        Then: 확률 범위 계약 위반으로 ValidationError를 낸다.
+        """
+        with pytest.raises(ValidationError):
+            _make_snapshot(outcome_prices=[price, 0.38])
+
+    def test_rejects_empty_outcomes(self):
+        """Given: 결과와 확률이 모두 비어 있는 입력
+        When: MarketSnapshot 생성
+        Then: 최소 한 결과가 필요하므로 ValidationError를 낸다.
+        """
+        with pytest.raises(ValidationError):
+            _make_snapshot(outcomes=[], outcome_prices=[])

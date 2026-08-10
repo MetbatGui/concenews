@@ -72,7 +72,7 @@ class PgMarketClassificationRepository:
 
 
 class PgMarketSnapshotRepository:
-    """PostgreSQL adapter for market_snapshot."""
+    """market_snapshot용 PostgreSQL 저장소 어댑터."""
 
     def __init__(self, session: Session) -> None:
         """저장소에 사용할 SQLAlchemy Session을 받는다."""

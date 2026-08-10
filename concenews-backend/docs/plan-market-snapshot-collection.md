@@ -22,7 +22,7 @@ Scheduler (5분)
 
 **브랜치/PR**: `codex/market-snapshot-collection-domain-repository`
 
-- `MarketSnapshot` 불변 Domain 모델과 상위 N 선정 규칙 구현
+- `MarketSnapshot` 불변 Domain 모델 구현
 - Snapshot Repository Port와 PostgreSQL 구현·ORM 추가
 - 기존 `market_snapshot` 스키마와 ORM의 계약을 Integration Test로 검증
 - 실제 PostgreSQL에서 스냅샷 한 건 저장·조회 검증
@@ -36,6 +36,7 @@ Scheduler (5분)
 - Gamma 응답의 JSON 문자열 배열과 숫자 문자열 변환 구현
 - 100개 단위 두 페이지로 상위 200개 조회 구현
 - 분류 수집 한도를 100개에서 200개로 확대
+- 유효한 MACRO 분류 후보에서 거래량 순 상위 50개를 선정하는 규칙 구현
 - 유효한 MACRO 분류와 교집합한 상위 50개를 저장하는 서비스 구현
 - `httpx.MockTransport` fixture 기반 Unit/Integration Test 추가
 
