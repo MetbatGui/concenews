@@ -3,16 +3,28 @@
 Walking Skeleton: 최소 흐름 (fetch → classify → save).
 실제 흐름 (에러 처리, 부분 성공 등) 정교화는 후속 PR 에서.
 """
+
 from datetime import UTC, datetime
+import logging
+
+import httpx
 
 from src.modules.market.application.ports import (
     ClassificationRepositoryPort,
     MarketSourcePort,
+    ParticipantSnapshotRepositoryPort,
+    ParticipantSourcePort,
     SnapshotIdGeneratorPort,
     SnapshotRepositoryPort,
 )
 from src.modules.market.domain.classifier import classify
-from src.modules.market.domain.models import MarketClassification
+from src.modules.market.domain.models import (
+    MarketClassification,
+    MarketParticipantSnapshot,
+)
+
+
+logger = logging.getLogger(__name__)
 
 
 class MarketClassifierService:
@@ -111,3 +123,52 @@ class MarketSnapshotService:
             for candidate in selected
         ]
         self._snapshot_repository.save_bulk(snapshots)
+
+
+class MarketParticipantSnapshotService:
+    """거래량 상위 마켓의 공개 상위 보유 포지션 수집 서비스."""
+
+    def __init__(
+        self,
+        source: ParticipantSourcePort,
+        market_snapshot_repository: SnapshotRepositoryPort,
+        participant_snapshot_repository: ParticipantSnapshotRepositoryPort,
+        id_generator: SnapshotIdGeneratorPort,
+    ) -> None:
+        """참여자 소스와 저장소를 조립한다."""
+        self._source = source
+        self._market_snapshot_repository = market_snapshot_repository
+        self._participant_snapshot_repository = participant_snapshot_repository
+        self._id_generator = id_generator
+
+    async def run(self) -> None:
+        """최신 추적 대상의 결과별 상위 보유 포지션을 저장한다."""
+        tracked_markets = self._market_snapshot_repository.find_latest_tracked_markets(
+            limit=50
+        )
+        observed_at = datetime.now(UTC)
+
+        for market in tracked_markets:
+            try:
+                positions = await self._source.fetch_top_holder_positions(
+                    condition_id=market.condition_id, limit=20
+                )
+            except httpx.HTTPError:
+                logger.exception(
+                    "마켓 참여자 포지션 수집에 실패했습니다: %s", market.market_id
+                )
+                continue
+
+            snapshots = [
+                MarketParticipantSnapshot(
+                    id=self._id_generator.generate(),
+                    market_id=market.market_id,
+                    condition_id=market.condition_id,
+                    wallet_address=position.wallet_address,
+                    outcome_index=position.outcome_index,
+                    position_amount=position.position_amount,
+                    timestamp=observed_at,
+                )
+                for position in positions
+            ]
+            self._participant_snapshot_repository.save_bulk(snapshots)

@@ -14,6 +14,7 @@ from src.modules.market.domain.models import (
     MarketSnapshot,
     MarketSnapshotPayload,
     MarketParticipantSnapshot,
+    ParticipantPositionPayload,
     Tag,
     TrackedMarket,
 )
@@ -103,6 +104,16 @@ class ParticipantSnapshotRepositoryPort(Protocol):
 
     def save_bulk(self, snapshots: list[MarketParticipantSnapshot]) -> None:
         """보유 포지션 관측값을 한 번에 저장한다."""
+        ...
+
+
+class ParticipantSourcePort(Protocol):
+    """Polymarket 공개 참여자 데이터 소스."""
+
+    async def fetch_top_holder_positions(
+        self, condition_id: str, limit: int
+    ) -> list[ParticipantPositionPayload]:
+        """마켓 결과별 상위 보유 포지션을 조회한다."""
         ...
 
 

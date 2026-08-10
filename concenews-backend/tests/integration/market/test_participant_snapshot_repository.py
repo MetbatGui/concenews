@@ -3,15 +3,25 @@
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
+import httpx
+import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.modules.market.application.services import MarketParticipantSnapshotService
 from src.modules.market.domain.models import MarketParticipantSnapshot, MarketSnapshot
 from src.modules.market.infrastructure.orm import MarketParticipantSnapshotRow
+from src.modules.market.infrastructure.polymarket_data_client import (
+    PolymarketDataClient,
+)
 from src.modules.market.infrastructure.repositories import (
     PgMarketParticipantSnapshotRepository,
     PgMarketSnapshotRepository,
 )
+from src.modules.market.infrastructure.snapshot_id_generator import (
+    UuidV7SnapshotIdGenerator,
+)
+from tests.fixtures.polymarket import POLYMARKET_TOP_HOLDERS
 
 
 def _market_snapshot(
@@ -77,3 +87,55 @@ class TestPgMarketParticipantSnapshotRepository:
         assert tracked[0].condition_id == "0xcondition"
         assert float(row.position_amount) == 125.5
         assert row.outcome_index == 1
+
+    @pytest.mark.asyncio
+    async def test_service_persists_data_api_fixture_for_latest_tracked_market(
+        self, pg_session: Session
+    ):
+        """Given: 최신 추적 마켓과 Data API fixture
+        When: 실제 저장소·서비스·HTTP adapter를 조합해 수집
+        Then: 결과별 공개 보유 포지션을 실제 DB에 저장한다.
+        """
+        observed_at = datetime(2026, 8, 10, 5, 0, tzinfo=UTC)
+        market_repository = PgMarketSnapshotRepository(pg_session)
+        market_repository.save_bulk(
+            [
+                _market_snapshot(
+                    UUID("018f0d3d-5b5a-7a3d-8b54-8f3c11a20d07"),
+                    observed_at,
+                    "0xcondition",
+                )
+            ]
+        )
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            assert request.url.params["market"] == "0xcondition"
+            assert request.url.params["limit"] == "20"
+            return httpx.Response(200, json=POLYMARKET_TOP_HOLDERS)
+
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            service = MarketParticipantSnapshotService(
+                source=PolymarketDataClient(client=client),
+                market_snapshot_repository=market_repository,
+                participant_snapshot_repository=PgMarketParticipantSnapshotRepository(
+                    pg_session
+                ),
+                id_generator=UuidV7SnapshotIdGenerator(),
+            )
+            await service.run()
+
+        rows = (
+            pg_session.execute(
+                select(MarketParticipantSnapshotRow).order_by(
+                    MarketParticipantSnapshotRow.outcome_index
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+        assert [(row.wallet_address, row.outcome_index) for row in rows] == [
+            ("0xwallet-yes", 0),
+            ("0xwallet-yes-2", 0),
+            ("0xwallet-no", 1),
+        ]
