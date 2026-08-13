@@ -27,55 +27,16 @@
 
 ## 커밋 컨벤션
 
-### 형식
-
 ```
 {GITMOJI}{type}: {title}
 
-{description}
-
-- {detail}
-- {detail}
+{description}          ← 필수
+- {detail}             ← 선택 (복잡한 작업만)
 ```
 
-### 규칙
+gitmoji는 type에 붙여 쓴다: `✨feat` `🐛fix` `♻️refactor` `📝docs` `🧪test` `🔧chore`
 
-- gitmoji는 type에 붙여서 작성 (`✨feat`, `🐛fix`)
-- description 필수
-- `-` 항목은 선택 (복잡한 작업만, 단순 작업은 title + description으로 충분)
-
-### Gitmoji 매핑
-
-| type     | gitmoji | 설명                           |
-| -------- | ------- | ------------------------------ |
-| feat     | ✨      | 새로운 기능 추가               |
-| fix      | 🐛      | 버그 수정                      |
-| refactor | ♻️    | 코드 리팩토링 (기능 변경 없음) |
-| docs     | 📝      | 문서 추가/수정                 |
-| test     | 🧪      | 테스트 추가/수정 (설계 포함)   |
-| chore    | 🔧      | 빌드, 의존성, 설정 변경        |
-
-### 예시
-
-**복잡한 작업:**
-
-```
-✨feat: 뉴스 카드 컴포넌트 추가
-
-뉴스 목록 페이지에서 각 기사를 표시하는 카드 UI 구현
-
-- 썸네일, 제목, 요약, 날짜 필드 포함
-- 클릭 시 상세 페이지로 라우팅
-- 모바일 반응형 레이아웃 적용
-```
-
-**단순 작업:**
-
-```
-🔧chore: 환경 변수 설정 추가
-
-.env.example 파일 추가 및 README에 설정 가이드 작성
-```
+상세 규칙·예시: [git-workflow.md § Commit 메시지](docs/git-workflow.md)
 
 ---
 
@@ -84,7 +45,9 @@
 | 상황 | 문서 |
 |------|------|
 | 이 기능이 제품 방향에 맞나 / 우선순위 판단 | [product-vision.md](docs/product-vision.md) |
-| 커밋 메시지 형식 | 이 파일 위 (커밋 컨벤션) |
+| 커밋 메시지 형식 (상세 규칙·예시) | [git-workflow.md § Commit 메시지](docs/git-workflow.md) |
+| GitHub 액션(Issue/PR/마일스톤/라벨) 전 사용자 검토 | [github-strategy.md § GitHub 액션 전 사용자 검토 필수](docs/github-strategy.md) |
+| 프론트엔드 설계 (Vue/Pinia, 도메인 매핑) | [frontend.md](docs/frontend.md) |
 | 커밋 단위 (원자성, 언제 커밋할지) | [git-workflow.md § 원자적 커밋](docs/git-workflow.md) |
 | 순수 docs 변경은 어떻게 (직접 master?) | [git-workflow.md § 문서 전용 변경](docs/git-workflow.md) |
 | 브랜치 만들 때 / PR 만들 때 (단위·이름·master green 규칙) | [git-workflow.md § 브랜치 전략](docs/git-workflow.md) |
@@ -118,44 +81,9 @@
 프로젝트 루트에서 백엔드 명령 실행:
 
 ```bash
-# 테스트
 uv --directory concenews-backend run pytest
-
-# 개발 서버
 uv --directory concenews-backend run python -m uvicorn src.main:app --reload
-
-# 기타 Python 스크립트
 uv --directory concenews-backend run python script.py
 ```
 
-또는 백엔드 폴더로 이동 후:
-```bash
-cd concenews-backend
-uv run pytest
-uv run python -m uvicorn src.main:app --reload
-```
-
----
-
-## 프론트엔드 설계
-
-사용자는 프론트엔드 미경험. 모든 프론트엔드 작업에서:
-
-- **프론트엔드 엔지니어 입장에서 생각**
-- 백엔드 도메인 구조 → 프론트 아키텍처 매핑
-- Vue 컴포넌트 설계, 상태 관리 (Pinia) 구조 제안
-- 사용자에게 "왜 이렇게 설계하는가" 설명
-
----
-
-## GitHub 워크플로우 (✨ 중요)
-
-**Spec/Plan 작성 후 GitHub 액션 전에 사용자 검토 대기 필수**:
-
-- Issue 생성 전: 사용자 검토 및 승인 기다림
-- PR 생성 전: 사용자 지시 대기
-- 마일스톤/라벨 할당: 사용자 지시에 따름
-
-예: Spec/Plan 완성 → 사용자에게 검토 요청 → 승인 후 GitHub에 반영
-
-사용자가 명시적으로 "GitHub에 생성해", "PR 만들어" 등 지시하기 전까지는 로컬 상태만 유지.
+백엔드 폴더로 이동한 경우는 `uv run {cmd}`. 설치·마이그레이션 등 초기 설정은 [README § 빠른 시작](README.md).
