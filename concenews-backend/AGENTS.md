@@ -11,23 +11,11 @@
 just check-branch-green
 ```
 
-`Justfile`의 하위 작업은 다음과 같다.
+**모두 통과해야 커밋**. 실패 시 fix 우선.
 
-```bash
-just check-ruff         # lint (문법, unused, style)
-just check-ty           # 타입 검증
-just check-imports      # 모듈 경계 검증
-just check-unit         # 외부 의존성 없는 빠른 테스트
-just check-integration  # 테스트용 PostgreSQL을 기동한 통합 테스트
-just check-e2e          # 실제 외부 API + PostgreSQL 수동 검증 (토큰 필요)
-```
+하위 작업(ruff·ty·import-linter·unit·integration)은 리포 루트 `Justfile` 에 정의되어 있다. 목록은 `just --list`.
 
-**`check-branch-green`이 모두 통과해야 커밋**. 실패 시 fix 우선.
-`check-e2e`는 외부 API 상태에 의존하므로 병합 전 게이트에 넣지 않고 배포 전 수동 실행한다.
-
-- **ruff**: unused import, style, syntax 등 자동 catch (self-review 부담 감소)
-- **ty**: 타입 오류 (Astral 신규 checker)
-- **pytest**: TDD 검증
+`check-e2e` 는 `check-branch-green` 에 **포함되지 않는다**. 실제 외부 API 상태에 의존하므로 병합 전 게이트가 아니라 배포 전 수동 실행한다.
 
 **범위**: 지금은 news 모듈만 (모듈 확장 시 대상 갱신).
 
