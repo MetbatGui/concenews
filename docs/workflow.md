@@ -8,6 +8,8 @@
 ## 플로우 개요
 
 ```
+[제품 방향 확인: product-vision.md]
+        ↓
 간단 기획 → (Spike) → (ADR) → Spec → Plan → 사용자 검토 → Issue 생성 → Tasks → Walking Skeleton → 구현 → 부가 기능
                                                                                   ↑
                                                                   각 구현 단계 = Integration Test 로 검증
@@ -16,6 +18,11 @@
 ---
 
 ## 단계별 상세
+
+### 0. 제품 방향 확인
+
+- [product-vision.md](product-vision.md) 로 이 기능이 북극성·제품 원칙·단계적 진화에 맞는지 확인한다.
+- 구체적인 범위와 우선순위는 Spec·Plan 이 결정한다. 이 단계는 방향이 어긋난 작업을 착수 전에 걸러내는 용도다.
 
 ### 1. 간단 기획 (5분)
 
