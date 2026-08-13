@@ -172,7 +172,7 @@ Ready PR을 연 뒤 Codex는 별도 컨텍스트의 읽기 전용 리뷰를 자�
 
 1. 저자는 self-review에서 발견한 사항을 수정하고 전체 검증을 다시 통과한 뒤 Ready PR을 연다.
 2. 독립 리뷰는 `Caveman Review` 형식으로 결함·위험·질문만 판정한다.
-3. **Question이 없으면** Codex는 Bug·Risk·Nit finding을 자동 수정한다. Question이 있으면 사용자 결정 전에는 해당 결정을 전제한 코드를 변경하지 않는다.
+3. 리뷰어는 **🔴 Bug·🔵 Nit finding 을 자동 수정**한다. **🟡 Risk·❓ Question 은 사용자 결정 전에는 해당 결정을 전제한 코드를 변경하지 않는다** ([ADR 2026-08-14](decisions/2026-08-14-review-response-policy.md)).
 4. 수정 뒤 `just check-branch-green`·커밋·push를 수행하고, `# Caveman Review 조치` 댓글로 변경·검증 결과를 남긴다.
 5. 조치가 모두 검증되면 merge commit으로 병합한다.
 

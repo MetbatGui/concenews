@@ -87,7 +87,7 @@
 - PR 생성 전 `git-workflow.md`의 Self-review 최소 계약으로 범위·계약 증명·외부 경계·결정성·운영 계약을 확인하고, 발견한 사항을 먼저 수정한다.
 - Self-review 개선 후 전체 검증을 다시 통과한 커밋만 push·Ready PR 오픈 대상으로 삼는다. PR 본문에는 최종 self-review 결과와 선행 개선 사항을 기록한다.
 - Ready PR을 연 뒤 별도 컨텍스트의 읽기 전용 Caveman Review를 수행하고 `# Caveman Review` 댓글로 남긴다. Draft PR은 구현 진행 상황 공유에만 사용하며 독립 리뷰의 시작점이 아니다.
-- 리뷰에 **Question이 없으면** Bug·Risk·Nit finding을 자동 수정하고, `just check-branch-green`·커밋·push 후 `# Caveman Review 조치` 댓글에 변경과 검증 결과를 기록한다. Question이 있으면 사용자 결정을 받은 뒤 진행한다.
+- **🔴 Bug·🔵 Nit 은 자동 수정**하고, `just check-branch-green`·커밋·push 후 `# Caveman Review 조치` 댓글에 변경과 검증 결과를 기록한다. **🟡 Risk·❓ Question 은 사용자 결정**을 받은 뒤 진행한다 ([ADR 2026-08-14](decisions/2026-08-14-review-response-policy.md)).
 - 조치가 검증되면 Task PR을 merge commit으로 병합한다.
 
 ### 11. Milestone 완료

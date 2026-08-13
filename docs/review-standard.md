@@ -112,7 +112,7 @@
 
 ## 저자 응답
 
-리뷰 대응 시 각 finding 에 accept/defer/fix 결정 명시.
+처리 주체는 severity 가 결정한다 ([ADR 2026-08-14](decisions/2026-08-14-review-response-policy.md)).
 
 ### 형식 (권장)
 
@@ -126,16 +126,18 @@
 | 🟡 X | accept | 실 데이터에 없음 |
 | ❓ Y | defer | 다음 PR 결정 |
 
-### 🔵 Nits
+### 🔴 Bugs & 🔵 Nits
 
-모두 accept. 개별 refactor 스코프 확장 회피.
+자동 수정 완료. 조치 내용은 `# Caveman Review 조치` 참고.
 ```
 
 ### 원칙
 
-- 🔴/🟡/❓ = 명시적 결정 필수 (accept/defer/fix)
-- 🔵 = 요약 accept 로 충분
+- 🔴/🔵 = 리뷰어가 **자동 수정**. 결정 여지가 없다 (bug 는 merge 블록이라 fix 외 선택지가 없고, nit 은 저자 재량)
+- 🟡/❓ = 사용자 **명시적 결정 필수** (accept/defer/fix). 정의 자체가 결정을 요구한다
+- 결정 전에는 해당 결정을 전제한 코드를 변경하지 않는다
 - Defer = 후속 PR/이슈 명시
+- 자동 수정분은 `# Caveman Review 조치` 댓글에 조치·검증 결과 기록
 
 ---
 
