@@ -34,6 +34,7 @@ just check-branch-green
 ## Self-review
 
 - [ ] 현재 Task 범위와 `origin/master...HEAD` diff가 일치한다.
+- [ ] 실패하는 테스트를 먼저 작성했다. (근거: 해당 테스트 파일·커밋 명시)
 - [ ] 테스트가 요구 계약을 실제로 증명한다.
 - [ ] 실제 외부 서비스 요청은 Fake·fixture·격리된 경계로 대체했다.
 - [ ] self-review finding을 PR 생성 전에 조치하고 검증을 다시 실행했다.
