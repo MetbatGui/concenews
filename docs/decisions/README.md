@@ -29,6 +29,7 @@
 | 2026-08-10 | [github-work-item-model](./2026-08-10-github-work-item-model.md) | Accepted |
 | 2026-08-10 | [workflow-execution-contract (실행 순서·PR 경계·운영 계약)](./2026-08-10-workflow-execution-contract.md) | Accepted |
 | 2026-08-10 | [spike-knowledge-recording (Spike 결과의 리포 기록)](./2026-08-10-spike-knowledge-recording.md) | Accepted |
+| 2026-08-14 | [cross-cutting-rule-placement (ADR·TDD 강제의 지침 파일 배치)](./2026-08-14-cross-cutting-rule-placement.md) | Accepted |
 
 ### Architecture & Strategy
 
