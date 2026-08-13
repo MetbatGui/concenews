@@ -17,8 +17,6 @@ just check-branch-green
 
 `check-e2e` 는 `check-branch-green` 에 **포함되지 않는다**. 실제 외부 API 상태에 의존하므로 병합 전 게이트가 아니라 배포 전 수동 실행한다.
 
-**범위**: 지금은 news 모듈만 (모듈 확장 시 대상 갱신).
-
 ---
 
 ## 코드 작성 전 필수 확인
