@@ -37,7 +37,7 @@ just check-e2e          # 실제 외부 API + PostgreSQL 수동 검증 (토큰 �
 
 **설계 결정이 트리거 매칭 시 코드 변경 전에 ADR 먼저**:
 
-1. **Trigger 매칭 확인** ([adr-process.md](../../docs/adr-process.md) 표):
+1. **Trigger 매칭 확인** ([adr-process.md](../docs/adr-process.md) 표):
    - Domain 계약 (id/필드/invariant), 모듈 경계, 저장소 전략, 외부 dep, 원칙, 프로세스
 2. **ADR 작성/갱신** (`docs/decisions/YYYY-MM-DD-{slug}.md`)
 3. **Docs 갱신** (spec/plan/AGENTS/convention) — ADR 링크 명시
