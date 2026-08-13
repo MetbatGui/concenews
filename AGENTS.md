@@ -7,6 +7,8 @@
 - 새 규칙/피드백 → `AGENTS.md` 또는 `docs/` 해당 문서에 직접 반영
 - 설계 결정 → ADR (`docs/decisions/`)
 - Codex/Claude 공통 SSOT = 리포 내 마크다운
+- **이 파일이 SSOT.** `CLAUDE.md` 는 이 파일을 가리키는 포인터일 뿐 — 내용 복사/이전 금지
+- 에이전트 전용 설정(skill, hook, MCP)은 `.claude/` · `.codex/` 등 각자 위치에. 지침 파일에 중복 금지
 - **Why:** SSOT 단일화, 에이전트 간 이식성, drift 방지, git 이력 추적
 
 ---

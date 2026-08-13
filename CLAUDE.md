@@ -1,4 +1,14 @@
 # CLAUDE.md
 
-> 이 프로젝트는 [AGENTS.md](AGENTS.md) 를 표준 에이전트 지침 파일로 사용합니다 (Codex/Claude 공통).
-> 모든 지침은 [AGENTS.md](AGENTS.md) 참조.
+**작업 시작 전 [AGENTS.md](AGENTS.md) 를 먼저 읽어라.**
+이 프로젝트의 모든 에이전트 지침은 `AGENTS.md` 에 있다 (Codex/Claude 공통 SSOT).
+
+## 이 파일 편집 규칙
+
+- 이 파일에 지침 **내용**을 쓰지 마라. 포인터로만 유지한다.
+- 새 규칙/피드백 → `AGENTS.md` 또는 `docs/` 에 기록.
+- `AGENTS.md` 내용을 이 파일로 옮기거나 복사하지 마라.
+- Claude 전용 규칙(skill, hook 등)만 이 파일 하단에 둘 수 있다. 중복은 금지.
+
+**Why:** 같은 내용이 두 파일에 있으면 SSOT 가 0개가 된다. 한쪽만 수정되어 갈라지고,
+이후 에이전트가 "불일치 정리"를 하며 한쪽을 덮어 규칙이 소실된다.
