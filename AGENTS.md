@@ -83,6 +83,7 @@
 
 | 상황 | 문서 |
 |------|------|
+| 이 기능이 제품 방향에 맞나 / 우선순위 판단 | [product-vision.md](docs/product-vision.md) |
 | 커밋 메시지 형식 | 이 파일 위 (커밋 컨벤션) |
 | 커밋 단위 (원자성, 언제 커밋할지) | [git-workflow.md § 원자적 커밋](docs/git-workflow.md) |
 | 순수 docs 변경은 어떻게 (직접 master?) | [git-workflow.md § 문서 전용 변경](docs/git-workflow.md) |
@@ -96,7 +97,10 @@
 | 새 slice 시작 (Spec/Plan/Task 순서) | [vertical-slices.md](docs/architecture/principles/vertical-slices.md) |
 | TDD 순서 헷갈림 (Red-Green-Refactor, GWT) | [xp.md](docs/architecture/principles/xp.md) |
 | 도메인 계층 애매 (4계층 어디에?) | [ddd.md](docs/architecture/principles/ddd.md) |
-| 새 모듈 폴더 위치 & 경계 | [modular-monolith.md](concenews-backend/docs/architecture/modular-monolith.md) |
+| 새 모듈 폴더 위치 & 모듈 "간" 경계 (`public.py`, 버스) | [modular-monolith.md](concenews-backend/docs/architecture/modular-monolith.md) |
+| 모듈 "안" 4계층 구조 (어느 계층에 무엇을 넣나) | [module-internals.md](concenews-backend/docs/architecture/module-internals.md) |
+| 계층 간 주고받는 타입 (dict 써도 되나, Domain 모델 API 노출) | [boundaries.md](concenews-backend/docs/architecture/boundaries.md) |
+| DDD 4계층과 모듈 경계가 어떻게 맞물리나 | [integration.md](concenews-backend/docs/architecture/integration.md) |
 | 백엔드 slice 세부 설계 | `concenews-backend/docs/plan-{slice}.md` |
 | Docstring 형식 (Google style) | [docstring.md](concenews-backend/docs/conventions/docstring.md) |
 | Domain immutability (frozen, tuple 등) | [immutability.md](concenews-backend/docs/conventions/immutability.md) |
