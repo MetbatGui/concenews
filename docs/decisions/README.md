@@ -48,6 +48,7 @@
 |------|-----|--------|
 | 2026-08-10 | [market-snapshot-selection](./2026-08-10-market-snapshot-selection.md) | Accepted |
 | 2026-08-10 | [market-participant-identity](./2026-08-10-market-participant-identity.md) | Accepted |
+| 2026-08-15 | [market-participant-observation-eligibility](./2026-08-15-market-participant-observation-eligibility.md) | Accepted |
 
 ### Module Boundaries
 
