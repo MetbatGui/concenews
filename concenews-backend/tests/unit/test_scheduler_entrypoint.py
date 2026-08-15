@@ -40,12 +40,24 @@ class TestApiRuntimeBoundary:
 class TestSchedulerEntrypoint:
     """독립 Scheduler 프로세스의 조립과 종료 계약."""
 
-    @pytest.fixture(autouse=True)
-    def _skip_db_bootstrap(self, monkeypatch):
-        """Unit test는 DB에 접근하지 않으므로 초기 등록을 대체한다."""
+    def test_main_registers_exclusions_before_starting_scheduler(self, monkeypatch):
+        """초기 관측 제외 등록은 Scheduler 실행보다 먼저 수행된다."""
+        calls: list[str] = []
+
+        def record_run(coro) -> None:
+            coro.close()
+            calls.append("scheduler")
+
         monkeypatch.setattr(
-            scheduler_main, "run_observation_exclusion_bootstrap", lambda: None
+            scheduler_main,
+            "run_observation_exclusion_bootstrap",
+            lambda: calls.append("exclusion-bootstrap"),
         )
+        monkeypatch.setattr(scheduler_main.asyncio, "run", record_run)
+
+        scheduler_main.main()
+
+        assert calls == ["exclusion-bootstrap", "scheduler"]
 
     def test_build_scheduler_registers_both_jobs(self, monkeypatch):
         """하나의 Scheduler에 뉴스와 마켓 작업을 모두 등록한다."""
@@ -82,35 +94,6 @@ class TestSchedulerEntrypoint:
 
         assert scheduler_main.build_scheduler() is scheduler
         assert registered == ["news", "market", "snapshot", "participant"]
-
-    def test_run_scheduler_registers_initial_exclusions_before_start(
-        self, monkeypatch
-    ):
-        """초기 관측 제외 지갑은 주기 작업이 시작되기 전에 등록된다."""
-        calls: list[str] = []
-
-        class RecordingScheduler(_FakeScheduler):
-            async def start(self) -> None:
-                calls.append("start")
-                await super().start()
-
-        monkeypatch.setattr(
-            scheduler_main,
-            "run_observation_exclusion_bootstrap",
-            lambda: calls.append("exclusion-bootstrap"),
-        )
-
-        async def stop_immediately() -> None:
-            return None
-
-        asyncio.run(
-            scheduler_main.run_scheduler(
-                scheduler=RecordingScheduler(),
-                wait_for_shutdown=stop_immediately,
-            )
-        )
-
-        assert calls == ["exclusion-bootstrap", "start"]
 
     def test_run_scheduler_stops_on_shutdown_signal(self):
         """종료 대기 완료 뒤 Scheduler를 항상 정리한다."""
