@@ -40,7 +40,6 @@ async def run_scheduler(
     active_scheduler: AsyncioSchedulerAdapter | None = None
     try:
         stop_event = _install_shutdown_signal_handlers()
-        run_observation_exclusion_bootstrap()
         active_scheduler = scheduler or build_scheduler()
         await active_scheduler.start()
         logger.info("Scheduler 작업을 시작했습니다.")
@@ -72,7 +71,11 @@ def _install_shutdown_signal_handlers() -> asyncio.Event:
 
 
 def main() -> None:
-    """Scheduler 프로세스를 실행한다."""
+    """초기 참조 데이터를 등록한 뒤 Scheduler 프로세스를 실행한다.
+
+    등록은 실행 전 1회 수행한다 (ADR 2026-08-16 초기 참조 데이터 등록 위치).
+    """
+    run_observation_exclusion_bootstrap()
     asyncio.run(run_scheduler())
 
 
