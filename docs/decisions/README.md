@@ -31,6 +31,7 @@
 | 2026-08-10 | [spike-knowledge-recording (Spike 결과의 리포 기록)](./2026-08-10-spike-knowledge-recording.md) | Accepted |
 | 2026-08-14 | [cross-cutting-rule-placement (ADR·TDD 강제의 지침 파일 배치)](./2026-08-14-cross-cutting-rule-placement.md) | Accepted |
 | 2026-08-14 | [review-response-policy (severity 별 finding 처리 주체)](./2026-08-14-review-response-policy.md) | Accepted |
+| 2026-08-16 | [initial-reference-data-registration (초기 참조 데이터 등록 위치)](./2026-08-16-initial-reference-data-registration.md) | Accepted |
 
 ### Architecture & Strategy
 

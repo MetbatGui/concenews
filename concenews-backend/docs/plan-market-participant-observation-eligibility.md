@@ -25,7 +25,7 @@ Data API -> 원본 MarketParticipantSnapshot 저장
 
 - 실패하는 Unit Test부터 `MarketParticipantObservationExclusion` 불변 Domain 모델의 지갑 정규화·검토 상태·활성 중복 규칙 정의
 - 제외 목록 Port와 PostgreSQL adapter, ORM, Alembic 마이그레이션 추가
-- Spike 근거 URL을 가진 초기 지갑을 멱등적으로 등록하는 bootstrap 경로 추가
+- Spike 근거 URL을 가진 초기 지갑을 멱등적으로 등록하는 bootstrap 경로 추가. 등록은 프로세스 진입점에서 실행 전 1회 수행한다 ([ADR 2026-08-16](../../docs/decisions/2026-08-16-initial-reference-data-registration.md))
 - 실제 PostgreSQL에서 초기 항목·근거·상태가 저장되고 재실행해도 중복되지 않는 Integration Test 작성
 
 **완료 기준**: 초기 제외 지갑과 감사 메타데이터가 실제 DB에 한 번만 저장되고, 유효하지 않은 주소·중복 활성 항목은 저장되지 않는다.
