@@ -13,6 +13,7 @@ from src.modules.market.domain.models import (
     MarketMetadata,
     MarketSnapshot,
     MarketSnapshotPayload,
+    MarketParticipantObservationExclusion,
     MarketParticipantSnapshot,
     ParticipantPositionPayload,
     Tag,
@@ -104,6 +105,20 @@ class ParticipantSnapshotRepositoryPort(Protocol):
 
     def save_bulk(self, snapshots: list[MarketParticipantSnapshot]) -> None:
         """보유 포지션 관측값을 한 번에 저장한다."""
+        ...
+
+
+class ObservationExclusionRepositoryPort(Protocol):
+    """참여자 관측 제외 목록 저장소."""
+
+    def register_if_absent(
+        self, exclusions: list[MarketParticipantObservationExclusion]
+    ) -> None:
+        """같은 지갑의 활성 항목이 없을 때만 제외 항목을 저장한다."""
+        ...
+
+    def find_active_wallet_addresses(self) -> set[str]:
+        """활성·검토 완료 제외 지갑 주소를 조회한다."""
         ...
 
 

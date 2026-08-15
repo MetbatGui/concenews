@@ -2,9 +2,15 @@
 
 import os
 from collections.abc import Callable
+from datetime import UTC, datetime
+from uuid import UUID
 
 from sqlalchemy.orm import Session
 
+from src.modules.market.domain.models import (
+    MarketParticipantObservationExclusion,
+    ObservationExclusionReviewStatus,
+)
 from src.modules.market.application.ports import (
     MarketSourcePort,
     ParticipantSourcePort,
@@ -21,6 +27,7 @@ from src.modules.market.infrastructure.polymarket_data_client import (
 from src.modules.market.infrastructure.polymarket_client import PolymarketGammaClient
 from src.modules.market.infrastructure.repositories import (
     PgMarketClassificationRepository,
+    PgMarketParticipantObservationExclusionRepository,
     PgMarketParticipantSnapshotRepository,
     PgMarketSnapshotRepository,
 )
@@ -29,6 +36,32 @@ from src.modules.market.infrastructure.snapshot_id_generator import (
 )
 from src.shared_kernel.db.engine import get_engine
 from src.shared_kernel.scheduler import AsyncioSchedulerAdapter
+
+
+INITIAL_OBSERVATION_EXCLUSIONS: tuple[MarketParticipantObservationExclusion, ...] = (
+    MarketParticipantObservationExclusion(
+        id=UUID("018f0d3d-5b5a-7a3d-8b54-8f3c11a20e01"),
+        wallet_address="0xa5ef39c3d3e10d0b270233af41cac69796b12966",
+        reason="거래 참여자로 귀속할 수 없음",
+        evidence_url=(
+            "https://github.com/MetbatGui/concenews/blob/master/"
+            "docs/research/polymarket-system-wallet-eligibility.md"
+        ),
+        registered_at=datetime(2026, 8, 15, tzinfo=UTC),
+        review_status=ObservationExclusionReviewStatus.REVIEWED,
+        active=True,
+    ),
+)
+
+
+def register_initial_observation_exclusions(session: Session) -> None:
+    """Spike 근거를 가진 초기 관측 제외 지갑을 멱등적으로 등록한다.
+
+    Args:
+        session: SQLAlchemy Session.
+    """
+    repository = PgMarketParticipantObservationExclusionRepository(session)
+    repository.register_if_absent(list(INITIAL_OBSERVATION_EXCLUSIONS))
 
 
 def build_classifier_service(

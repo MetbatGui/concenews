@@ -59,6 +59,22 @@ class MarketSnapshotRow(Base):
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class MarketParticipantObservationExclusionRow(Base):
+    """market_participant_observation_exclusion 테이블 ORM."""
+
+    __tablename__ = "market_participant_observation_exclusion"
+
+    id: Mapped[UUID] = mapped_column(PgUUID(as_uuid=True), primary_key=True)
+    wallet_address: Mapped[str] = mapped_column(String, nullable=False)
+    reason: Mapped[str] = mapped_column(String, nullable=False)
+    evidence_url: Mapped[str] = mapped_column(String, nullable=False)
+    registered_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    review_status: Mapped[str] = mapped_column(String, nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+
 class MarketParticipantSnapshotRow(Base):
     """market_participant_snapshot 테이블 ORM."""
 

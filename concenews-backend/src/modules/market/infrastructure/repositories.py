@@ -5,18 +5,21 @@ Walking Skeleton 단계에서 이미 실제 SQL 구현 (E2E 검증에 필요).
 
 from datetime import datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from src.modules.market.domain.models import (
     MarketClassification,
+    MarketParticipantObservationExclusion,
     MarketParticipantSnapshot,
     MarketSnapshot,
+    ObservationExclusionReviewStatus,
     TrackedMarket,
 )
 from src.modules.market.infrastructure.orm import (
     MarketClassificationRow,
+    MarketParticipantObservationExclusionRow,
     MarketParticipantSnapshotRow,
     MarketSnapshotRow,
 )
@@ -147,6 +150,50 @@ class PgMarketSnapshotRepository:
             TrackedMarket(market_id=market_id, condition_id=condition_id)
             for market_id, condition_id in self._session.execute(stmt)
         ]
+
+
+class PgMarketParticipantObservationExclusionRepository:
+    """market_participant_observation_exclusion PostgreSQL 저장소 어댑터."""
+
+    def __init__(self, session: Session) -> None:
+        """SQLAlchemy Session을 받는다."""
+        self._session = session
+
+    def register_if_absent(
+        self, exclusions: list[MarketParticipantObservationExclusion]
+    ) -> None:
+        """같은 지갑의 활성 항목이 이미 있으면 저장하지 않는다."""
+        if not exclusions:
+            return
+
+        rows = [
+            {
+                "id": exclusion.id,
+                "wallet_address": exclusion.wallet_address,
+                "reason": exclusion.reason,
+                "evidence_url": exclusion.evidence_url,
+                "registered_at": exclusion.registered_at,
+                "review_status": exclusion.review_status.value,
+                "active": exclusion.active,
+            }
+            for exclusion in exclusions
+        ]
+        stmt = insert(MarketParticipantObservationExclusionRow).values(rows)
+        stmt = stmt.on_conflict_do_nothing(
+            index_elements=["wallet_address"],
+            index_where=text("active"),
+        )
+        self._session.execute(stmt)
+        self._session.flush()
+
+    def find_active_wallet_addresses(self) -> set[str]:
+        """활성·검토 완료 제외 지갑 주소만 조회한다."""
+        stmt = select(MarketParticipantObservationExclusionRow.wallet_address).where(
+            MarketParticipantObservationExclusionRow.active.is_(True),
+            MarketParticipantObservationExclusionRow.review_status
+            == ObservationExclusionReviewStatus.REVIEWED.value,
+        )
+        return set(self._session.execute(stmt).scalars().all())
 
 
 class PgMarketParticipantSnapshotRepository:
