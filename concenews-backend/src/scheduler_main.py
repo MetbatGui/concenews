@@ -9,6 +9,7 @@ from src.modules.market.bootstrap import (
     register_market_classifier_job,
     register_market_participant_snapshot_job,
     register_market_snapshot_job,
+    run_observation_exclusion_bootstrap,
 )
 from src.modules.news.bootstrap import register_news_collection_job
 from src.shared_kernel.scheduler import AsyncioSchedulerAdapter
@@ -39,6 +40,7 @@ async def run_scheduler(
     active_scheduler: AsyncioSchedulerAdapter | None = None
     try:
         stop_event = _install_shutdown_signal_handlers()
+        run_observation_exclusion_bootstrap()
         active_scheduler = scheduler or build_scheduler()
         await active_scheduler.start()
         logger.info("Scheduler 작업을 시작했습니다.")

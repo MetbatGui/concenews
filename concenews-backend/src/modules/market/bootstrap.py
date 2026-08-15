@@ -7,10 +7,6 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from src.modules.market.domain.models import (
-    MarketParticipantObservationExclusion,
-    ObservationExclusionReviewStatus,
-)
 from src.modules.market.application.ports import (
     MarketSourcePort,
     ParticipantSourcePort,
@@ -20,6 +16,10 @@ from src.modules.market.application.services import (
     MarketClassifierService,
     MarketParticipantSnapshotService,
     MarketSnapshotService,
+)
+from src.modules.market.domain.models import (
+    MarketParticipantObservationExclusion,
+    ObservationExclusionReviewStatus,
 )
 from src.modules.market.infrastructure.polymarket_data_client import (
     PolymarketDataClient,
@@ -62,6 +62,25 @@ def register_initial_observation_exclusions(session: Session) -> None:
     """
     repository = PgMarketParticipantObservationExclusionRepository(session)
     repository.register_if_absent(list(INITIAL_OBSERVATION_EXCLUSIONS))
+
+
+def run_observation_exclusion_bootstrap(
+    session_factory: Callable[[], Session] | None = None,
+) -> None:
+    """자체 Session으로 초기 관측 제외 지갑을 등록하고 커밋한다.
+
+    Args:
+        session_factory: 테스트에서 주입할 Session 생성기.
+    """
+    session = session_factory() if session_factory else Session(get_engine())
+    try:
+        register_initial_observation_exclusions(session)
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
 def build_classifier_service(
