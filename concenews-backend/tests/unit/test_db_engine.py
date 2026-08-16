@@ -2,20 +2,15 @@
 
 from unittest.mock import MagicMock
 
-import pytest
-
 from src.shared_kernel.db import engine as engine_module
 
 
 class TestGetEngine:
-    """DB 가 응답하지 않을 때 무제한 대기하지 않는 계약."""
+    """DB 가 응답하지 않을 때 무제한 대기하지 않는 계약.
 
-    @pytest.fixture(autouse=True)
-    def _clear_engine_cache(self):
-        """모듈 singleton 캐시가 테스트 간 새어나가지 않게 한다."""
-        engine_module.get_engine.cache_clear()
-        yield
-        engine_module.get_engine.cache_clear()
+    get_engine 의 lru_cache 정리는 tests/conftest.py 의 전역 autouse
+    fixture(_clear_test_state)가 매 test 후 수행한다.
+    """
 
     def test_passes_connect_timeout_to_create_engine(self, monkeypatch):
         """Given: DB 가 응답하지 않는 상황
@@ -34,5 +29,6 @@ class TestGetEngine:
         engine_module.get_engine()
 
         connect_args = captured.get("connect_args", {})
-        assert "connect_timeout" in connect_args
-        assert 0 < connect_args["connect_timeout"] <= 10
+        assert connect_args.get("connect_timeout") == (
+            engine_module.CONNECT_TIMEOUT_SECONDS
+        )

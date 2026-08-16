@@ -8,6 +8,7 @@ from sqlalchemy import Engine, create_engine
 
 from src.shared_kernel.db.settings import get_database_url
 
+# 정상 연결은 1초 미만. IPv6+IPv4 순차 시도 실측 재현이 5초 기준 10.17초에 실패해 근거로 삼음 (이슈 #45).
 CONNECT_TIMEOUT_SECONDS = 5
 
 
