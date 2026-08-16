@@ -27,11 +27,10 @@ from src.modules.market.domain.models import (
 
 logger = logging.getLogger(__name__)
 
-# 태그 조회는 마켓 하나당 API 콜 1개라 rate limit 에 걸린다.
-# 실측(2026-08-16): 단일 실행 200개 동시 조회 100% 성공, 500개는 429 다발.
-# 신규 마켓을 이 크기로 잘라 처리하면 콜드스타트도 여러 주기에 걸쳐
-# 안전하게 수렴한다 — 캐시(find_active_condition_ids)가 진행 상태를 담당해
-# 별도 카운터가 필요 없다.
+# 태그 조회는 마켓 하나당 API 콜 1개라 rate limit 에 걸린다. 신규 마켓을
+# 이 크기로 잘라 처리하면 콜드스타트도 여러 주기에 걸쳐 안전하게
+# 수렴한다 — 캐시(find_active_condition_ids)가 진행 상태를 담당해 별도
+# 카운터가 필요 없다. 실측 근거: docs/research/market-classification-tag-rate-limit.md
 NEW_MARKETS_PER_CYCLE_LIMIT = 100
 
 
