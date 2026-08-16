@@ -27,6 +27,13 @@ from src.modules.market.domain.models import (
 
 logger = logging.getLogger(__name__)
 
+# 태그 조회는 마켓 하나당 API 콜 1개라 rate limit 에 걸린다.
+# 실측(2026-08-16): 단일 실행 200개 동시 조회 100% 성공, 500개는 429 다발.
+# 신규 마켓을 이 크기로 잘라 처리하면 콜드스타트도 여러 주기에 걸쳐
+# 안전하게 수렴한다 — 캐시(find_active_condition_ids)가 진행 상태를 담당해
+# 별도 카운터가 필요 없다.
+NEW_MARKETS_PER_CYCLE_LIMIT = 100
+
 
 class MarketClassifierService:
     """Polymarket 마켓 분류 오케스트레이션."""
@@ -58,19 +65,20 @@ class MarketClassifierService:
         cached_ids = self._repository.find_active_condition_ids(now)
 
         markets = await self._source.fetch_active_markets(
-            limit=200, order="volume24hr", ascending=False
+            limit=500, order="volume24hr", ascending=False
         )
         new_markets = [m for m in markets if m.condition_id not in cached_ids]
+        batch = new_markets[:NEW_MARKETS_PER_CYCLE_LIMIT]
 
-        if not new_markets:
+        if not batch:
             return
 
         tag_map = await self._source.fetch_tags_bulk(
-            [m.condition_id for m in new_markets]
+            [m.condition_id for m in batch]
         )
 
         classifications: list[MarketClassification] = []
-        for market in new_markets:
+        for market in batch:
             tags = tag_map.get(market.condition_id, [])
             result = classify({t.id for t in tags})
             if result is None:
