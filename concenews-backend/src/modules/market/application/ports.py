@@ -107,6 +107,10 @@ class ParticipantSnapshotRepositoryPort(Protocol):
         """보유 포지션 관측값을 한 번에 저장한다."""
         ...
 
+    def find_latest_snapshots(self) -> list[MarketParticipantSnapshot]:
+        """가장 최근 수집 배치의 원본 보유 포지션 스냅샷을 조회한다."""
+        ...
+
 
 class ObservationExclusionRepositoryPort(Protocol):
     """참여자 관측 제외 목록 저장소."""
