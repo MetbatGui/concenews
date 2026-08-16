@@ -40,6 +40,25 @@ class TestApiRuntimeBoundary:
 class TestSchedulerEntrypoint:
     """독립 Scheduler 프로세스의 조립과 종료 계약."""
 
+    def test_main_registers_exclusions_before_starting_scheduler(self, monkeypatch):
+        """초기 관측 제외 등록은 Scheduler 실행보다 먼저 수행된다."""
+        calls: list[str] = []
+
+        def record_run(coro) -> None:
+            coro.close()
+            calls.append("scheduler")
+
+        monkeypatch.setattr(
+            scheduler_main,
+            "run_observation_exclusion_bootstrap",
+            lambda: calls.append("exclusion-bootstrap"),
+        )
+        monkeypatch.setattr(scheduler_main.asyncio, "run", record_run)
+
+        scheduler_main.main()
+
+        assert calls == ["exclusion-bootstrap", "scheduler"]
+
     def test_build_scheduler_registers_both_jobs(self, monkeypatch):
         """하나의 Scheduler에 뉴스와 마켓 작업을 모두 등록한다."""
         scheduler = _FakeScheduler()

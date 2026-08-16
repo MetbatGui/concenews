@@ -7,7 +7,14 @@ from datetime import datetime
 from enum import Enum
 from uuid import UUID
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 
 class Classification(str, Enum):
@@ -218,3 +225,54 @@ class ParticipantPositionPayload(BaseModel):
     wallet_address: str = Field(min_length=1)
     outcome_index: int = Field(ge=0)
     position_amount: float = Field(gt=0)
+
+
+class ObservationExclusionReviewStatus(str, Enum):
+    """관측 제외 항목의 사람 검토 상태."""
+
+    PENDING = "PENDING"
+    REVIEWED = "REVIEWED"
+
+
+class MarketParticipantObservationExclusion(BaseModel):
+    """신호 계산에서 제외할 공개 지갑의 근거 기반 관측 정책.
+
+    Attributes:
+        id: 제외 항목 고유 식별자(UUID v7).
+        wallet_address: 정규화한 Polymarket proxy wallet 주소.
+        reason: 거래 참여자 신호에서 제외하는 사유.
+        evidence_url: 판단 근거를 확인할 수 있는 URL.
+        registered_at: 항목 등록 시각(UTC).
+        review_status: 사람 검토 상태.
+        active: 신호 계산 제외 적용 여부.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    id: UUID
+    wallet_address: str
+    reason: str = Field(min_length=1)
+    evidence_url: str = Field(min_length=1)
+    registered_at: AwareDatetime
+    review_status: ObservationExclusionReviewStatus
+    active: bool
+
+    @field_validator("wallet_address")
+    @classmethod
+    def _normalize_wallet_address(cls, wallet_address: str) -> str:
+        """Ethereum 지갑 주소 형식을 검증하고 소문자로 정규화한다."""
+        normalized = wallet_address.lower()
+        if len(normalized) != 42 or not normalized.startswith("0x"):
+            raise ValueError("지갑 주소는 0x 접두사의 40자리 16진수여야 합니다.")
+        if any(character not in "0123456789abcdef" for character in normalized[2:]):
+            raise ValueError("지갑 주소는 0x 접두사의 40자리 16진수여야 합니다.")
+        return normalized
+
+    @model_validator(mode="after")
+    def _validate_activation_after_review(
+        self,
+    ) -> "MarketParticipantObservationExclusion":
+        """검토 대기 항목이 신호에서 제외되지 않도록 검증한다."""
+        if self.active and self.review_status is not ObservationExclusionReviewStatus.REVIEWED:
+            raise ValueError("검토 완료 전에는 관측 제외 항목을 활성화할 수 없습니다.")
+        return self

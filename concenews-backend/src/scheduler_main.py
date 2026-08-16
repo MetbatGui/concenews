@@ -9,6 +9,7 @@ from src.modules.market.bootstrap import (
     register_market_classifier_job,
     register_market_participant_snapshot_job,
     register_market_snapshot_job,
+    run_observation_exclusion_bootstrap,
 )
 from src.modules.news.bootstrap import register_news_collection_job
 from src.shared_kernel.scheduler import AsyncioSchedulerAdapter
@@ -70,7 +71,11 @@ def _install_shutdown_signal_handlers() -> asyncio.Event:
 
 
 def main() -> None:
-    """Scheduler 프로세스를 실행한다."""
+    """초기 참조 데이터를 등록한 뒤 Scheduler 프로세스를 실행한다.
+
+    등록은 실행 전 1회 수행한다 (ADR 2026-08-16 초기 참조 데이터 등록 위치).
+    """
+    run_observation_exclusion_bootstrap()
     asyncio.run(run_scheduler())
 
 
