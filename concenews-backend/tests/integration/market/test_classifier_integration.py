@@ -30,21 +30,36 @@ class _FakeSource:
         self._markets = markets
         self._tag_map = tag_map
         self.closed = False
+        self.fetch_active_markets_calls: list[dict] = []
+        self.fetch_tags_bulk_calls: list[list[str]] = []
 
     async def fetch_active_markets(
         self, limit: int, order: str, ascending: bool
     ) -> list[MarketMetadata]:
-        del limit, order, ascending
+        self.fetch_active_markets_calls.append(
+            {"limit": limit, "order": order, "ascending": ascending}
+        )
         return list(self._markets)
 
     async def fetch_tags_bulk(
         self, condition_ids: list[str]
     ) -> dict[str, list[Tag]]:
+        self.fetch_tags_bulk_calls.append(list(condition_ids))
         return {cid: self._tag_map.get(cid, []) for cid in condition_ids}
 
     async def aclose(self) -> None:
         """Scheduler가 외부 경계 자원을 정리했는지 기록한다."""
         self.closed = True
+
+
+def _make_macro_market(index: int, end_date):
+    """태그 rate limit 배치 테스트용 MACRO 마켓 하나를 만든다."""
+    condition_id = f"0xmarket{index:04d}"
+    market = MarketMetadata(
+        condition_id=condition_id, question=f"Market {index}?", end_date=end_date
+    )
+    tag = Tag(id=159, label="Fed", slug="fed")
+    return market, tag
 
 
 class TestClassifierIntegration:
@@ -129,6 +144,53 @@ class TestClassifierIntegration:
         rows = pg_session.execute(select(MarketClassificationRow)).scalars().all()
         saved_ids = {r.condition_id for r in rows}
         assert saved_ids == {"0xcached", "0xnew"}
+
+    @pytest.mark.asyncio
+    async def test_fetches_top_500_market_list(self, pg_session: Session):
+        """Given: Fake source
+        When: run()
+        Then: 마켓 목록 조회는 상위 500개를 요청한다 (AC2).
+        """
+        source = _FakeSource(markets=[], tag_map={})
+        repository = PgMarketClassificationRepository(pg_session)
+        service = MarketClassifierService(source=source, repository=repository)
+
+        await service.run()
+
+        assert source.fetch_active_markets_calls == [
+            {"limit": 500, "order": "volume24hr", "ascending": False}
+        ]
+
+    @pytest.mark.asyncio
+    async def test_caps_new_markets_processed_per_run(self, pg_session: Session):
+        """Given: rate limit 안전 배치 크기(100)를 초과하는 신규 마켓 150개
+        When: run() 을 두 번 호출 (콜드스타트 후 다음 주기 시뮬레이션)
+        Then: 첫 run() 은 최대 100개만 태그 조회·저장하고, 두 번째 run() 이
+            나머지를 처리해 두 번 합쳐 150개 전부 저장된다.
+        """
+        future = datetime.now(UTC) + timedelta(days=30)
+        markets_and_tags = [_make_macro_market(i, future) for i in range(150)]
+        markets = [m for m, _ in markets_and_tags]
+        tag_map = {m.condition_id: [t] for m, t in markets_and_tags}
+        source = _FakeSource(markets=markets, tag_map=tag_map)
+        repository = PgMarketClassificationRepository(pg_session)
+        service = MarketClassifierService(source=source, repository=repository)
+
+        await service.run()
+
+        rows_after_first = (
+            pg_session.execute(select(MarketClassificationRow)).scalars().all()
+        )
+        assert len(rows_after_first) == 100
+        assert len(source.fetch_tags_bulk_calls[0]) == 100
+
+        await service.run()
+
+        rows_after_second = (
+            pg_session.execute(select(MarketClassificationRow)).scalars().all()
+        )
+        assert len(rows_after_second) == 150
+        assert len(source.fetch_tags_bulk_calls[1]) == 50
 
     @pytest.mark.asyncio
     async def test_registered_job_uses_own_session_and_closes_external_source(
