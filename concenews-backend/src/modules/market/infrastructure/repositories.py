@@ -222,3 +222,25 @@ class PgMarketParticipantSnapshotRepository:
         ]
         self._session.execute(insert(MarketParticipantSnapshotRow).values(rows))
         self._session.flush()
+
+    def find_latest_snapshots(self) -> list[MarketParticipantSnapshot]:
+        """가장 최근 수집 배치(timestamp 최댓값)의 원본 스냅샷을 조회한다."""
+        latest_timestamp = select(
+            func.max(MarketParticipantSnapshotRow.timestamp)
+        ).scalar_subquery()
+        stmt = select(MarketParticipantSnapshotRow).where(
+            MarketParticipantSnapshotRow.timestamp == latest_timestamp
+        )
+        rows = self._session.execute(stmt).scalars().all()
+        return [
+            MarketParticipantSnapshot(
+                id=row.id,
+                market_id=row.market_id,
+                condition_id=row.condition_id,
+                wallet_address=row.wallet_address,
+                outcome_index=row.outcome_index,
+                position_amount=float(row.position_amount),
+                timestamp=row.timestamp,
+            )
+            for row in rows
+        ]

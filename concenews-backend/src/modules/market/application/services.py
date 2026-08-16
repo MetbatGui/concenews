@@ -12,6 +12,7 @@ import httpx
 from src.modules.market.application.ports import (
     ClassificationRepositoryPort,
     MarketSourcePort,
+    ObservationExclusionRepositoryPort,
     ParticipantSnapshotRepositoryPort,
     ParticipantSourcePort,
     SnapshotIdGeneratorPort,
@@ -172,3 +173,29 @@ class MarketParticipantSnapshotService:
                 for position in positions
             ]
             self._participant_snapshot_repository.save_bulk(snapshots)
+
+
+class MarketParticipantObservationService:
+    """원본 보유 포지션에 관측 제외 정책을 읽기 시점에 적용하는 조회 서비스."""
+
+    def __init__(
+        self,
+        snapshot_repository: ParticipantSnapshotRepositoryPort,
+        exclusion_repository: ObservationExclusionRepositoryPort,
+    ) -> None:
+        """원본 스냅샷 저장소와 제외 목록 저장소를 조립한다."""
+        self._snapshot_repository = snapshot_repository
+        self._exclusion_repository = exclusion_repository
+
+    def list_observable_positions(self) -> list[MarketParticipantSnapshot]:
+        """활성·검토 완료 제외 지갑을 뺀 최신 배치의 보유 포지션을 반환한다.
+
+        원본 스냅샷은 조회만 하며 수정·삭제하지 않는다.
+        """
+        excluded_wallets = self._exclusion_repository.find_active_wallet_addresses()
+        latest_snapshots = self._snapshot_repository.find_latest_snapshots()
+        return [
+            snapshot
+            for snapshot in latest_snapshots
+            if snapshot.wallet_address not in excluded_wallets
+        ]
