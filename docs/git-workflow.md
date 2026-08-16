@@ -24,6 +24,12 @@ feature/news-fetch-wire          (Endpoint wire-up + integration test, GREEN)
 - **매 PR merge 시 master green 보장** — RED 상태 master merge 금지.
 - master 에서 생성, PR merge 후 삭제
 
+### fix/{topic}
+
+Slice 에 속하지 않는 버그·인프라 수정에 사용한다 (예: `fix/db-connect-timeout`).
+- `feature/{slice}-{task}` 와 동일하게 master 에서 생성, PR merge 후 삭제.
+- Slice 소속 작업은 버그 수정이라도 `feature/{slice}-{task}` 를 그대로 쓴다. `fix/` 는 어떤 Slice 에도 속하지 않을 때만 쓴다.
+
 ---
 
 ## Spike (임시 코드는 로컬, 결과는 Git)
