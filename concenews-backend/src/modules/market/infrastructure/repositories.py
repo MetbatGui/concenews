@@ -224,7 +224,12 @@ class PgMarketParticipantSnapshotRepository:
         self._session.flush()
 
     def find_latest_snapshots(self) -> list[MarketParticipantSnapshot]:
-        """가장 최근 수집 배치(timestamp 최댓값)의 원본 스냅샷을 조회한다."""
+        """가장 최근 수집 배치(timestamp 최댓값)의 원본 스냅샷을 조회한다.
+
+        MarketParticipantSnapshotService.run() 이 한 실행의 모든 마켓에
+        같은 timestamp 를 부여하므로, 전역 최댓값 일치만으로 "그 실행에서
+        저장된 전체 마켓" 을 안전하게 잡는다.
+        """
         latest_timestamp = select(
             func.max(MarketParticipantSnapshotRow.timestamp)
         ).scalar_subquery()

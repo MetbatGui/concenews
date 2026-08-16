@@ -25,13 +25,18 @@ ORDINARY_WALLET = "0x" + "b" * 40
 
 
 def _position(
-    snapshot_id: str, wallet_address: str, timestamp: datetime
+    snapshot_id: str,
+    wallet_address: str,
+    timestamp: datetime,
+    *,
+    market_id: str = "3438892",
+    condition_id: str = "0xcondition",
 ) -> MarketParticipantSnapshot:
     """원본 보유 포지션 스냅샷을 만든다."""
     return MarketParticipantSnapshot(
         id=UUID(snapshot_id),
-        market_id="3438892",
-        condition_id="0xcondition",
+        market_id=market_id,
+        condition_id=condition_id,
         wallet_address=wallet_address,
         outcome_index=1,
         position_amount=125.5,
@@ -231,3 +236,43 @@ class TestMarketParticipantObservationService:
         result = service.list_observable_positions()
 
         assert [p.wallet_address for p in result] == [WHALE_WALLET]
+
+    def test_includes_all_markets_from_the_same_batch(self, pg_session: Session):
+        """Given: 서로 다른 두 마켓이 같은 실행에서 같은 timestamp 로 저장됨
+        When: 관측 자격 조회
+        Then: 두 마켓의 포지션이 모두 최신 배치로 반환된다.
+        """
+        observed_at = datetime(2026, 8, 10, 5, 0, tzinfo=UTC)
+        snapshot_repository = PgMarketParticipantSnapshotRepository(pg_session)
+        snapshot_repository.save_bulk(
+            [
+                _position(
+                    "018f0d3d-5b5a-7a3d-8b54-8f3c11a20f08",
+                    ORDINARY_WALLET,
+                    observed_at,
+                    market_id="3438892",
+                    condition_id="0xcondition",
+                ),
+                _position(
+                    "018f0d3d-5b5a-7a3d-8b54-8f3c11a20f09",
+                    WHALE_WALLET,
+                    observed_at,
+                    market_id="9999999",
+                    condition_id="0xothercondition",
+                ),
+            ]
+        )
+        exclusion_repository = PgMarketParticipantObservationExclusionRepository(
+            pg_session
+        )
+        service = MarketParticipantObservationService(
+            snapshot_repository=snapshot_repository,
+            exclusion_repository=exclusion_repository,
+        )
+
+        result = service.list_observable_positions()
+
+        assert {(p.market_id, p.wallet_address) for p in result} == {
+            ("3438892", ORDINARY_WALLET),
+            ("9999999", WHALE_WALLET),
+        }
