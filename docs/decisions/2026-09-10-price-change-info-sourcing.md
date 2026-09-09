@@ -8,7 +8,7 @@
 
 `MarketSnapshot` 에 확률(Yes 가격) 변동 정보를 4개 구간(1h, 24h, 1w, 1mo)으로 추가한다. 구간마다 데이터 확보 방식이 다르다.
 
-- Polymarket Gamma API `/markets` 응답에 `oneWeekPriceChange`·`oneMonthPriceChange` 필드가 이미 계산되어 포함된다. `oneDayPriceChange`·`oneHourPriceChange` 같은 필드는 존재하지 않는다(원본 필드 덤프로 확인).
+- Polymarket Gamma API `/markets` 응답에 `oneWeekPriceChange`·`oneMonthPriceChange` 필드가 이미 계산되어 포함된다. `oneDayPriceChange`·`oneHourPriceChange` 같은 필드는 존재하지 않는다([Spike: Gamma API 가격 변동 필드](../research/gamma-price-change-fields.md)).
 - 우리 `market_snapshot` 은 5분 주기로 수집돼, 1시간·24시간 전 시점에 가장 가까운 과거 스냅샷을 자체 히스토리에서 찾아 비교할 수 있다.
 - 이 프로젝트의 수집 이력은 아직 짧다(수 주 수준). 1주·1개월 변동을 자체 히스토리로 재구성하면, 그 기간만큼 데이터가 쌓이기 전까지는 부정확하거나 결측된다.
 
@@ -43,5 +43,6 @@
 
 ## References
 
+- [Spike: Gamma API 가격 변동 필드](../research/gamma-price-change-fields.md)
 - [spec-market-price-change-info.md](../../concenews-backend/docs/spec-market-price-change-info.md)
 - `concenews-backend/src/modules/market/infrastructure/polymarket_client.py` — Gamma 원본 필드 확인
