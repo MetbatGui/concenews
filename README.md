@@ -120,6 +120,7 @@ just check-container
 - **수익 보장 없음**: 시장 신호 ≠ 수익
 - **정보 분석만**: 투자 조언 아님
 - **자체 판단 책임**: 손실 책임 없음
+- **도박 아님**: 이 프로젝트는 베팅·주문 실행 기능을 제공하지 않으며 도박을 권장하지 않는다. 예측시장 데이터를 투자 인사이트 목적으로만 조회·분석한다. 대한민국에서 도박은 형법상 금지되어 있다.
 
 ---
 
@@ -180,6 +181,7 @@ THENEWSAPI_TOKEN=your_api_key just check-e2e
 - [ADR Index](docs/decisions/README.md)
 - [Spike-Learning-Spec 정밀도](docs/decisions/2026-07-07-spike-learning-spec-fidelity.md)
 - [Bootstrap DI 전략](docs/decisions/2026-07-07-di-bootstrap-strategy.md)
+- [Polymarket 국내 접속 차단 대응](docs/decisions/2026-09-10-polymarket-kr-block-response.md)
 
 ### 명세
 - [News Collection Spec](concenews-backend/docs/spec-news-collection.md)

@@ -32,6 +32,7 @@
 | 2026-08-14 | [cross-cutting-rule-placement (ADR·TDD 강제의 지침 파일 배치)](./2026-08-14-cross-cutting-rule-placement.md) | Accepted |
 | 2026-08-14 | [review-response-policy (severity 별 finding 처리 주체)](./2026-08-14-review-response-policy.md) | Accepted |
 | 2026-08-16 | [initial-reference-data-registration (초기 참조 데이터 등록 위치)](./2026-08-16-initial-reference-data-registration.md) | Accepted |
+| 2026-09-10 | [polymarket-kr-block-response (국내 접속 차단 대응, 우회 배포 보류)](./2026-09-10-polymarket-kr-block-response.md) | Accepted |
 
 ### Architecture & Strategy
 
