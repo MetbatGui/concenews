@@ -1,0 +1,257 @@
+{
+  "collected_at": "2026-09-09T18:53:44.469521+00:00",
+  "markets": [
+    {
+      "condition_id": "0x42b633e7acfedf301c4eb85acefc7430f2e76825c1f3324a39a5582d7a26599b",
+      "market_id": "4095052",
+      "question": "US x Iran Effective Ceasefire by September 4?",
+      "matched_tag_ids": [
+        78,
+        100265
+      ],
+      "outcomes": [
+        {
+          "outcome_index": 0,
+          "outcome_name": "Yes",
+          "top_holders": [
+            {
+              "wallet": "0xff1e352d5310eab17d1e9fd7e00ec33f16c05e2d",
+              "amount": 20296.343515,
+              "pseudonym": "Unripe-Whisker",
+              "name": "0xff1e352d5310eab17d1e9fd7e00ec33f16c05e2",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 45,
+                  "REDEEM": 5
+                },
+                "earliest_timestamp": 1788920353
+              }
+            },
+            {
+              "wallet": "0x62cf46cd4c3af254dccfc37a7f93de265b4b5826",
+              "amount": 18633.440948,
+              "pseudonym": "Accurate-Spirit",
+              "name": "eCash",
+              "bio": "e.cash, for the first time in history we will have scalable SoV and MoE combined.",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 49,
+                  "MERGE": 1
+                },
+                "earliest_timestamp": 1788967114
+              }
+            },
+            {
+              "wallet": "0x60a92c8620846d81f5ea17b0564e0d4b7c545a71",
+              "amount": 15492.354331,
+              "pseudonym": "Fearful-Congress",
+              "name": "paddaa",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 45,
+                  "MERGE": 5
+                },
+                "earliest_timestamp": 1788974680
+              }
+            }
+          ]
+        },
+        {
+          "outcome_index": 1,
+          "outcome_name": "No",
+          "top_holders": [
+            {
+              "wallet": "0xcb4c32ea10e917e5daac3710c64981aebdb66d64",
+              "amount": 14999.991628,
+              "pseudonym": "Turbulent-Celebrity",
+              "name": "52centis",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "REWARD": 4,
+                  "TRADE": 45,
+                  "REDEEM": 1
+                },
+                "earliest_timestamp": 1788327718
+              }
+            },
+            {
+              "wallet": "0xeb22f4735df6bd5d14e1b5fd10faefa7757d808a",
+              "amount": 14999.985439,
+              "pseudonym": "Needy-Cenotaph",
+              "name": "BigRabbit",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 46,
+                  "MAKER_REBATE": 1,
+                  "YIELD": 1,
+                  "REWARD": 1,
+                  "REDEEM": 1
+                },
+                "earliest_timestamp": 1788856359
+              }
+            },
+            {
+              "wallet": "0x44c1dfe43260c94ed4f1d00de2e1f80fb113ebc1",
+              "amount": 14950.1,
+              "pseudonym": "Sociable-Rooster",
+              "name": "aenews2",
+              "bio": "I still got the sauce 🍅",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 43,
+                  "REDEEM": 4,
+                  "REWARD": 2,
+                  "YIELD": 1
+                },
+                "earliest_timestamp": 1788861768
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "condition_id": "0x5c79dfde05559b79a9cb9f7c4187e4d49632dd042572ae676952f812732591cc",
+      "market_id": "2176270",
+      "question": "Strait of Hormuz traffic returns to normal by December 31?",
+      "matched_tag_ids": [
+        78,
+        100265
+      ],
+      "outcomes": [
+        {
+          "outcome_index": 0,
+          "outcome_name": "Yes",
+          "top_holders": [
+            {
+              "wallet": "0xa91edabae0eae478c830a6d5dfd3acc0571709e0",
+              "amount": 128329.87655,
+              "pseudonym": "Tough-Conscience",
+              "name": "enri.hl",
+              "bio": "0xWhaleHL",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 47,
+                  "MAKER_REBATE": 1,
+                  "REWARD": 2
+                },
+                "earliest_timestamp": 1788902475
+              }
+            },
+            {
+              "wallet": "0xce1d15f4ab2e11cca6fefe4fe7d70889e6531b9b",
+              "amount": 114999.988205,
+              "pseudonym": "",
+              "name": "armads",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "YIELD": 5,
+                  "MAKER_REBATE": 1,
+                  "TAKER_REBATE": 1,
+                  "TRADE": 38,
+                  "REWARD": 1,
+                  "REDEEM": 4
+                },
+                "earliest_timestamp": 1783968172
+              }
+            },
+            {
+              "wallet": "0x57e7c7ef2a44ff08d724d0054fa2b648f93db491",
+              "amount": 92414.83,
+              "pseudonym": "Flawless-Traffic",
+              "name": "Marks1000",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 7,
+                  "REDEEM": 4,
+                  "YIELD": 39
+                },
+                "earliest_timestamp": 1775089401
+              }
+            }
+          ]
+        },
+        {
+          "outcome_index": 1,
+          "outcome_name": "No",
+          "top_holders": [
+            {
+              "wallet": "0x6139c42e48cf190e67a0a85d492413b499336b7a",
+              "amount": 282112.951141,
+              "pseudonym": "Near-Familiar",
+              "name": "RememberAmalek",
+              "bio": "Remember what the Amalekites did to you along the way when you came out of Egypt.",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 45,
+                  "REDEEM": 5
+                },
+                "earliest_timestamp": 1788934513
+              }
+            },
+            {
+              "wallet": "0x2e0b70d482e6b389e81dea528be57d825dd48070",
+              "amount": 170096.24,
+              "pseudonym": "",
+              "name": "Trump2028",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "MAKER_REBATE": 3,
+                  "TRADE": 43,
+                  "REDEEM": 3,
+                  "CONVERSION": 1
+                },
+                "earliest_timestamp": 1788251157
+              }
+            },
+            {
+              "wallet": "0x0c0e270cf879583d6a0142fc817e05b768d0434e",
+              "amount": 135696.619528,
+              "pseudonym": "Impassioned-Watch",
+              "name": "The Spirit of Ukraine>UMA",
+              "bio": "",
+              "verified": false,
+              "activity": {
+                "count": 50,
+                "types": {
+                  "TRADE": 48,
+                  "CONVERSION": 2
+                },
+                "earliest_timestamp": 1788956208
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
