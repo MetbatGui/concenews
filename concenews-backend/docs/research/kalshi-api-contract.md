@@ -83,6 +83,18 @@ KXPJMEMERGENCY PJM capacity emergency days                       volume_fp=98305
 - 공개 엔드포인트에 명시적 rate limit 헤더가 없으므로, 폴링 주기는 보수적으로 직접 설정(예: 분당 수십 회 이내)하고 429 응답 발생 시 backoff를 별도로 검증해야 한다 — 이번 Spike 범위 밖.
 - `event_ticker`로 이벤트 조회 시 `category`/`series_ticker`를 함께 받아오므로, 마켓→이벤트 조인은 이벤트를 캐싱해두면 N+1 호출을 피할 수 있다.
 
+## 추가 조사: 개별 체결(Trade) 단위 대형 거래 감지 — 가능
+
+지갑 신원은 익명이지만, **개별 체결 자체의 규모**는 `GET /markets/trades`로 완전히 공개된다.
+
+`Trade` 스키마 핵심 필드:
+- `count_fp` (`FixedPointCount`): 이 체결에서 거래된 계약 수량
+- `yes_price_dollars`/`no_price_dollars` (`FixedPointDollars`): 체결 가격($0~1)
+- `is_block_trade` (bool): RFQ·협상형으로 장외 체결된 **블록거래**인지 여부 — 대형 거래가 아예 별도 플래그로 명시됨
+- 거래 당사자 식별자는 스키마에 없음 (완전 익명)
+
+`count_fp × price`가 곧 그 체결의 달러 규모다. 예: 한화 30억(약 $220만) 상당 단일 베팅이면 `count_fp`가 그만큼 큰 값으로 잡히거나, 애초에 `is_block_trade=true`로 분리 식별된다. 즉 **"누가"는 못 잡아도 "언제·얼마 규모로 한 번에 들어왔는지"는 트레이더 신원 없이도 완전히 관측 가능** — Polymarket의 지갑 단위 top-holder 추적과는 다른 방식이지만, "대형 신규 유입 감지"라는 목적 자체는 대체 가능하다.
+
 ## 추가 조사: 참여자(지갑) 단위 공개 데이터 — 없음
 
 `MarketParticipantSnapshotService`/`MarketParticipantObservationExclusion`([ADR 2026-08-15](../../../docs/decisions/2026-08-15-market-participant-observation-eligibility.md))은 Polymarket이 **온체인**이라 지갑별 보유·거래 내역이 공개된다는 전제 위에 서 있다.
