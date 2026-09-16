@@ -35,6 +35,7 @@
 | 2026-09-10 | [polymarket-kr-block-response (국내 접속 차단 대응, 우회 배포 보류)](./2026-09-10-polymarket-kr-block-response.md) | Accepted |
 | 2026-09-10 | [price-change-info-sourcing (확률 변동 정보 구간별 소싱 방식)](./2026-09-10-price-change-info-sourcing.md) | Accepted |
 | 2026-09-17 | [polymarket-to-kalshi-market-source-migration (마켓 데이터 소스 교체)](./2026-09-17-polymarket-to-kalshi-market-source-migration.md) | Accepted |
+| 2026-09-17 | [kalshi-domain-scope-correction (Domain 재설계 필요 + 참여자 모듈 범위 축소)](./2026-09-17-kalshi-domain-scope-correction.md) | Accepted |
 
 ### Architecture & Strategy
 
