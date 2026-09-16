@@ -83,6 +83,14 @@ KXPJMEMERGENCY PJM capacity emergency days                       volume_fp=98305
 - 공개 엔드포인트에 명시적 rate limit 헤더가 없으므로, 폴링 주기는 보수적으로 직접 설정(예: 분당 수십 회 이내)하고 429 응답 발생 시 backoff를 별도로 검증해야 한다 — 이번 Spike 범위 밖.
 - `event_ticker`로 이벤트 조회 시 `category`/`series_ticker`를 함께 받아오므로, 마켓→이벤트 조인은 이벤트를 캐싱해두면 N+1 호출을 피할 수 있다.
 
+## 추가 조사: 참여자(지갑) 단위 공개 데이터 — 없음
+
+`MarketParticipantSnapshotService`/`MarketParticipantObservationExclusion`([ADR 2026-08-15](../../../docs/decisions/2026-08-15-market-participant-observation-eligibility.md))은 Polymarket이 **온체인**이라 지갑별 보유·거래 내역이 공개된다는 전제 위에 서 있다.
+
+Kalshi OpenAPI 전체를 훑은 결과, 포지션·주문·체결·잔고 관련 엔드포인트(`/portfolio/positions`, `/portfolio/orders`, `/portfolio/fills`, `/portfolio/balance` 등)는 전부 `portfolio` 태그이며 `KALSHI-ACCESS-KEY`/`KALSHI-ACCESS-SIGNATURE`(RSA-PSS 서명) 인증이 필요하고, **호출자 본인 계정 데이터만 반환한다**. 리더보드, 마켓별 보유자 목록, 타 트레이더 포지션 등 제3자 참여자 데이터를 노출하는 공개 엔드포인트는 존재하지 않는다.
+
+**결론**: Kalshi는 KYC 기반 규제 거래소라 Polymarket과 달리 참여자 단위 공개 데이터가 구조적으로 없다. `market-participant` 모듈(스냅샷·관측 제외 등 참여자 추적 관련 기능 전체)은 Kalshi로 이식 불가능하다 — Market/News 매칭 계열 기능과 분리해서 별도로 결정해야 한다.
+
 ## References
 
 - OpenAPI 스펙: `https://docs.kalshi.com/openapi.yaml` (2026-09-17 다운로드본으로 실측, title: "Kalshi Trade API Manual Endpoints", version 3.30.0)
