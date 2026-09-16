@@ -9,6 +9,7 @@ from typing import Protocol
 from uuid import UUID
 
 from src.modules.market.domain.models import (
+    KalshiMarketMetadata,
     MarketClassification,
     MarketMetadata,
     MarketSnapshot,
@@ -54,6 +55,42 @@ class MarketSourcePort(Protocol):
         self, limit: int, order: str, ascending: bool
     ) -> list[MarketSnapshotPayload]:
         """스냅샷 후보가 될 활성 마켓 원본을 조회한다."""
+        ...
+
+
+class KalshiMarketSourcePort(Protocol):
+    """Kalshi 마켓 데이터 소스.
+
+    기존 MarketSourcePort(Polymarket)와 병존하는 별개 Protocol이다.
+    임시: Polymarket 어댑터 제거 시 통합 예정
+    (docs/decisions/2026-09-17-kalshi-domain-scope-correction.md).
+    """
+
+    async def fetch_active_markets(self, limit: int) -> list[KalshiMarketMetadata]:
+        """활성 마켓 목록 fetch.
+
+        Kalshi는 서버 사이드 정렬을 제공하지 않아 order/ascending 파라미터가 없다.
+
+        Args:
+            limit: 조회할 최대 개수.
+
+        Returns:
+            KalshiMarketMetadata 리스트.
+        """
+        ...
+
+    async def fetch_categories_bulk(self, series_ids: list[str]) -> dict[str, str]:
+        """시리즈별 주 카테고리 조회.
+
+        Kalshi는 카테고리가 Market이 아니라 Series/Event 레벨에 있어
+        series_id 단위로 조회한다.
+
+        Args:
+            series_ids: 조회할 series_ticker 목록.
+
+        Returns:
+            series_id → 주 카테고리 문자열 매핑.
+        """
         ...
 
 
