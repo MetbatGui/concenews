@@ -29,6 +29,9 @@
 - Bug fix
 - Nit 처리
 - Test 세부 (하드코드 값 등)
+- 트리거 표에 형식적으로 걸리더라도, 대안 간 실질적 tradeoff 가 없고 되돌리기 쉬운 관례성 결정("판단 기준" 항목 참고)
+
+**판단 기준**: 트리거 매칭 여부만으로 기계적으로 판정하지 않는다. 실질 질문은 "미래 세션이 '왜 이 선택?' 물었을 때 답이 필요한가" — 근거를 안 적으면 누군가 조용히 되돌릴 위험이 있는 결정만 쓴다.
 
 ---
 
@@ -112,6 +115,17 @@
 - [ ] Superseded 인 경우 원 ADR Status 갱신 + 신규 파일?
 
 ---
+
+## GitHub Discussions 미러
+
+저장소(markdown 파일)가 SSOT. GitHub Discussions(Announcements 카테고리)는 이를 외부에 노출하는 미러다.
+
+Issue 대신 Discussions를 쓰는 이유: ADR은 "할 일"이 아니라 "이미 내려진 결정"이라 Issue의 open/closed(작업 진행상태) 의미와 맞지 않는다. Discussions는 이 개념 자체가 없어 더 정확하다.
+
+- ADR 파일 생성 시 Announcements 카테고리에 Discussion을 하나 만든다. 본문에는 요약 + 파일 링크만 두고, 전문은 복사하지 않는다.
+- ADR 파일 내용(Status 변경, Superseded 등)이 갱신되면 대응 Discussion에도 코멘트로 반영한다.
+- Superseded 시: 원 Discussion에 "Superseded by {new}" 코멘트 남기고, 새 ADR의 Discussion을 새로 연다(원 ADR immutable 원칙과 동일).
+- GitHub 액션이므로 다른 GitHub 쓰기 작업과 동일하게 사용자 승인 후 실행한다.
 
 ## 소급 적용 (기존 ADR)
 
