@@ -34,6 +34,7 @@
 | 2026-08-16 | [initial-reference-data-registration (초기 참조 데이터 등록 위치)](./2026-08-16-initial-reference-data-registration.md) | Accepted |
 | 2026-09-10 | [polymarket-kr-block-response (국내 접속 차단 대응, 우회 배포 보류)](./2026-09-10-polymarket-kr-block-response.md) | Accepted |
 | 2026-09-10 | [price-change-info-sourcing (확률 변동 정보 구간별 소싱 방식)](./2026-09-10-price-change-info-sourcing.md) | Accepted |
+| 2026-09-17 | [polymarket-to-kalshi-market-source-migration (마켓 데이터 소스 교체)](./2026-09-17-polymarket-to-kalshi-market-source-migration.md) | Accepted |
 
 ### Architecture & Strategy
 
