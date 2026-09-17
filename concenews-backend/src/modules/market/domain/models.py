@@ -78,22 +78,6 @@ class MarketClassification(BaseModel):
     classified_at: datetime
 
 
-class KalshiCategory(BaseModel):
-    """Kalshi 카테고리 (Series/Event 레벨 문자열 카테고리).
-
-    Polymarket Tag(int id)와 구조가 달라 별도 타입으로 병존한다.
-    임시: Polymarket 어댑터 제거 시 `Category`로 리네임 예정
-    (docs/decisions/2026-09-17-kalshi-domain-scope-correction.md).
-
-    Attributes:
-        id: Kalshi 카테고리 문자열 (예: "Economics").
-    """
-
-    model_config = ConfigDict(frozen=True)
-
-    id: str
-
-
 class KalshiMarketMetadata(BaseModel):
     """Kalshi 마켓 메타데이터.
 

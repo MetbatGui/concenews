@@ -42,7 +42,7 @@
 ### AC1. Domain 모델 (신규, 병존)
 
 - `KalshiMarketMetadata`: `market_id`(ticker), `series_id`(series_ticker), `question`, `end_date` 필드.
-- `KalshiCategory`: `id: str`(예: `"Economics"`) — Kalshi 카테고리는 문자열이라 `Tag`의 `int id`/`slug` 구조를 따르지 않는다.
+- 카테고리는 `dict[str, str]`(series_id → 카테고리 문자열)로 충분해 별도 `Category` 래퍼 타입을 두지 않는다(Independent Review에서 미사용 타입으로 지적돼 제거 — YAGNI).
 - 기존 `MarketMetadata`, `Tag`, `MarketClassification`, `Classification` enum은 **파일·필드 그대로**.
 
 ### AC2. Port (신규, 병존)
