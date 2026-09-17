@@ -101,6 +101,32 @@ MACRO_IDS: frozenset[int] = frozenset(
 )
 
 
+# Kalshi 카테고리 기반 분류 (Polymarket classify()와 병존, 무관계).
+# 임시: 실제 매핑은 별도 Task에서 채운다. 현재는 빈 집합이라 항상 None.
+# 근거: docs/decisions/2026-09-17-kalshi-domain-scope-correction.md
+NON_MACRO_CATEGORIES: frozenset[str] = frozenset()
+MACRO_CATEGORIES: frozenset[str] = frozenset()
+
+
+def classify_by_category(categories: set[str]) -> Classification | None:
+    """카테고리 문자열 집합으로 마켓 분류 (Kalshi 전용).
+
+    블랙리스트 우선: NON_MACRO_CATEGORIES 히트 시 즉시 NON_MACRO.
+    이후 화이트리스트: MACRO_CATEGORIES 히트 시 MACRO.
+
+    Args:
+        categories: 마켓이 속한 카테고리 문자열 집합.
+
+    Returns:
+        Classification 값 또는 None. 상수가 비어 있는 동안은 항상 None.
+    """
+    if categories & NON_MACRO_CATEGORIES:
+        return Classification.NON_MACRO
+    if categories & MACRO_CATEGORIES:
+        return Classification.MACRO
+    return None
+
+
 def classify(tag_ids: set[int]) -> Classification | None:
     """태그 ID 집합으로 마켓 분류.
 

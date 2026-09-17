@@ -78,6 +78,26 @@ class MarketClassification(BaseModel):
     classified_at: datetime
 
 
+class KalshiMarketMetadata(BaseModel):
+    """Kalshi 마켓 메타데이터.
+
+    임시: Polymarket 어댑터 제거 시 `MarketMetadata`로 리네임 예정.
+
+    Attributes:
+        market_id: Kalshi ticker (마켓 식별자).
+        series_id: Kalshi series_ticker (카테고리 조인 키).
+        question: 마켓 질문.
+        end_date: 마켓 종료일 (UTC).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    market_id: str
+    series_id: str
+    question: str
+    end_date: datetime
+
+
 class MarketSnapshot(BaseModel):
     """거래량 상위 마켓의 한 시점 관측값.
 

@@ -9,7 +9,7 @@
 ## 범위 요약
 
 **포함**:
-- 신규 Domain: `KalshiMarketMetadata`, `KalshiCategory` (기존 `MarketMetadata`/`Tag`와 별개)
+- 신규 Domain: `KalshiMarketMetadata` (기존 `MarketMetadata`/`Tag`와 별개; 카테고리는 `dict[str, str]`로 충분해 별도 타입 없음 — Independent Review에서 YAGNI로 제거)
 - 신규 Port: `KalshiMarketSourcePort` (기존 `MarketSourcePort`와 별개)
 - 신규 함수: `classify_by_category()` + `NON_MACRO_CATEGORIES`/`MACRO_CATEGORIES`(빈 placeholder) — 기존 `classify()`와 별개
 - `KalshiMarketClient` Walking Skeleton (하드코딩 스텁)
@@ -48,19 +48,6 @@
 
 ```python
 # domain/models.py 에 추가 (기존 클래스는 무변경)
-
-class KalshiCategory(BaseModel):
-    """Kalshi 카테고리 (Series/Event 레벨 문자열 카테고리).
-
-    Polymarket Tag(int id)와 달리 Kalshi 카테고리는 문자열이라 별도 타입.
-    임시: Polymarket 어댑터 제거 시 `Category`로 리네임 예정
-    (docs/decisions/2026-09-17-kalshi-domain-scope-correction.md).
-    """
-
-    model_config = ConfigDict(frozen=True)
-
-    id: str
-
 
 class KalshiMarketMetadata(BaseModel):
     """Kalshi 마켓 메타데이터.
@@ -151,7 +138,7 @@ Integration test는 이 프로덕션 스텁이 아니라 **하드코딩된 값�
 ### PR #1: Kalshi Walking Skeleton (병존 추가) — `feature/kalshi-market-source-acceptance`
 
 1. **RED**: `tests/integration/market/test_kalshi_market_source_integration.py` 신설 — `_FakeKalshiSource` + `classify_by_category` 흐름 검증 (아직 타입 없어서 import 에러 = RED)
-2. **GREEN 최소**: `domain/models.py`에 `KalshiCategory`, `KalshiMarketMetadata` 추가; `domain/classifier.py`에 `classify_by_category` + 빈 placeholder 상수 추가; `application/ports.py`에 `KalshiMarketSourcePort` 추가; `infrastructure/kalshi_client.py` 신설(스텁)
+2. **GREEN 최소**: `domain/models.py`에 `KalshiMarketMetadata` 추가; `domain/classifier.py`에 `classify_by_category` + 빈 placeholder 상수 추가; `application/ports.py`에 `KalshiMarketSourcePort` 추가; `infrastructure/kalshi_client.py` 신설(스텁)
 3. **Unit test**: `tests/unit/market/test_classifier.py`에 `classify_by_category` 케이스 추가(같은 파일, 기존 `TestClassify` 클래스는 무변경 — 새 `TestClassifyByCategory` 클래스만 추가) — "빈 상수 → 항상 None" 검증
 4. **회귀 확인**: 기존 `test_classifier.py`(원래 클래스), `test_classifier_integration.py`, `test_polymarket_adapter.py`가 한 줄도 안 바뀐 채 그대로 green인지 diff로 확인
 
@@ -163,7 +150,7 @@ Integration test는 이 프로덕션 스텁이 아니라 **하드코딩된 값�
 concenews-backend/
 ├─ src/modules/market/
 │  ├─ domain/
-│  │  ├─ models.py         (= 기존 클래스 무변경, + KalshiCategory, KalshiMarketMetadata)
+│  │  ├─ models.py         (= 기존 클래스 무변경, + KalshiMarketMetadata)
 │  │  └─ classifier.py     (= 기존 classify/상수 무변경, + classify_by_category, placeholder 상수)
 │  ├─ application/
 │  │  └─ ports.py          (= MarketSourcePort 무변경, + KalshiMarketSourcePort)
