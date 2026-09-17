@@ -58,50 +58,41 @@ v0.3        (뉴스-마켓 매칭)
 3. Spec·Plan 작성 (설계 완료)
 4. 사용자 검토·승인
    ↓
-5. Epic 또는 Slice Issue 생성 ← GitHub에 공식화
-6. Task별 `feature/{slice}-{task}` 브랜치 시작
+5. Slice Issue 생성 ← GitHub에 공식화. 예외 없음(모든 Slice)
+6. Task마다 서브이슈 생성 + `feature/{slice}-{task}` 브랜치 시작
 ```
 
-이유: 승인된 설계를 Issue로 공식화한 뒤, Task별 PR을 연결한다.
+이유: 승인된 설계를 Issue로 공식화한 뒤, Task별 PR을 연결한다. 과거엔 "작은 로컬 작업"을 이슈 없이 진행하는 예외를 뒀으나, Slice 단위 추적 일관성을 위해 폐지했다 — 모든 Slice는 크기와 무관하게 이슈화한다.
 
-### Epic과 Slice 정의
+### Epic, Slice, Task 라벨
 
 ```
-Epic Title: [market] Market Bounded Context
-Slice Title: [market-classification] 매크로 마켓 분류
-
-Epic Labels: epic
-Slice Labels: type:feat, status:planning
-Milestone: 릴리스 버전 (필요한 경우)
-
-## Research
-- [조사 결과](../path/to/docs/research.md)
-
-## What
-- 사용자 관점: AC(Acceptance Criteria)
-
-## Plan
-- [설계](../path/to/plan.md)
+epic  — Bounded Context 단위 상위 이슈 (.github/ISSUE_TEMPLATE/epic.md)
+slice — Vertical Slice 단위 이슈 (.github/ISSUE_TEMPLATE/slice.md)
+task  — Slice의 서브이슈, PR 1개 단위 (.github/ISSUE_TEMPLATE/task.md)
 ```
+
+Epic은 여러 Slice를 묶는 상위 단위가 실제로 있을 때만 만든다(작은 프로젝트에선 Slice Issue만으로 충분할 수 있다). Slice와 Task는 템플릿 그대로 사용하고 `type:*`/`status:*` 라벨을 필요하면 추가로 붙인다.
 
 ### 예시: Slice
 ```
-[news-fetch] 뉴스 조회
+[Slice] 매크로 마켓 분류
 
-Parent: News Bounded Context Epic
+Labels: slice, type:feat
 Milestone: v0.1 (선택)
-Labels: type:feat, status:planning
 
-## Research
-- NewsAPI 선택 이유, 응답 형식 확인
-- [스펙](../concenews-backend/docs/spec-news-fetch.md)
+Spec: concenews-backend/docs/spec-market-tracking.md
+Plan: concenews-backend/docs/plan-market-tracking.md
 
-## What
-- GET /news → 최근 뉴스 50개 반환
-- 필드: id, title, link, description, source, published_at
+## 개요
+Polymarket 활성 마켓을 태그 기반으로 MACRO/NON_MACRO 분류한다.
 
-## Plan
-- [설계](../concenews-backend/docs/plan-news-fetch.md)
+## Acceptance Criteria
+- [ ] AC 1: ...
+
+## Tasks
+- [ ] #{task-issue-1}
+- [ ] #{task-issue-2}
 ```
 
 ---

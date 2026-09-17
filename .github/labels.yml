@@ -3,7 +3,15 @@
 labels:
   - name: epic
     color: 9C27B0
-    description: "Epic (Slice definition)"
+    description: "Epic (Bounded Context 단위 상위 이슈)"
+
+  - name: slice
+    color: 673AB7
+    description: "Vertical Slice 단위 이슈"
+
+  - name: task
+    color: 3F51B5
+    description: "Slice의 서브이슈 (PR 1개 단위)"
 
   - name: "type:feat"
     color: 2196F3

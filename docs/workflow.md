@@ -62,12 +62,12 @@
 - Spec과 Plan을 사용자에게 제시하고 승인받는다.
 - 승인 전에는 구현 브랜치·프로덕션 코드·GitHub Issue/PR을 만들지 않는다.
 
-### 7. GitHub Issue 생성 (GitHub로 추적하는 Slice만)
+### 7. GitHub Issue 생성 (모든 Slice)
 
-- 사용자가 명시적으로 승인한 경우에만 Epic 또는 Slice Issue를 생성한다.
+- Spec·Plan 사용자 승인 후, `.github/ISSUE_TEMPLATE/slice.md`(`slice` 라벨)로 Slice Issue를 생성한다. **Slice는 예외 없이 이슈화한다** — "작은 로컬 작업이라 생략" 판단은 이제 두지 않는다.
 - Issue는 승인된 Spec·Plan과 Research·ADR을 링크해 Slice의 공식 기록이 된다.
-- 각 Task는 `.github/ISSUE_TEMPLATE/task.md` 템플릿으로 Slice의 서브이슈로 생성하고, 이어서 `feature/{slice}-{task}` 브랜치를 만든다.
-- 작은 로컬 작업처럼 GitHub Issue로 추적하지 않는 경우에는 이 단계를 건너뛴다.
+- 각 Task는 `.github/ISSUE_TEMPLATE/task.md`(`task` 라벨)로 Slice의 서브이슈로 생성하고, 이어서 `feature/{slice}-{task}` 브랜치를 만든다.
+- Issue 생성은 GitHub 쓰기 작업이라 매번 사용자 승인을 받은 뒤 실행한다(승인은 "이슈화 하라"는 일반 방침이 아니라 각 Slice·Task 시점의 실행 승인).
 - 상세: [github-strategy.md](github-strategy.md)
 
 ### 8. Tasks
